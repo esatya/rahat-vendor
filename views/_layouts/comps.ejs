@@ -1,0 +1,43 @@
+<div id="cmpAction" style="display:none">
+  <div class="header-large-title">
+    <h1 class="title">&nbsp;</h1>
+  </div>
+
+  <div class="section mb-5 text-center">
+    <div class="card m-2">
+      <div class="card-body">
+        <div id="remoteResponse"></div>
+      </div>
+    </div>
+    <button type="button" onclick="$('#cmpMain').show(); $('#cmpAction').hide();"
+      class="btn btn-icon btn-success mt-2 pr-5 pl-5 btn-done" style="display:none;">
+      Done
+    </button>
+  </div>
+</div>
+
+<div class="login-form" id="cmpUnlock" style="display:none;margin-top: 80px;">
+  <div class="section">
+    <h1>Wallet Locked</h1>
+    <h4>Please enter your 6-digit code to unlock</h4>
+  </div>
+  <div class="section mt-2 mb-5">
+    <div class="form-group boxed">
+      <div class="input-wrapper">
+        <input type="password" pattern="[0-9]*" inputmode="numeric" class="form-control verify-input" id="unlockCode"
+          placeholder="------" maxlength="6" style="color: green;">
+        <div class="text-center">
+          <small class="text-danger message">
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="form-button-group">
+        <button type="button" class="btn btn-primary btn-block btn-lg">
+          <ion-icon name="lock-open-outline"></ion-icon>
+          Unlock
+        </button>
+      </div> -->
+  </div>
+</div>

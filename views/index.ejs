@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class=" ">
+
+<head>
+  <title>Home - Rumsan Sanduk</title>
+  <%- include ("./_layouts/head")%>
+</head>
+
+<body>
+  <%- include ("./_layouts/header")%>
+  <!-- App Header -->
+  <div class="appHeader transparent">
+    <div class="left d-none">
+      <a href="#" class="headerButton">
+        <ion-icon name="chevron-back-outline" role="img" class="md hydrated" aria-label="chevron back outline">
+        </ion-icon>
+      </a>
+    </div>
+    <div class="pageTitle">
+
+      <img src="/images/Rahat logo main.png" alt="logo" class="logo">
+    </div>
+    <div class="right d-none">
+      <a href="#" class="headerButton">
+        <ion-icon name="search-outline" role="img" class="md hydrated" aria-label="search outline"></ion-icon>
+      </a>
+    </div>
+  </div>
+
+  <!-- <div class="appHeader bg-primary scrolled">
+    <div class="left d-none">
+      <a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+        <ion-icon name="home-outline"></ion-icon>
+      </a>
+    </div>
+    <div class="pageTitle">
+      Rumsan Sanduk
+    </div>
+    <div class="right">
+      <a href="javascript:;" class="headerButton logout">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </a>
+    </div>
+  </div> -->
+  <!-- * App Header -->
+
+  <div id="appCapsule">
+
+    <div id="cmpMain">
+      <div class="section mt-5" id="cmpInfo">
+        <div class="card">
+          <div class=" text-center">
+            <div class="card-header">
+              Wallet Balance
+            </div>
+            <div class="card-body">
+              <!-- <h1 style="margin-top: 25px;" class="tokenName"></h1> -->
+              <h1 style="display: inline;" class="tokenBalance"></h1>
+              <em>
+                <h3 style="display: inline;" class="tokenSymbol"></h3>
+              </em>
+            </div>
+
+          </div>
+          <div class="text-center" style="margin-top: 5px; margin-bottom: 20px;">
+
+
+            <button id="btnSendToken" type="button" class="btn btn-primary rounded mr-1">SEND </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button id="btnReceiveToken" type="button" class="btn btn-success rounded mr-1">RECEIVE</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- transactions table -->
+      <div class="section mt-2">
+        <div class="card text-center">
+          <div class="card-header">
+            Recent Transactions
+          </div>
+          <div class="card-body mb-n4">
+            <div class="table-responsive">
+              <table class="table mt-n3" id="tx-table">
+                <thead>
+                  <tr>
+                    <th scope="col" width="140">Date</th>
+                    <th scope="col">Beneficiary</th>
+                    <th scope="col">Amount</th>
+                  </tr>
+                </thead>
+                <!-- <tbody>
+                  <tr>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                  </tr>
+
+                </tbody> -->
+
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+  <%- include ("./_layouts/comps")%>
+  </div>
+
+  <%- include ("./_layouts/footer")%>
+  <%- include ("./_layouts/foot")%>
+  <script type="text/javascript" language="javascript" src="/js/plugins/datatables/datatables.min.js"></script>
+
+  <script src="/js/app/home.js?v=<%=app.version%>"></script>
+</body>
+
+</html>
+
+<div id="mdlPasscode" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">First, let's setup your passcode</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-5">
+          <div class="col">
+            <p>Choose a 6-digit passcode.</p>
+            <input type="password" pattern="[0-9]*" inputmode="numeric" class="form-control verify-input passcode"
+              placeholder="------" maxlength="6" autocomplete="false">
+            <div class="text-center">
+              <small class="text-danger message">
+              </small>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer" style="display: none;">
+          <button id="btnNewWallet" type="button" class="btn btn-block btn-linkedin mb-2">
+            <ion-icon name="add-circle-outline" class="md hydrated" aria-label="Create New Wallet"></ion-icon>
+            Create New Wallet
+          </button>
+          <button id="btnRestoreWallet" type="button" class="btn btn-block btn-bitcoin">
+            <ion-icon name="wallet-outline" class="md hydrated" aria-label="Restore Existing Wallet"></ion-icon>
+            Restore Existing Wallet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- send modal -->
+<div id="mdlSendToken" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Send Tokens</h4>
+        <a href="javascript:;" data-dismiss="modal">Close</a>
+      </div>
+      <div class="modal-body card mt-5" id="cmpTransfer">
+        <div class="card-body">
+          <form>
+            <div class="form-group boxed" style="padding:0px">
+              <div class="input-wrapper">
+                <label class="label" for="sendToAddr">Address:</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" id="sendToAddr" name="sendToAddr"
+                    placeholder="Enter Ethereum Address" value="">
+                  <i class="clear-input">
+                    <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                  </i>
+                  <div class="ml-1" style="display: none;">
+                    <button type="button" class="btn btn-icon btn-primary mr-1 mb-1 btn-scan-address">
+                      <ion-icon name="qr-code-outline"></ion-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group boxed" style="padding:0px">
+              <div class="input-wrapper">
+                <label class="label" for="sendAmount">Amount to send:</label>
+                <input type="number" class="form-control" id="sendAmount" name="sendAmount"
+                  placeholder="Enter Token amount to request" value="">
+                <i class="clear-input">
+                  <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                </i>
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="card-footer text-right">
+          <button type="button" id="btnConfirmSend" class="btn btn-success">
+            <ion-icon name="send-outline"></ion-icon> Send Token
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- send modal -->
+
+
+<!-- receive modal -->
+<div id="mdlReceiveToken" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Receive Tokens</h4>
+        <a href="javascript:;" data-dismiss="modal">Close</a>
+      </div>
+      <div class="modal-body section mt-2 mb-5" id="cmpInfo">
+        <div class="card">
+          <div class="pl-4 pt-3 pr-4 text-center">
+            <canvas id="qrcode"></canvas>
+          </div>
+          <div class="card-body text-center" style="margin-top: -25px;">
+            <h5 class="card-text infoAddress text-bold"></h5>
+            <small style="font-size: 10px;">Scan the QR Code or use the address to receive tokens to your
+              account.</small>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- receive modal -->
+
+
+<div id="mdlWalletRestore" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Now, let's restore your wallet</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <p>Please enter your 12 to 24 words mnemonic to restore your wallet.</p>
+            <textarea type='text' style="width: 100%;border-color:gray;height:84px;" name='mnemonic'></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-restore btn-success">
+            <ion-icon name="wallet-outline" class="md hydrated" aria-label="Restore Wallet"></ion-icon>
+            Restore Wallet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- request modal -->
+<div id="mdlRequestToken" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Request Tokens</h4>
+        <a href="javascript:;" data-dismiss="modal">Close</a>
+      </div>
+      <div class="modal-body section mt-2 mb-5" id="cmpInfo">
+        <div class="card mt-2" id="cmpRequest">
+          <div class="card-body">
+            <form>
+              <div class="form-group boxed" style="padding:0px">
+                <div class="input-wrapper">
+                  <label class="label" for="sendToAddr">Phone Number:</label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="phone" name="phone"
+                      placeholder="Enter Beneficiary's Number">
+                    <i class="clear-input">
+                      <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                    </i>
+                    <!-- <div class="ml-1">
+                      <button type="button" class="btn btn-icon btn-primary mr-1 mb-1 btn-scan-address">
+                        <ion-icon name="qr-code-outline"></ion-icon>
+                      </button>
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group boxed" style="padding:0px">
+                <div class="input-wrapper">
+                  <label class="label" for="sendAmount">Amount to Request:</label>
+                  <input type="number" class="form-control" id="tokenAmount" name="tokenAmount"
+                    placeholder="Enter Token amount to request" value="">
+                  <i class="clear-input">
+                    <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                  </i>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+          <div class="card-footer text-right">
+            <button type="button" id="btnRequestSend" class="btn btn-success">
+              <ion-icon name="send-outline"></ion-icon> Request Token
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OTP modal -->
+
+<div id="mdlOTP" class="modal fade" role="dialog" style="display: none;">
+
+  <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">OTP Verification</h4>
+
+      </div>
+
+      <div class="modal-body">
+        <div class="login-form">
+
+          <div class="section mt-4 mb-5">
+            <form>
+
+              <div class="form-group basic">
+                <div class="input-wrapper">
+                  <label class="label" for="password1">OTP</label>
+                  <input type="password" class="form-control" id="otp" name='otp' placeholder="6-digit otp">
+                  <i class="clear-input">
+                    <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                  </i>
+                </div>
+              </div>
+
+              <div class="mt-2">
+                <button id="btnSubmit" type="submit" class="btn btn-primary btn-block btn-lg">Submit</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- register Modal -->
+<div id="mdlRegister" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Register as Vendor</h4>
+        <a href="javascript:;" data-dismiss="modal">Close</a>
+      </div>
+      <div class="modal-body">
+        <div class="section mt-2 text-center">
+          <h1 id=mdlAgencyName></h1>
+          <h4>Fill the form to register</h4>
+        </div>
+        <div class="section mt-4 mb-5">
+          <form>
+            <div class="form-group basic">
+              <div class="input-wrapper">
+                <label class="label" for="name">Name</label>
+                <input type="text" class="form-control" id="name" name='name' placeholder="Your Full Name">
+                <i class="clear-input">
+                  <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                </i>
+              </div>
+            </div>
+            <div class="form-group basic">
+              <div class="input-wrapper">
+                <label class="label" for="email">E-mail</label>
+                <input type="email" class="form-control" id="email" name='email' placeholder="Your e-mail">
+                <i class="clear-input">
+                  <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                </i>
+              </div>
+            </div>
+
+            <div class="form-group basic">
+              <div class="input-wrapper">
+                <label class="label" for="phone">phone</label>
+                <input type="number" class="form-control" id="phone" name='phone' placeholder="Phone Number">
+                <i class="clear-input">
+                  <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                </i>
+              </div>
+            </div>
+            <div class="form-group basic">
+              <div class="input-wrapper">
+                <label class="label" for="location">Location/Address</label>
+                <input type="text" class="form-control" id="loation" , name='address' placeholder="Address">
+                <i class="clear-input">
+                  <ion-icon name="close-circle" role="img" class="md hydrated" aria-label="close circle"></ion-icon>
+                </i>
+              </div>
+            </div>
+
+
+
+            <div class="mt-2">
+              <button type="submit" class="btn btn-primary btn-block btn-lg">Submit </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include ("./_layouts/posthtml")%>

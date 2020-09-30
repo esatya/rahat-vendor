@@ -1,0 +1,46 @@
+{
+  "name": "rahat-vendor",
+  "version": "1.0.0",
+  "description": "Mobile friendly vendor web application for Rahat.",
+  "main": "app.js",
+  "scripts": {
+    "start": "cross-env ENV_TYPE=development nodemon ./bin/www",
+    "client": "cd ./client && yarn dev",
+    "setup": "yarn install && cd ./client && yarn install",
+    "build": "ENV_TYPE=production yarn install && cd ./client && yarn install && yarn run prod",
+    "production": "yarn build && ENV_TYPE=production node ./bin/www"
+  },
+  "keywords": [],
+  "author": {
+    "email": "team@esatya.io",
+    "name": "eSatya Team"
+  },
+  "maintainers": [
+    {
+      "email": "team@esatya.io",
+      "name": "eSatya Team"
+    }
+  ],
+  "license": "TBD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esatya/rahat-vendor.git"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "public/*",
+      "client/*",
+      "config/*"
+    ]
+  },
+  "dependencies": {
+    "config": "^3.3.1",
+    "ejs": "^3.1.3",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  }
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html class=" ">
+
+<head>
+  <title>Rumsan Sanduk</title>
+  <%- include ("./_layouts/head")%>
+</head>
+
+<body>
+  <%- include ("./_layouts/header")%>
+
+  <div class="appHeader bg-primary text-light">
+    <div class="left">
+      <a href="javascript:;" class="headerButton goBack">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </a>
+    </div>
+    <div class="pageTitle">Profile</div>
+    <div class="right">
+      <a href="/home" class="headerButton">
+        <ion-icon name="home-outline"></ion-icon>
+      </a>
+    </div>
+  </div>
+
+  <div id="appCapsule">
+    <div class="section mt-2">
+      <div class="profile-head">
+        <div class="avatar">
+          <img src="/images/Fav-icon 1.png" alt=" avatar" class="imaged w64 rounded">
+        </div>
+        <div class="in">
+          <h3 id="greetVendor" class="name">Hello Vendor</h3>
+          <h5 id="phone" class="subtext">:)</h5>
+          <h5 id="email" class="subtext">:)</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section full mb-2">
+    <div class="tab-content">
+      <!-- settings -->
+      <div class="tab-pane fade show active" id="settings" role="tabpanel">
+        <ul class="listview image-listview text flush transparent pt-1">
+          <li>
+            <div class="item">
+              <div class="in">
+                <div>
+                  Dark Mode
+                </div>
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input  dark-mode-switch" id="customSwitch1">
+                  <label class="custom-control-label" for="customSwitch1"></label>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a href="/wip" class="item">
+              <div class="in">
+                <div>Backups</div>
+              </div>
+            </a>
+          </li>
+          <!-- <li>
+            <a href="/settings/network" class="item">
+              <div class="in">
+                <div>Current Network</div>
+                <footer>...</footer>
+              </div>
+            </a>
+          </li> -->
+        </ul>
+      </div>
+      <!-- * settings -->
+    </div>
+  </div>
+
+  <%- include ("./_layouts/footer")%>
+  <%- include ("./_layouts/foot")%>
+  <script src="/js/app/profile.js?v=<%=app.version%>"></script>
+</body>
+
+</html>
+
+<div id="mdlQR" class="modal fade" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Scan a QR Code</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <div id="qr-reader" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

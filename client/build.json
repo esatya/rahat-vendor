@@ -1,0 +1,15 @@
+{
+  "vendors": {
+    "entry": "./js/vendors/index.js",
+    "outputPath": "../public/js/app",
+    "outputFile": "vendors.js"
+  },
+  "js": {
+    "entry": {
+      "auth": "./js/auth/index.js",
+      "auth.passport": "./js/auth/passport.js",
+      "home": "./js/index.js"
+    },
+    "outputPath": "../public/js/app"
+  }
+}
