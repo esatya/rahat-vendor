@@ -12,7 +12,7 @@
   "dependencies": {
     "ethereum-qr-code": "^0.3.0",
     "ethers": "^5.0.8",
-    "jquery": "2.2.4",
+    "jquery": "3.5.1",
     "qrcode": "^1.4.4",
     "rumsan-core": "^1.0.1",
     "rumsan-ui": "^1.0.11",
