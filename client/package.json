@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "cross-env ENV_TYPE=development gulp",
     "client": "cross-env ENV_TYPE=development gulp",
-    "prod": "cross-env ENV_TYPE=production gulp build"
+    "prod": "ENV_TYPE=production gulp build"
   },
   "devDependencies": {
     "browser-sync": "^2.26.7",
