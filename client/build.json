@@ -8,7 +8,13 @@
     "entry": {
       "auth": "./js/auth/index.js",
       "auth.passport": "./js/auth/passport.js",
-      "home": "./js/index.js"
+      "home": "./js/index.js",
+      "slider": "./js/slider.js",
+      "register": "./js/register/agency.js",
+      "transactions": "./js/transactions/page.index.js",
+      "setup.google": "./js/setup/google.js",
+      "settings.network": "./js/settings/page.network.js",
+      "profile": "./js/settings/page.index.js"
     },
     "outputPath": "../public/js/app"
   }

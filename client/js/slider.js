@@ -3,7 +3,7 @@
 import store from "store";
 import Mnemonic from "./register/mnemonic";
 import { Modal } from 'rumsan-ui'
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import Google from './utils/google';
 import Passcode from './setup/passcode'
 import Wallet from './blockchain/wallet';
@@ -37,6 +37,7 @@ $(document).ready(() => {
   })
 
   $("#generateSecret").on("click", () => {
+    console.log("ethers", ethers);
     let seed = ethers.Wallet.createRandom().mnemonic.phrase;
     $("[name=mnemonic]").val(seed);
   });

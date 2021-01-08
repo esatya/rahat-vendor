@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import wallet from './wallet';
 import AppSettings from '../settings/app';
 import config from '../config'

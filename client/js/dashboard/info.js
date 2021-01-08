@@ -19,9 +19,6 @@ export default class extends Component {
     let aidTokenContract = await ethersContract(tokenAbi, tokenAddress)
     let tokenBalance = await aidTokenContract.balanceOf(this.account.address)
     console.log(tokenBalance.toNumber());
-    let tokenSymbol = await aidTokenContract.symbol();
-    let tokenName = await aidTokenContract.name();
-
     this.select(".tokenBalance").text(tokenBalance);
   }
 

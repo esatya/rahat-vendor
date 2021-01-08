@@ -1,4 +1,4 @@
-import ethers from '../blockchain/ethers';
+import { ethers } from '../blockchain/ethers';
 
 export default (data) => {
   if (!ethers.utils.isAddress(data.to)) throw Error('Bad address. Please scan again.');
