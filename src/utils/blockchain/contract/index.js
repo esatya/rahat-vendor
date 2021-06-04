@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
+import { getDefaultNetwork } from '../../../constants/networks';
 
-export default function Contract({ wallet, address, type }) {
+const provider = new ethers.providers.JsonRpcProvider(getDefaultNetwork());
+export default function Contract({ address, type }) {
 	const getAbi = () => {
 		return require(`./${type}`);
 	};
@@ -8,7 +10,7 @@ export default function Contract({ wallet, address, type }) {
 	return {
 		abi: getAbi(),
 		get() {
-			return new ethers.Contract(address, getAbi(), wallet);
+			return new ethers.Contract(address, getAbi(), provider);
 		}
 	};
 }

@@ -1,13 +1,20 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
+import DataService from '../../services/db';
+import Contract from '../../utils/blockchain/contract';
+import { APP_CONSTANTS, CONTRACT } from '../../constants';
+import { ethers } from 'ethers';
+import { get } from 'store';
+
 var QRCode = require('qrcode.react');
 
 export default function Main() {
 	const { hasWallet, wallet } = useContext(AppContext);
+	const [balance, setBalance] = useState(0);
 	const [showPageLoader, setShowPageLoader] = useState(true);
 
 	const cardBody = useRef();
@@ -18,9 +25,29 @@ export default function Main() {
 		else return 280;
 	};
 
-	setTimeout(() => {
+	const getBalance = async () => {
+		const agency = await DataService.listAgencies();
+		const tokenAddress = agency[0].tokenAddress;
+		const userAddress = await DataService.getAddress();
+		if (!userAddress) return 0;
+
+		const tokenContract = Contract({ address: tokenAddress, type: CONTRACT.TOKEN }).get();
+
+		let remainingBalance = await tokenContract.balanceOf(userAddress);
+
+		return remainingBalance.toNumber();
+	};
+
+	setTimeout(async () => {
 		setShowPageLoader(false);
 	}, 500);
+
+	useEffect(() => {
+		(async () => {
+			const balance = await getBalance();
+			setBalance(balance);
+		})();
+	}, []);
 
 	if (!hasWallet) {
 		return <Redirect to="/setup" />;
@@ -35,12 +62,12 @@ export default function Main() {
 			)}
 
 			<div id="appCapsule">
-				<div className="section wallet-card-section pt-1">
-					<div className="wallet-card">
-						<div className="balance">
-							<div className="left">
-								<span className="title">Your Token Balance</span>
-								<h1 className="total">$ 2,562.50</h1>
+				<div class="section wallet-card-section pt-1">
+					<div class="wallet-card">
+						<div class="balance">
+							<div class="left">
+								<span class="title">Your Token Balance</span>
+								<h1 class="total">{balance}</h1>
 							</div>
 							<div className="right"></div>
 						</div>

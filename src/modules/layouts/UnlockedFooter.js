@@ -1,16 +1,18 @@
 import React, { useState, useContext } from 'react';
+import { Modal, Form } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 import QrReader from 'react-qr-reader';
 import Swal from 'sweetalert2';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { GrTransaction } from 'react-icons/gr';
-
+import Loading from '../global/Loading';
 import { useIcon } from '../../utils/react-utils';
 import ModalWrapper from '../global/ModalWrapper';
 import ActionSheet from '../global/ActionSheet';
 import { AppContext } from '../../contexts/AppContext';
-import { APP_CONSTANTS } from '../../constants';
+import { APP_CONSTANTS, CONTRACT } from '../../constants';
 import DataService from '../../services/db';
+import Contract from '../../utils/blockchain/contract';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
@@ -19,8 +21,72 @@ export default function UnlockedFooter() {
 	const { saveScannedAddress, wallet, network } = useContext(AppContext);
 	const [scanModal, setScanModal] = useState(false);
 	const [showActionSheet, setShowActionSheet] = useState(null);
+	const [loadingModal, setLoadingModal] = useState(false);
+	const [chargeData, setChargeData] = useState({ phone: '', amount: '', otp: '' });
+	const [otp, setOtp] = useState('');
 
 	const handleScanModalToggle = () => setScanModal(!scanModal);
+
+	//TODO send requestToken transaction
+	//TODO claim token on OTP verification
+
+	const chargeCustomer = async () => {
+		setLoadingModal(true);
+		const agency = await DataService.listAgencies();
+		const agencyAddress = agency[0].address;
+		const rahatContract = Contract({ wallet, address: agencyAddress, type: CONTRACT.RAHAT }).get();
+		let remainingBalance = await rahatContract.tokenBalance(chargeData.phone);
+		if (chargeData.amount > remainingBalance.toNumber()) {
+			// waring token amount is greater than remaining blance
+		}
+		const rahatContractSigner = rahatContract.connect(wallet);
+		const tx = await rahatContractSigner.createClaim(Number(chargeData.phone), Number(chargeData.amount));
+		const receipt = await tx.wait();
+		setLoadingModal(false);
+		return setShowActionSheet('otp');
+	};
+
+	const updateForm = e => {
+		let formData = new FormData(e.target.form);
+		let data = {};
+		formData.forEach((value, key) => (data[key] = value));
+		data.phone = data.phone.replace(/[^0-9]/g, '');
+		data.amount = data.amount.replace(/[^0-9]/g, '');
+		data.otp = data.otp;
+		setChargeData(data);
+	};
+
+	const updateOtp = e => {
+		let formData = new FormData(e.target.form);
+		let data = {};
+		formData.forEach((value, key) => (data[key] = value));
+		setOtp(data.otp);
+	};
+
+	const verifyCharge = async () => {
+		setLoadingModal(true);
+		console.log({ loadingModal });
+		const agency = await DataService.listAgencies();
+		const agencyAddress = agency[0].address;
+		const rahatContract = Contract({ wallet, address: agencyAddress, type: CONTRACT.RAHAT }).get();
+
+		const rahatContractSigner = rahatContract.connect(wallet);
+
+		const tx = await rahatContractSigner.getTokensFromClaim(Number(chargeData.phone), otp);
+		const receipt = await tx.wait();
+		setLoadingModal(false);
+		setShowActionSheet(null);
+		await DataService.addTx({
+			hash: receipt.transactionHash,
+			type: 'receive',
+			timestamp: Date.now(),
+			amount: chargeData.amount,
+			to: 'xxx',
+			from: chargeData.phone,
+			status: 'success'
+		});
+		Swal.fire('Success', 'Transaction completed.');
+	};
 
 	const handleQRLogin = payload => {
 		wallet.signMessage(payload.token).then(signedData => {
@@ -109,15 +175,21 @@ export default function UnlockedFooter() {
 
 	return (
 		<>
-			<ActionSheet
-				title="Charge Customer"
-				showModal={showActionSheet === 'charge'}
-				handleSubmit={() => setShowActionSheet('otp')}
-			>
+			<Loading message="Transaction in process. Please wait..." showModal={loadingModal} />
+			<ActionSheet title="Charge Customer" showModal={showActionSheet === 'charge'} handleSubmit={chargeCustomer}>
 				<div className="form-group basic">
 					<div className="input-wrapper">
 						<label className="label">Customer Phone Number</label>
-						<input type="number" className="form-control" id="text11" placeholder="Enter number" />
+						<Form.Control
+							type="number"
+							name="phone"
+							className="form-control"
+							placeholder="Phone Number"
+							value={chargeData.phone}
+							onChange={updateForm}
+							required
+						/>
+						{/* <input type="number" className="form-control" id="phone" placeholder="Enter number" /> */}
 						<i className="clear-input">
 							<ion-icon name="close-circle"></ion-icon>
 						</i>
@@ -132,24 +204,34 @@ export default function UnlockedFooter() {
 								Rs.
 							</span>
 						</div>
-						<input type="number" className="form-control form-control-lg" placeholder="0" />
+						<Form.Control
+							type="number"
+							name="amount"
+							className="form-control"
+							placeholder="Charge Amount"
+							value={chargeData.amount}
+							onChange={updateForm}
+							required
+						/>
+						{/* <input type="number" id="amount" className="form-control form-control-lg" placeholder="0" /> */}
 					</div>
 				</div>
 			</ActionSheet>
 
-			<ActionSheet
-				title="Verification OTP"
-				showModal={showActionSheet === 'otp'}
-				handleSubmit={() => {
-					setShowActionSheet(null);
-					sendTransaction();
-					Swal.fire('Success', 'Transaction completed.');
-				}}
-			>
+			<ActionSheet title="Verification OTP" showModal={showActionSheet === 'otp'} handleSubmit={verifyCharge}>
 				<div className="form-group basic">
 					<div className="input-wrapper">
 						<label className="label">OTP from SMS (ask from customer)</label>
-						<input type="number" className="form-control" id="text11" placeholder="Enter OTP" />
+						<Form.Control
+							type="number"
+							name="otp"
+							className="form-control"
+							placeholder="OTP"
+							value={chargeData.otp}
+							onChange={updateOtp}
+							required
+						/>
+						{/* <input type="number" className="form-control" id="text11" placeholder="Enter OTP" /> */}
 						<i className="clear-input">
 							<ion-icon name="close-circle"></ion-icon>
 						</i>

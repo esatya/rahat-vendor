@@ -33,5 +33,10 @@ module.exports = {
 	DEFAULT_TOKEN: {
 		NAME: 'Ether',
 		SYMBOL: 'ETH'
+	},
+
+	CONTRACT: {
+		RAHAT: 'Rahat',
+		TOKEN: 'AidToken'
 	}
 };

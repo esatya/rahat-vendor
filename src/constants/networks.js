@@ -2,13 +2,13 @@ const networkList = [
 	{
 		name: 'rumsan',
 		url: 'https://chain.esatya.io',
-		display: 'Rumsan Network',
-		default: true
+		display: 'Rumsan Network'
 	},
 	{
 		name: 'rumsan_test',
 		url: 'https://testnetwork.esatya.io',
-		display: 'Rumsan Test Network'
+		display: 'Rumsan Test Network',
+		default: true
 	},
 	{
 		name: 'mainnet',

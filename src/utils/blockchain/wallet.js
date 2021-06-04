@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, getDefaultProvider } from 'ethers';
 
 import DataService from '../../services/db';
 
@@ -10,6 +10,13 @@ const Wallet = {
 		const { url } = network;
 		const provider = new ethers.providers.JsonRpcProvider(url);
 		return wallet.connect(provider);
+	},
+
+	async getProvider() {
+		if (!network) network = await DataService.getNetwork();
+		const { url } = network;
+		const provider = new ethers.providers.JsonRpcProvider(url);
+		return provider;
 	},
 
 	async loadFromJson(passcode, encryptedJsonWallet) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from 'react-bootstrap';
+import { Modal, Form } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 export default function ActionSheet(props) {
@@ -20,21 +20,22 @@ export default function ActionSheet(props) {
 				)}
 
 				<Modal.Body>
-					<div className="action-sheet-content">
-						<form>
-							{props.children}
-							<div className="form-group basic">
-								<button
-									type="button"
-									className="btn btn-primary btn-block btn-lg"
-									data-dismiss="modal"
-									onClick={handleSubmit}
-								>
-									Charge
-								</button>
-							</div>
-						</form>
-					</div>
+					<Form>
+						<div className="action-sheet-content">
+							<form>
+								{props.children}
+								<div className="form-group basic">
+									<button
+										type="button"
+										onClick={handleSubmit}
+										className="btn btn-primary btn-block btn-lg"
+									>
+										Charge
+									</button>
+								</div>
+							</form>
+						</div>
+					</Form>
 				</Modal.Body>
 			</Modal>
 		</>
