@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import React from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { IoLogoGoogle, IoWalletOutline } from 'react-icons/io5';
 
 import DataService from '../../services/db';
@@ -17,7 +17,7 @@ export default function Main() {
 
 	return (
 		<>
-			<div class="item p-2">
+			<div className="item p-2">
 				<div className="text-center p-3 mb-3">
 					<img src="/assets/img/brand/logo-512.png" alt="alt" width="200" />
 				</div>

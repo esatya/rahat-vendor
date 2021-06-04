@@ -114,27 +114,25 @@ export default function UnlockedFooter() {
 				showModal={showActionSheet === 'charge'}
 				handleSubmit={() => setShowActionSheet('otp')}
 			>
-				<div class="form-group basic">
-					<div class="input-wrapper">
-						<label class="label" for="text11">
-							Customer Phone Number
-						</label>
-						<input type="number" class="form-control" id="text11" placeholder="Enter number" />
-						<i class="clear-input">
+				<div className="form-group basic">
+					<div className="input-wrapper">
+						<label className="label">Customer Phone Number</label>
+						<input type="number" className="form-control" id="text11" placeholder="Enter number" />
+						<i className="clear-input">
 							<ion-icon name="close-circle"></ion-icon>
 						</i>
 					</div>
 				</div>
 
-				<div class="form-group basic">
-					<label class="label">Enter Amount</label>
-					<div class="input-group mb-3">
-						<div class="input-group-prepend">
-							<span class="input-group-text" id="input14">
+				<div className="form-group basic">
+					<label className="label">Enter Amount</label>
+					<div className="input-group mb-3">
+						<div className="input-group-prepend">
+							<span className="input-group-text" id="input14">
 								Rs.
 							</span>
 						</div>
-						<input type="number" class="form-control form-control-lg" placeholder="0" />
+						<input type="number" className="form-control form-control-lg" placeholder="0" />
 					</div>
 				</div>
 			</ActionSheet>
@@ -148,13 +146,11 @@ export default function UnlockedFooter() {
 					Swal.fire('Success', 'Transaction completed.');
 				}}
 			>
-				<div class="form-group basic">
-					<div class="input-wrapper">
-						<label class="label" for="text11">
-							OTP from SMS (ask from customer)
-						</label>
-						<input type="number" class="form-control" id="text11" placeholder="Enter OTP" />
-						<i class="clear-input">
+				<div className="form-group basic">
+					<div className="input-wrapper">
+						<label className="label">OTP from SMS (ask from customer)</label>
+						<input type="number" className="form-control" id="text11" placeholder="Enter OTP" />
+						<i className="clear-input">
 							<ion-icon name="close-circle"></ion-icon>
 						</i>
 					</div>
@@ -175,14 +171,14 @@ export default function UnlockedFooter() {
 				<div className="appBottomMenu">
 					<Link to="/tx" className="item">
 						<div className="col">
-							<GrTransaction class="ion-icon" />
+							<GrTransaction className="ion-icon" />
 							<strong>Transactions</strong>
 						</div>
 					</Link>
 					<a href="#home" className="item" onClick={() => setShowActionSheet('charge')}>
 						<div className="col">
 							<div className="action-button large">
-								<GiReceiveMoney class="ion-icon" />
+								<GiReceiveMoney className="ion-icon" />
 							</div>
 						</div>
 					</a>

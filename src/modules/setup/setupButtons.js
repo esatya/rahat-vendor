@@ -8,19 +8,19 @@ import DataService from '../../services/db';
 import Loading from '../global/Loading';
 import { AppContext } from '../../contexts/AppContext';
 import { APP_CONSTANTS } from '../../constants';
-import { IoWalletOutline, IoLogoGoogle, IoAddCircleOutline } from 'react-icons/io5';
+import { IoWalletOutline, IoLogoGoogle } from 'react-icons/io5';
 
 const { PASSCODE_LENGTH } = APP_CONSTANTS;
 
 export default function Setup() {
-	const { hasWallet, setWallet, network, wallet } = useContext(AppContext);
+	const { setWallet } = useContext(AppContext);
 	let history = useHistory();
 
 	const [showWalletActions, setShowWalletActions] = useState(false);
 	const [passcode, setPasscode] = useState('');
 	const [confirmPasscode, setConfirmPasscode] = useState('');
 	const [loadingModal, setLoadingModal] = useState(false);
-	const [loadingMessage, setLoadingMessage] = useState('Creating your new wallet. Please wait...');
+	const [loadingMessage] = useState('Creating your new wallet. Please wait...');
 	const [currentAction, setCurrentAction] = useState(null);
 	const inputRef = useRef(null);
 

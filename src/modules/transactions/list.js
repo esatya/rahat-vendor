@@ -1,15 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { GiReceiveMoney } from 'react-icons/gi';
 import Moment from 'react-moment';
 
-import { AppContext } from '../../contexts/AppContext';
 import DataService from '../../services/db';
 
 export default function ListTx({ limit }) {
-	const { hasWallet, wallet } = useContext(AppContext);
-
 	const [transactions, setTransaction] = useState([]);
 
 	useEffect(() => {
@@ -20,7 +17,7 @@ export default function ListTx({ limit }) {
 				if (tx.type === 'charge') {
 					tx.name = 'Charge to Customer';
 					tx.icon = (
-						<div class="icon-box bg-success">
+						<div className="icon-box bg-success">
 							<GiReceiveMoney className="ion-icon" />
 						</div>
 					);
@@ -28,7 +25,7 @@ export default function ListTx({ limit }) {
 				if (tx.type === 'send') {
 					tx.name = 'Send Tokens';
 					tx.icon = (
-						<div class="icon-box bg-danger">
+						<div className="icon-box bg-danger">
 							<IoArrowForwardOutline className="ion-icon" />
 						</div>
 					);
@@ -36,7 +33,7 @@ export default function ListTx({ limit }) {
 				if (tx.type === 'receive') {
 					tx.name = 'Received Tokens';
 					tx.icon = (
-						<div class="icon-box bg-primary">
+						<div className="icon-box bg-primary">
 							<IoArrowDownOutline className="ion-icon" />
 						</div>
 					);
@@ -48,26 +45,26 @@ export default function ListTx({ limit }) {
 
 	return (
 		<>
-			<ul class="listview image-listview flush">
+			<ul className="listview image-listview flush">
 				{transactions.length > 0 &&
 					transactions.map(tx => {
 						return (
 							<li key={tx.hash}>
-								<Link to="/tx/details" class="item">
+								<Link to="/tx/details" className="item">
 									{tx.icon}
-									<div class="in">
+									<div className="in">
 										<div>
-											<div class="mb-05">
+											<div className="mb-05">
 												<strong>{tx.name}</strong>
 											</div>
-											<div class="text-xsmall">
+											<div className="text-xsmall">
 												<Moment date={tx.timestamp} format="YYYY/MM/DD hh:mm a" />
 											</div>
 										</div>
 										{tx.type === 'send' ? (
-											<span class="text-danger">{tx.amount}</span>
+											<span className="text-danger">{tx.amount}</span>
 										) : (
-											<span class="text-success">{tx.amount}</span>
+											<span className="text-success">{tx.amount}</span>
 										)}
 									</div>
 								</Link>

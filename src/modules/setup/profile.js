@@ -1,15 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { IoCloseCircle } from 'react-icons/io5';
 import { Form, Button } from 'react-bootstrap';
 
-import AppHeader from '../layouts/AppHeader';
-import { AppContext } from '../../contexts/AppContext';
 import DataService from '../../services/db';
 
 export default function Main() {
 	const history = useHistory();
-	const { hasWallet, wallet } = useContext(AppContext);
 	const [profile, setProfile] = useState({ fullName: '', phone: '', address: '', email: '' });
 
 	const save = async event => {
@@ -41,41 +38,37 @@ export default function Main() {
 
 	return (
 		<>
-			<div class="section mt-2">
+			<div className="section mt-2">
 				<div className="text-center p-5 mb-3">
 					<img src="/assets/img/brand/logo-512.png" alt="alt" width="200" />
 				</div>
 				<Form onSubmit={save}>
-					<div class="card">
-						<div class="card-body">
-							<div class="form-group basic">
-								<div class="input-wrapper">
-									<label class="label" for="userid1">
-										Full Name
-									</label>
+					<div className="card">
+						<div className="card-body">
+							<div className="form-group basic">
+								<div className="input-wrapper">
+									<label className="label">Full Name</label>
 									<Form.Control
 										type="text"
 										name="fullName"
-										class="form-control"
+										className="form-control"
 										placeholder="Enter your full name"
 										value={profile.fullName}
 										onChange={updateProfile}
 										required
 									/>
-									<i class="clear-input">
+									<i className="clear-input">
 										<IoCloseCircle className="ion-icon" />
 									</i>
 								</div>
 							</div>
 
-							<div class="form-group basic">
-								<div class="input-wrapper">
-									<label class="label" for="userid1">
-										Phone #
-									</label>
+							<div className="form-group basic">
+								<div className="input-wrapper">
+									<label className="label">Phone #</label>
 									<Form.Control
 										type="number"
-										class="form-control"
+										className="form-control"
 										name="phone"
 										placeholder="Enter mobile number"
 										value={profile.phone}
@@ -87,44 +80,40 @@ export default function Main() {
 										}}
 										required
 									/>
-									<i class="clear-input">
+									<i className="clear-input">
 										<IoCloseCircle className="ion-icon" />
 									</i>
 								</div>
 							</div>
-							<div class="form-group basic">
-								<div class="input-wrapper">
-									<label class="label" for="userid1">
-										Address
-									</label>
+							<div className="form-group basic">
+								<div className="input-wrapper">
+									<label className="label">Address</label>
 									<Form.Control
 										type="text"
-										class="form-control"
+										className="form-control"
 										name="address"
 										placeholder="Enter your address"
 										value={profile.address}
 										onChange={updateProfile}
 										required
 									/>
-									<i class="clear-input">
+									<i className="clear-input">
 										<IoCloseCircle className="ion-icon" />
 									</i>
 								</div>
 							</div>
-							<div class="form-group basic">
-								<div class="input-wrapper">
-									<label class="label" for="userid1">
-										Email Address (optional)
-									</label>
+							<div className="form-group basic">
+								<div className="input-wrapper">
+									<label className="label">Email Address (optional)</label>
 									<Form.Control
 										type="email"
-										class="form-control"
+										className="form-control"
 										name="email"
 										placeholder="Enter email"
 										value={profile.email}
 										onChange={updateProfile}
 									/>
-									<i class="clear-input">
+									<i className="clear-input">
 										<IoCloseCircle className="ion-icon" />
 									</i>
 								</div>

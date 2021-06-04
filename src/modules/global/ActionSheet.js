@@ -1,9 +1,9 @@
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 export default function ActionSheet(props) {
-	const { btnText, handleSubmit, modalSize, showModal, title, onHide, onShow } = props;
+	const { handleSubmit, modalSize, showModal, title, onHide, onShow } = props;
 	return (
 		<>
 			<Modal
@@ -23,10 +23,10 @@ export default function ActionSheet(props) {
 					<div className="action-sheet-content">
 						<form>
 							{props.children}
-							<div class="form-group basic">
+							<div className="form-group basic">
 								<button
 									type="button"
-									class="btn btn-primary btn-block btn-lg"
+									className="btn btn-primary btn-block btn-lg"
 									data-dismiss="modal"
 									onClick={handleSubmit}
 								>

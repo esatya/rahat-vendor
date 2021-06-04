@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { IoCloseCircle, IoCamera } from 'react-icons/io5';
+import { useHistory } from 'react-router-dom';
+import { IoCamera } from 'react-icons/io5';
 import { BiReset } from 'react-icons/bi';
 import Webcam from 'react-webcam';
 import Swal from 'sweetalert2';
@@ -14,8 +14,8 @@ export default function Main() {
 	const history = useHistory();
 	const { setHasWallet, setWallet } = useContext(AppContext);
 	const [loadingModal, setLoadingModal] = useState(false);
-	const [loadingMessage, setLoadingMessage] = useState('Finishing setup. Please wait...');
-	const [videoConstraints, setVideoConstraints] = useState({
+	const [loadingMessage] = useState('Finishing setup. Please wait...');
+	const [videoConstraints] = useState({
 		facingMode: 'environment',
 		height: 50
 	});
@@ -75,13 +75,13 @@ export default function Main() {
 	return (
 		<>
 			<Loading message={loadingMessage} showModal={loadingModal} />
-			<div class="section">
+			<div className="section">
 				<div className="text-center p-2">
 					<img src="/assets/img/brand/logo-512.png" alt="alt" width="130" />
 				</div>
-				<div class="card1">
-					<div class="card-body text-center">
-						<h3 class="mb-2">
+				<div className="card1">
+					<div className="card-body text-center">
+						<h3 className="mb-2">
 							Take a picture of your ID card
 							<small>
 								<br />

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
+import React, { useContext } from 'react';
+import { IoArrowDownOutline } from 'react-icons/io5';
 import { GiReceiveMoney } from 'react-icons/gi';
 
 import AppHeader from '../layouts/AppHeader';
@@ -11,21 +11,21 @@ export default function Main() {
 	return (
 		<>
 			<AppHeader currentMenu="Tx Details" />
-			<div id="appCapsule" class="full-height">
-				<div class="section mt-2 mb-2">
-					<div class="listed-detail mt-3">
-						<div class="icon-wrapper">
-							<div class="iconbox">
-								<IoArrowDownOutline class="ion-icon" />
+			<div id="appCapsule" className="full-height">
+				<div className="section mt-2 mb-2">
+					<div className="listed-detail mt-3">
+						<div className="icon-wrapper">
+							<div className="iconbox">
+								<IoArrowDownOutline className="ion-icon" />
 							</div>
 						</div>
-						<h3 class="text-center mt-2">Token Received</h3>
+						<h3 className="text-center mt-2">Token Received</h3>
 					</div>
 
-					<ul class="listview flush transparent simple-listview no-space mt-3">
+					<ul className="listview flush transparent simple-listview no-space mt-3">
 						<li>
 							<strong>Status</strong>
-							<span class="text-success">Success</span>
+							<span className="text-success">Success</span>
 						</li>
 						<li>
 							<strong>To</strong>
@@ -41,7 +41,7 @@ export default function Main() {
 						</li>
 						<li>
 							<strong>Amount</strong>
-							<h3 class="m-0">$ 24</h3>
+							<h3 className="m-0">$ 24</h3>
 						</li>
 					</ul>
 				</div>

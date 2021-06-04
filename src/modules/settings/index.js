@@ -18,14 +18,14 @@ export default function Index() {
 		<>
 			<AppHeader currentMenu="Profile" />
 			<div id="appCapsule">
-				<div class="section mt-3 text-center">
-					<div class="avatar-section">
-						<img src={profileImage} alt="avatar" class="imaged w100 rounded" />
+				<div className="section mt-3 text-center">
+					<div className="avatar-section">
+						<img src={profileImage} alt="avatar" className="imaged w100 rounded" />
 					</div>
 				</div>
 
-				<div class="listview-title mt-1">Settings</div>
-				<ul class="listview image-listview text inset">
+				<div className="listview-title mt-1">Settings</div>
+				<ul className="listview image-listview text inset">
 					<li>
 						<Link to="/profile" className="item">
 							<div className="in">
@@ -38,7 +38,7 @@ export default function Index() {
 							<div className="in">
 								<div>
 									Backup Wallet
-									<div class="text-muted">
+									<div className="text-muted">
 										Backup your wallet to Google Drive
 										<br /> or get seed phrase.
 									</div>
