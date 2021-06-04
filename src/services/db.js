@@ -8,7 +8,8 @@ db.version(DB.VERSION).stores({
 	data: 'name,data',
 	documents: 'hash,type,name,file,encryptedFile,createdAt,inIpfs',
 	assets: 'address,type,name,symbol,decimal,balance,network',
-	agencies: 'address,name,logo,isRegistered'
+	agencies: 'address,name,logo,isRegistered',
+	transactions: 'hash,type,timestamp,amount,to,from,status,image'
 });
 
 const DataService = {
@@ -116,6 +117,19 @@ const DataService = {
 
 	listAgencies() {
 		return db.agencies.toArray();
+	},
+
+	addTx(tx) {
+		return db.transactions.put(tx);
+	},
+
+	getTx(hash) {
+		return db.transactions.get(hash);
+	},
+
+	listTx(type) {
+		if (!type) return db.transactions.toArray();
+		return db.transactions.get({ type });
 	},
 
 	async saveDocuments(docs) {

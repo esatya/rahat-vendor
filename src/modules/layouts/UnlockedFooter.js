@@ -92,6 +92,21 @@ export default function UnlockedFooter() {
 		}
 	};
 
+	const sendTransaction = async () => {
+		let hash = parseInt(Math.random() * 1000000); //add chain hash here
+		//Call blockchain contract here
+
+		await DataService.addTx({
+			hash,
+			type: 'send',
+			timestamp: Date.now(),
+			amount: 1000,
+			to: 'xxx',
+			from: '98767766',
+			status: 'success'
+		});
+	};
+
 	return (
 		<>
 			<ActionSheet
@@ -129,7 +144,8 @@ export default function UnlockedFooter() {
 				showModal={showActionSheet === 'otp'}
 				handleSubmit={() => {
 					setShowActionSheet(null);
-					Swal.fire('To Do', 'Execute Tx here');
+					sendTransaction();
+					Swal.fire('Success', 'Transaction completed.');
 				}}
 			>
 				<div class="form-group basic">

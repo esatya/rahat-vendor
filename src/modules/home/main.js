@@ -5,6 +5,8 @@ import { GiReceiveMoney } from 'react-icons/gi';
 
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
+import TransactionList from '../transactions/list';
+import DataService from '../../services/db';
 var QRCode = require('qrcode.react');
 
 export default function Main() {
@@ -53,56 +55,7 @@ export default function Main() {
 					<div class="card">
 						<div class="card-header">Recent Transactions</div>
 						<div class="card-body">
-							<ul class="listview image-listview flush">
-								<li>
-									<Link to="/tx/details" class="item">
-										<div class="icon-box bg-primary">
-											<IoArrowDownOutline class="ion-icon" />
-										</div>
-										<div class="in">
-											<div>
-												<div class="mb-05">
-													<strong>Token received</strong>
-												</div>
-												<div class="text-xsmall">5/3/2020 10:30 AM</div>
-											</div>
-											<span class="text-success">200</span>
-										</div>
-									</Link>
-								</li>
-								<li>
-									<Link to="/tx/details" class="item">
-										<div class="icon-box bg-success">
-											<GiReceiveMoney class="ion-icon" />
-										</div>
-										<div class="in">
-											<div>
-												<div class="mb-05">
-													<strong>Charge to customer</strong>
-												</div>
-												<div class="text-xsmall">5/3/2020 10:30 AM</div>
-											</div>
-											<span class="text-success">1500</span>
-										</div>
-									</Link>
-								</li>
-								<li>
-									<Link to="/tx/details" class="item">
-										<div class="icon-box bg-danger">
-											<IoArrowForwardOutline class="ion-icon" />
-										</div>
-										<div class="in">
-											<div>
-												<div class="mb-05">
-													<strong>Token sent</strong>
-												</div>
-												<div class="text-xsmall">5/3/2020 10:30 AM</div>
-											</div>
-											<span class="text-danger">200</span>
-										</div>
-									</Link>
-								</li>
-							</ul>
+							<TransactionList limit="3" />
 						</div>
 					</div>
 				</div>
