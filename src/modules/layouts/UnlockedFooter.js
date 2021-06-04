@@ -18,7 +18,7 @@ const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function UnlockedFooter() {
 	let history = useHistory();
-	const { saveScannedAddress, wallet, network } = useContext(AppContext);
+	const { saveScannedAddress, wallet, network, getBalance } = useContext(AppContext);
 	const [scanModal, setScanModal] = useState(false);
 	const [showActionSheet, setShowActionSheet] = useState(null);
 	const [loadingModal, setLoadingModal] = useState(false);
@@ -86,6 +86,7 @@ export default function UnlockedFooter() {
 			status: 'success'
 		});
 		Swal.fire('Success', 'Transaction completed.');
+		await getBalance();
 	};
 
 	const handleQRLogin = payload => {
@@ -239,7 +240,7 @@ export default function UnlockedFooter() {
 				</div>
 			</ActionSheet>
 
-			<ModalWrapper title="Scan a QR Code" showModal={scanModal} ohHide={handleScanModalToggle}>
+			<ModalWrapper title="Scan a QR Code" showModal={scanModal} onHide={handleScanModalToggle}>
 				<div style={SCANNER_CAM_STYLE}>
 					<QrReader
 						delay={SCAN_DELAY}
