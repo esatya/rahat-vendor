@@ -7,7 +7,8 @@ const AppReducer = (state, action) => {
 				...state,
 				address: action.data.address,
 				network: action.data.network,
-				hasWallet: action.data.hasWallet
+				hasWallet: action.data.hasWallet,
+				balance: action.data.balance
 			};
 
 		case APP_ACTIONS.SET_NETWORK:
@@ -28,7 +29,13 @@ const AppReducer = (state, action) => {
 				hasWallet: action.data
 			};
 
-		case APP_ACTIONS.SET_SCCANNED_DATA:
+		case APP_ACTIONS.SET_ETH_BALANCE:
+			return {
+				...state,
+				balance: action.data ? action.data : 0
+			};
+
+		case APP_ACTIONS.SET_SCANNED_DATA:
 			return {
 				...state,
 				scannedEthAddress: action.data.address,

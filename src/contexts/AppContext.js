@@ -1,8 +1,9 @@
 import React, { createContext, useReducer, useCallback } from 'react';
 import appReduce from '../reducers/appReducer';
 import APP_ACTIONS from '../actions/appActions';
+import Contract from '../utils/blockchain/contract';
 import DataService from '../services/db';
-import { APP_CONSTANTS, DEFAULT_TOKEN } from '../constants';
+import { APP_CONSTANTS, CONTRACT, DEFAULT_TOKEN } from '../constants';
 
 const initialState = {
 	sendingTokenName: '',
@@ -11,7 +12,8 @@ const initialState = {
 	wallet: null,
 	hasWallet: true,
 	scannedEthAddress: '',
-	scannedAmount: null
+	scannedAmount: null,
+	balance: 0
 };
 
 export const AppContext = createContext(initialState);
@@ -24,9 +26,22 @@ export const AppContextProvider = ({ children }) => {
 		DataService.save('version', APP_CONSTANTS.VERSION);
 		let data = await DataService.initAppData();
 		data.hasWallet = data.wallet === null ? false : true;
+		if (data.hasWallet) data.balance = await getBalance();
 		if (!data.hasWallet) localStorage.removeItem('address');
 		dispatch({ type: APP_ACTIONS.INIT_APP, data });
 	}, [dispatch]);
+
+	async function getBalance() {
+		const agency = await DataService.listAgencies();
+		const tokenAddress = agency[0].tokenAddress;
+		const userAddress = await DataService.getAddress();
+		if (!userAddress) return 0;
+		const tokenContract = Contract({ address: tokenAddress, type: CONTRACT.TOKEN }).get();
+		const remainingBalance = await tokenContract.balanceOf(userAddress);
+		const balance = remainingBalance.toNumber();
+		dispatch({ type: APP_ACTIONS.SET_ETH_BALANCE, data: balance });
+		return balance;
+	}
 
 	function setHasWallet(hasWallet) {
 		dispatch({ type: APP_ACTIONS.SET_HASWALLET, data: hasWallet });
@@ -41,7 +56,7 @@ export const AppContextProvider = ({ children }) => {
 	}
 
 	function saveScannedAddress(data) {
-		dispatch({ type: APP_ACTIONS.SET_SCCANNED_DATA, data });
+		dispatch({ type: APP_ACTIONS.SET_SCANNED_DATA, data });
 	}
 
 	function saveSendingTokenName(symbol) {
@@ -58,11 +73,13 @@ export const AppContextProvider = ({ children }) => {
 				network: state.network,
 				wallet: state.wallet,
 				sendingTokenName: state.sendingTokenName,
+				balance: state.balance,
 				initApp,
 				saveSendingTokenName,
 				saveScannedAddress,
 				setHasWallet,
 				setNetwork,
+				getBalance,
 				setWallet,
 				dispatch
 			}}
