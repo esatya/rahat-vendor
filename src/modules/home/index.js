@@ -31,7 +31,7 @@ function App() {
 			<Switch>
 				<Route exact path="/" component={Main} />
 				<PrivateRoute exact path="/tx" component={Transactions} wallet={wallet} />
-				<PrivateRoute exact path="/tx/details" component={TxDetails} wallet={wallet} />
+				<PrivateRoute exact path="/tx/:hash" component={TxDetails} wallet={wallet} />
 				<PrivateRoute exact path="/backup" component={BackupWallet} wallet={wallet} />
 				<PrivateRoute exact path="/networks" component={NetworkSettings} wallet={wallet} />
 				<PrivateRoute exact path="/profile" component={Profile} wallet={wallet} />

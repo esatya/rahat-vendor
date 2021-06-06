@@ -5,5 +5,6 @@ module.exports = {
 	SET_WALLET: 'set_wallet',
 	SET_SCANNED_DATA: 'set_scanned_eth_address',
 	SET_APP_PASSCODE: 'set_app_passcode',
-	SET_BALANCE: 'set_balance'
+	SET_BALANCE: 'set_balance',
+	ADD_RECENT_TX: 'add_recent_tx'
 };

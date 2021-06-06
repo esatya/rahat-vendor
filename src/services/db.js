@@ -138,8 +138,8 @@ const DataService = {
 	},
 
 	listTx(type) {
-		if (!type) return db.transactions.toArray();
-		return db.transactions.get({ type });
+		if (!type) return db.transactions.orderBy('timestamp').reverse().toArray();
+		return db.transactions.get({ type }).orderBy('timestamp').reverse();
 	},
 
 	async saveDocuments(docs) {

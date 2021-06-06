@@ -10,7 +10,7 @@ import { useIcon } from '../../utils/react-utils';
 import ModalWrapper from '../global/ModalWrapper';
 import ActionSheet from '../global/ActionSheet';
 import { AppContext } from '../../contexts/AppContext';
-import { APP_CONSTANTS, CONTRACT } from '../../constants';
+import { APP_CONSTANTS } from '../../constants';
 import DataService from '../../services/db';
 import { RahatService, TokenService } from '../../services/chain';
 
@@ -18,26 +18,15 @@ const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function UnlockedFooter() {
 	let history = useHistory();
-	const { saveScannedAddress, wallet, network, setTokenBalance } = useContext(AppContext);
+	const { saveScannedAddress, wallet, network, setTokenBalance, addRecentTx } = useContext(AppContext);
 	const [scanModal, setScanModal] = useState(false);
 	const [showActionSheet, setShowActionSheet] = useState(null);
 	const [loadingModal, setLoadingModal] = useState(false);
+	const [chargeRequestHash, setChargeRequestHash] = useState(null);
 	const [chargeData, setChargeData] = useState({ phone: '', amount: '', otp: '' });
 	const [otp, setOtp] = useState('');
 
 	const handleScanModalToggle = () => setScanModal(!scanModal);
-
-	//TODO send requestToken transaction
-	//TODO claim token on OTP verification
-
-	const chargeCustomer = async () => {
-		setLoadingModal(true);
-		const agency = await DataService.getDefaultAgency();
-		const rahat = RahatService(agency.address, wallet);
-		const receipt = await rahat.chargeCustomer(chargeData.phone, chargeData.amount);
-		setLoadingModal(false);
-		return setShowActionSheet('otp');
-	};
 
 	const updateForm = e => {
 		let formData = new FormData(e.target.form);
@@ -45,7 +34,6 @@ export default function UnlockedFooter() {
 		formData.forEach((value, key) => (data[key] = value));
 		data.phone = data.phone.replace(/[^0-9]/g, '');
 		data.amount = data.amount.replace(/[^0-9]/g, '');
-		data.otp = data.otp;
 		setChargeData(data);
 	};
 
@@ -56,26 +44,60 @@ export default function UnlockedFooter() {
 		setOtp(data.otp);
 	};
 
+	const chargeCustomer = async () => {
+		setLoadingModal(true);
+		try {
+			const agency = await DataService.getDefaultAgency();
+			const rahat = RahatService(agency.address, wallet);
+			let receipt = await rahat.chargeCustomer(chargeData.phone, chargeData.amount);
+			setChargeRequestHash(receipt.transactionHash);
+			return setShowActionSheet('otp');
+		} catch (e) {
+			Swal.fire('Error', 'Transaction cancelled. Please try again.', 'error');
+			setShowActionSheet(null);
+		} finally {
+			setLoadingModal(false);
+		}
+	};
+
 	const verifyCharge = async () => {
 		setLoadingModal(true);
 		const agency = await DataService.getDefaultAgency();
-		const rahat = RahatService(agency.address, wallet);
-		const receipt = await rahat.verifyCharge(chargeData.phone, otp);
+		try {
+			const rahat = RahatService(agency.address, wallet);
+			const receipt = await rahat.verifyCharge(chargeData.phone, otp);
+			const tx = {
+				hash: receipt.transactionHash,
+				type: 'charge',
+				timestamp: Date.now(),
+				amount: chargeData.amount,
+				to: wallet.address,
+				from: chargeData.phone,
+				status: 'success'
+			};
 
-		await DataService.addTx({
-			hash: receipt.transactionHash,
-			type: 'charge',
-			timestamp: Date.now(),
-			amount: chargeData.amount,
-			to: 'xxx',
-			from: chargeData.phone,
-			status: 'success'
-		});
-		setLoadingModal(false);
-		setShowActionSheet(null);
-		Swal.fire('Success', 'Transaction completed.');
-		let tokenBalance = await TokenService(agency.address).getBalance();
-		setTokenBalance(tokenBalance.toNumber());
+			Swal.fire('Success', 'Transaction completed.', 'success');
+			addRecentTx(tx);
+			await DataService.addTx(tx);
+		} catch (e) {
+			const tx = {
+				hash: chargeRequestHash,
+				type: 'charge',
+				timestamp: Date.now(),
+				amount: chargeData.amount,
+				to: wallet.address,
+				from: chargeData.phone,
+				status: 'error'
+			};
+			addRecentTx(tx);
+			await DataService.addTx(tx);
+			Swal.fire('Error', 'Transaction cancelled. Please try again.', 'error');
+		} finally {
+			setLoadingModal(false);
+			setShowActionSheet(null);
+			let tokenBalance = await TokenService(agency.address).getBalance();
+			setTokenBalance(tokenBalance.toNumber());
+		}
 	};
 
 	const handleQRLogin = payload => {
@@ -170,7 +192,10 @@ export default function UnlockedFooter() {
 				title="Charge Customer"
 				showModal={showActionSheet === 'charge'}
 				handleSubmit={chargeCustomer}
-				onHide={() => setShowActionSheet(null)}
+				onHide={() => {
+					setChargeData({ phone: '', amount: '' });
+					setShowActionSheet(null);
+				}}
 			>
 				<div className="form-group basic">
 					<div className="input-wrapper">
@@ -213,7 +238,15 @@ export default function UnlockedFooter() {
 				</div>
 			</ActionSheet>
 
-			<ActionSheet title="Verification OTP" showModal={showActionSheet === 'otp'} handleSubmit={verifyCharge}>
+			<ActionSheet
+				title="Verification OTP"
+				showModal={showActionSheet === 'otp'}
+				onHide={() => {
+					setOtp('');
+					setShowActionSheet(null);
+				}}
+				handleSubmit={verifyCharge}
+			>
 				<div className="form-group basic">
 					<div className="input-wrapper">
 						<label className="label">OTP from SMS (ask from customer)</label>

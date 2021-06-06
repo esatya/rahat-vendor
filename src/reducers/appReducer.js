@@ -35,6 +35,12 @@ const AppReducer = (state, action) => {
 				tokenBalance: action.data ? action.data : 0
 			};
 
+		case APP_ACTIONS.ADD_RECENT_TX:
+			return {
+				...state,
+				recentTx: action.data ? action.data : []
+			};
+
 		case APP_ACTIONS.SET_SCANNED_DATA:
 			return {
 				...state,

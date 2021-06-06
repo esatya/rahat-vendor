@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useCallback } from 'react';
+import React, { createContext, useState, useReducer, useCallback } from 'react';
 import appReduce from '../reducers/appReducer';
 import APP_ACTIONS from '../actions/appActions';
 import DataService from '../services/db';
@@ -18,6 +18,7 @@ const initialState = {
 export const AppContext = createContext(initialState);
 export const AppContextProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(appReduce, initialState);
+	const [recentTx, setRecentTx] = useState([]);
 
 	async function setTokenBalance(tokenBalance) {
 		dispatch({ type: APP_ACTIONS.SET_BALANCE, data: tokenBalance });
@@ -56,6 +57,12 @@ export const AppContextProvider = ({ children }) => {
 		dispatch({ type: APP_ACTIONS.SET_SCANNED_DATA, data });
 	}
 
+	function addRecentTx(tx) {
+		if (!Array.isArray(tx)) tx = [tx];
+		const arr = [...tx, ...recentTx];
+		setRecentTx(arr.slice(0, 3));
+	}
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -66,13 +73,15 @@ export const AppContextProvider = ({ children }) => {
 				hasWallet: state.hasWallet,
 				network: state.network,
 				wallet: state.wallet,
+				recentTx,
 				initApp,
 				setTokenBalance,
 				saveScannedAddress,
 				setHasWallet,
 				setNetwork,
 				setWallet,
-				dispatch
+				dispatch,
+				addRecentTx
 			}}
 		>
 			{children}

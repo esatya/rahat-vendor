@@ -1,14 +1,15 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
+import DataService from '../../services/db';
 
 var QRCode = require('qrcode.react');
 
 export default function Main() {
-	const { hasWallet, wallet, tokenBalance } = useContext(AppContext);
+	const { hasWallet, wallet, tokenBalance, recentTx, addRecentTx } = useContext(AppContext);
 	const [showPageLoader, setShowPageLoader] = useState(true);
 
 	const cardBody = useRef();
@@ -19,9 +20,16 @@ export default function Main() {
 		else return 280;
 	};
 
-	setTimeout(async () => {
-		setShowPageLoader(false);
-	}, 500);
+	useEffect(() => {
+		(async () => {
+			let txs = await DataService.listTx();
+			addRecentTx(txs.slice(0, 3));
+			const timer = setTimeout(() => {
+				setShowPageLoader(false);
+			}, 1000);
+			return () => clearTimeout(timer);
+		})();
+	}, []);
 
 	if (!hasWallet) {
 		return <Redirect to="/setup" />;
@@ -52,7 +60,7 @@ export default function Main() {
 					<div className="card">
 						<div className="card-header">Recent Transactions</div>
 						<div className="card-body">
-							<TransactionList limit="3" />
+							<TransactionList limit="3" transactions={recentTx} />
 						</div>
 					</div>
 				</div>
