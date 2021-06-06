@@ -60,7 +60,6 @@ export default function UnlockedFooter() {
 
 	const verifyCharge = async () => {
 		setLoadingModal(true);
-		console.log({ loadingModal });
 		const agency = await DataService.listAgencies();
 		const agencyAddress = agency[0].address;
 		const rahatContract = Contract({ wallet, address: agencyAddress, type: CONTRACT.RAHAT }).get();

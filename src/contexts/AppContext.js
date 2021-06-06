@@ -57,6 +57,7 @@ export const AppContextProvider = ({ children }) => {
 				setHasWallet,
 				setNetwork,
 				setWallet,
+				registerToAgency,
 				dispatch
 			}}
 		>
