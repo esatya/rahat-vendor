@@ -12,7 +12,7 @@ import DataService from '../../services/db';
 
 export default function Main() {
 	const history = useHistory();
-	const { setHasWallet, setWallet } = useContext(AppContext);
+	const { setHasWallet, setWallet, registerToAgency } = useContext(AppContext);
 	const [loadingModal, setLoadingModal] = useState(false);
 	const [loadingMessage] = useState('Finishing setup. Please wait...');
 	const [videoConstraints] = useState({
@@ -31,6 +31,17 @@ export default function Main() {
 		// 	})
 		// 	.catch(err => reject(err));
 		setPreviewImage(imageSrc);
+	};
+
+	const getProfile = async () => {
+		const profile = await DataService.getProfile();
+		return {
+			name: profile.fullName,
+			phone: profile.phone,
+			email: profile.email,
+			address: profile.address,
+			govt_id: profile.email
+		};
 	};
 
 	const save = async event => {
@@ -52,6 +63,9 @@ export default function Main() {
 			const res = await Wallet.create(profile.phone);
 			if (res) {
 				const { wallet, encryptedWallet } = res;
+				const profile = await getProfile();
+				profile.wallet_address = wallet.address;
+				await registerToAgency(profile);
 				await DataService.saveWallet(encryptedWallet);
 				DataService.saveAddress(wallet.address);
 				setWallet(wallet);

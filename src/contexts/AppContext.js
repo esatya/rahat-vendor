@@ -3,6 +3,7 @@ import appReduce from '../reducers/appReducer';
 import APP_ACTIONS from '../actions/appActions';
 import Contract from '../utils/blockchain/contract';
 import DataService from '../services/db';
+import * as Service from '../services';
 import { APP_CONSTANTS, CONTRACT, DEFAULT_TOKEN } from '../constants';
 
 const initialState = {
@@ -63,6 +64,12 @@ export const AppContextProvider = ({ children }) => {
 		dispatch({ type: APP_ACTIONS.SET_SENDING_TOKEN_NAME, data: symbol });
 	}
 
+	const registerToAgency = async payload => {
+		//	event.preventDefault();
+		//	const formData = new FormData(event.target);
+		return Service.registerToAgency(payload);
+	};
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -81,6 +88,7 @@ export const AppContextProvider = ({ children }) => {
 				setNetwork,
 				getBalance,
 				setWallet,
+				registerToAgency,
 				dispatch
 			}}
 		>

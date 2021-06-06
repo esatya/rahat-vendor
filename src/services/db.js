@@ -34,6 +34,10 @@ const DataService = {
 	saveProfile(data) {
 		return this.save('profile', data);
 	},
+	async getProfile() {
+		let profile = await this.get('profile');
+		return profile;
+	},
 
 	saveProfileImage(img) {
 		return this.save('profileImage', img);
