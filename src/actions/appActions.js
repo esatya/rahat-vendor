@@ -4,7 +4,5 @@ module.exports = {
 	SET_HASWALLET: 'set_haswallet',
 	SET_WALLET: 'set_wallet',
 	SET_SCANNED_DATA: 'set_scanned_eth_address',
-	SET_APP_PASSCODE: 'set_app_passcode',
-	SET_SENDING_TOKEN_NAME: 'set_sending_token_name',
-	SET_ETH_BALANCE: 'set_eth_balance'
+	SET_APP_PASSCODE: 'set_app_passcode'
 };

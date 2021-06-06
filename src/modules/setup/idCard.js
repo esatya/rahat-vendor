@@ -13,8 +13,7 @@ import DataService from '../../services/db';
 export default function Main() {
 	const history = useHistory();
 	const { setHasWallet, setWallet } = useContext(AppContext);
-	const [loadingModal, setLoadingModal] = useState(false);
-	const [loadingMessage] = useState('Finishing setup. Please wait...');
+	const [loading, showLoading] = useState(null);
 	const [videoConstraints] = useState({
 		facingMode: 'environment',
 		height: 50
@@ -33,10 +32,39 @@ export default function Main() {
 		setPreviewImage(imageSrc);
 	};
 
+	const registerWithAgency = async data => {
+		let appData = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/app/settings`).then(r => {
+			if (!r.ok) throw Error(r.message);
+			return r.json();
+		});
+
+		await DataService.addAgency({
+			api: process.env.REACT_APP_DEFAULT_AGENCY_API,
+			address: appData.agency.contracts.rahat,
+			network: process.env.REACT_APP_DEFAULT_NETWORK,
+			tokenAddress: appData.agency.contracts.token,
+			name: appData.agency.name,
+			email: appData.agency.email,
+			isRegistered: false
+		});
+
+		await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/register`, {
+			method: 'post',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(data)
+		}).then(r => {
+			if (!r.ok) throw Error(r.message);
+			return r.json();
+		});
+	};
+
 	const save = async event => {
 		event.preventDefault();
-		setLoadingModal(true);
 		try {
+			showLoading('Creating new wallet...');
 			const wallet = await DataService.getWallet();
 			if (wallet) {
 				history.push('/');
@@ -44,23 +72,36 @@ export default function Main() {
 			}
 			const profile = await DataService.get('profile');
 			if (!profile.phone) {
+				showLoading(null);
 				history.push('/setup/profile');
 				return;
 			}
 			await DataService.saveProfileIdCard(previewImage);
+			let profileImage = DataService.get('profileImage');
 
 			const res = await Wallet.create(profile.phone);
 			if (res) {
 				const { wallet, encryptedWallet } = res;
+				showLoading('Registering with the agency...');
+				await registerWithAgency({
+					wallet_address: wallet.address,
+					name: profile.name,
+					phone: profile.phone,
+					email: profile.email,
+					address: profile.address
+					//profileImage,
+					//idCard: previewImage
+				});
 				await DataService.saveWallet(encryptedWallet);
 				DataService.saveAddress(wallet.address);
 				setWallet(wallet);
 				setHasWallet(true);
+				showLoading(null);
 				history.push('/');
 			}
 		} catch (err) {
 			Swal.fire('ERROR', err.message, 'error');
-			setLoadingModal(false);
+			showLoading(null);
 		}
 	};
 
@@ -74,7 +115,7 @@ export default function Main() {
 
 	return (
 		<>
-			<Loading message={loadingMessage} showModal={loadingModal} />
+			<Loading message={loading} showModal={loading !== null} />
 			<div className="section">
 				<div className="text-center p-2">
 					<img src="/assets/img/brand/logo-512.png" alt="alt" width="130" />

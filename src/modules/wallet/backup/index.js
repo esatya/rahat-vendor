@@ -63,7 +63,7 @@ export default function Index() {
 	return (
 		<>
 			<Loading showModal={loading} message="Fetching your 12 words secret. It may take few seconds to load..." />
-			<ModalWrapper title="Please enter your passcode" showModal={passcodeModal} ohHide={togglePasscodeModal}>
+			<ModalWrapper title="Please enter your passcode" showModal={passcodeModal} onHide={togglePasscodeModal}>
 				<div className="row mb-5">
 					<div className="col">
 						<p>Choose a {PASSCODE_LENGTH}-digit passcode.</p>
@@ -87,7 +87,7 @@ export default function Index() {
 			<ModalWrapper
 				title="Here is your 12 words secret. Please write down these words in sequence (using the word number) and store safely"
 				showModal={phraseModal}
-				ohHide={togglePhraseModal}
+				onHide={togglePhraseModal}
 				modalSize="lg"
 				showFooter="true"
 				handleSubmit={handlePhraseSaveClick}

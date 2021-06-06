@@ -3,7 +3,7 @@ import { Modal, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 export default function ImageViewer(props) {
-	const { showModal, handleDownloadClick, handleRemoveDocClick, children, ohHide, documentName } = props;
+	const { showModal, handleDownloadClick, handleRemoveDocClick, children, onHide, documentName } = props;
 	return (
 		<>
 			<Modal
@@ -12,7 +12,7 @@ export default function ImageViewer(props) {
 				tabIndex={-1}
 				role="dialog"
 				show={showModal}
-				onHide={ohHide}
+				onHide={onHide}
 				size="lg"
 			>
 				<Modal.Body style={{ padding: 0 }}>{children}</Modal.Body>
@@ -39,6 +39,6 @@ export default function ImageViewer(props) {
 }
 
 ImageViewer.propTypes = {
-	ohHide: PropTypes.func.isRequired,
+	onHide: PropTypes.func.isRequired,
 	showModal: PropTypes.bool.isRequired
 };

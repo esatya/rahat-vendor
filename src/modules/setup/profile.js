@@ -7,16 +7,10 @@ import DataService from '../../services/db';
 
 export default function Main() {
 	const history = useHistory();
-	const [profile, setProfile] = useState({ fullName: '', phone: '', address: '', email: '' });
+	const [profile, setProfile] = useState({ name: '', phone: '', address: '', email: '' });
 
 	const save = async event => {
 		event.preventDefault();
-		await DataService.addAgency({
-			address: '0x8a76Af78E800a38ca05E2A4490FE5247cBffe248',
-			tokenAddress: '0xc367a378CE8358885CA6ea23c6311366F5707176',
-			name: 'Rumsan Group',
-			isRegistered: false
-		});
 		await DataService.saveProfile(profile);
 		history.push('/setup/selfie');
 	};
@@ -50,10 +44,10 @@ export default function Main() {
 									<label className="label">Full Name</label>
 									<Form.Control
 										type="text"
-										name="fullName"
+										name="name"
 										className="form-control"
 										placeholder="Enter your full name"
-										value={profile.fullName}
+										value={profile.name}
 										onChange={updateProfile}
 										required
 									/>

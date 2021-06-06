@@ -12,6 +12,7 @@ export default function ActionSheet(props) {
 				show={showModal || false}
 				onHide={onHide}
 				onShow={onShow}
+				role="dialog"
 			>
 				{title && (
 					<Modal.Header>
@@ -22,18 +23,16 @@ export default function ActionSheet(props) {
 				<Modal.Body>
 					<Form>
 						<div className="action-sheet-content">
-							<form>
-								{props.children}
-								<div className="form-group basic">
-									<button
-										type="button"
-										onClick={handleSubmit}
-										className="btn btn-primary btn-block btn-lg"
-									>
-										Charge
-									</button>
-								</div>
-							</form>
+							{props.children}
+							<div className="form-group basic">
+								<button
+									type="button"
+									onClick={handleSubmit}
+									className="btn btn-primary btn-block btn-lg"
+								>
+									Charge
+								</button>
+							</div>
 						</div>
 					</Form>
 				</Modal.Body>

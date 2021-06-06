@@ -10,7 +10,7 @@ import Loading from '../global/Loading';
 import AppHeader from '../layouts/AppHeader';
 import ModalWrapper from '../global/ModalWrapper';
 import { APP_CONSTANTS } from '../../constants';
-import Contract from '../../utils/blockchain/contract';
+import { TokenService } from '../../services/chain';
 import DataService from '../../services/db';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
@@ -154,8 +154,8 @@ export default function Index(props) {
 
 	const sendERCToken = async () => {
 		try {
-			const tokenContract = Contract({ wallet, address: tokenDetails.address, type: tokenDetails.type }).get();
-			await tokenContract.transfer(sendToAddress, sendAmount);
+			const contract = TokenService(tokenDetails.address, wallet);
+			await contract.transfer(sendToAddress, sendAmount);
 			sendERCSuccess(sendAmount, sendToAddress);
 		} catch (err) {
 			Swal.fire('ERROR', err.message, 'error');
@@ -236,7 +236,7 @@ export default function Index(props) {
 
 	return (
 		<>
-			<ModalWrapper title="Scan a QR Code" showModal={scanModal} ohHide={handleScanModalToggle}>
+			<ModalWrapper title="Scan a QR Code" showModal={scanModal} onHide={handleScanModalToggle}>
 				<div style={SCANNER_CAM_STYLE}>
 					<QrReader
 						delay={SCAN_DELAY}

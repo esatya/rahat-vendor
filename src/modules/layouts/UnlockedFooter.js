@@ -12,13 +12,13 @@ import ActionSheet from '../global/ActionSheet';
 import { AppContext } from '../../contexts/AppContext';
 import { APP_CONSTANTS, CONTRACT } from '../../constants';
 import DataService from '../../services/db';
-import Contract from '../../utils/blockchain/contract';
+import { RahatService } from '../../services/chain';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function UnlockedFooter() {
 	let history = useHistory();
-	const { saveScannedAddress, wallet, network, getBalance } = useContext(AppContext);
+	const { saveScannedAddress, wallet, network } = useContext(AppContext);
 	const [scanModal, setScanModal] = useState(false);
 	const [showActionSheet, setShowActionSheet] = useState(null);
 	const [loadingModal, setLoadingModal] = useState(false);
@@ -34,14 +34,9 @@ export default function UnlockedFooter() {
 		setLoadingModal(true);
 		const agency = await DataService.listAgencies();
 		const agencyAddress = agency[0].address;
-		const rahatContract = Contract({ wallet, address: agencyAddress, type: CONTRACT.RAHAT }).get();
-		let remainingBalance = await rahatContract.tokenBalance(chargeData.phone);
-		if (chargeData.amount > remainingBalance.toNumber()) {
-			// waring token amount is greater than remaining blance
-		}
-		const rahatContractSigner = rahatContract.connect(wallet);
-		const tx = await rahatContractSigner.createClaim(Number(chargeData.phone), Number(chargeData.amount));
-		const receipt = await tx.wait();
+		const rahat = RahatService(agencyAddress, wallet);
+		const receipt = await rahat.chargeCustomer(chargeData.phone, chargeData.amount);
+		console.log(receipt);
 		setLoadingModal(false);
 		return setShowActionSheet('otp');
 	};
@@ -177,7 +172,12 @@ export default function UnlockedFooter() {
 	return (
 		<>
 			<Loading message="Transaction in process. Please wait..." showModal={loadingModal} />
-			<ActionSheet title="Charge Customer" showModal={showActionSheet === 'charge'} handleSubmit={chargeCustomer}>
+			<ActionSheet
+				title="Charge Customer"
+				showModal={showActionSheet === 'charge'}
+				handleSubmit={chargeCustomer}
+				onHide={() => setShowActionSheet(null)}
+			>
 				<div className="form-group basic">
 					<div className="input-wrapper">
 						<label className="label">Customer Phone Number</label>
