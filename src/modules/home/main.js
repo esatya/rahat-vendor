@@ -8,7 +8,7 @@ import TransactionList from '../transactions/list';
 var QRCode = require('qrcode.react');
 
 export default function Main() {
-	const { hasWallet, wallet, balance } = useContext(AppContext);
+	const { hasWallet, wallet, tokenBalance } = useContext(AppContext);
 	const [showPageLoader, setShowPageLoader] = useState(true);
 
 	const cardBody = useRef();
@@ -41,7 +41,7 @@ export default function Main() {
 						<div className="balance">
 							<div className="left">
 								<span className="title">Your Token Balance</span>
-								<h1 className="total">{balance}</h1>
+								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
 						</div>

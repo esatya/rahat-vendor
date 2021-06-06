@@ -29,10 +29,10 @@ const AppReducer = (state, action) => {
 				hasWallet: action.data
 			};
 
-		case APP_ACTIONS.SET_ETH_BALANCE:
+		case APP_ACTIONS.SET_BALANCE:
 			return {
 				...state,
-				balance: action.data ? action.data : 0
+				tokenBalance: action.data ? action.data : 0
 			};
 
 		case APP_ACTIONS.SET_SCANNED_DATA:

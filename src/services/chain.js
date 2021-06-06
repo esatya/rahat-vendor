@@ -33,23 +33,31 @@ const RahatService = (agencyAddress, wallet) => {
 		async chargeCustomer(phone, amount) {
 			const contract = await this.getContract();
 			let benBalance = await contract.tokenBalance(phone);
-			console.log(benBalance.toNumber());
 			// if (amount > benBalance.toNumber()) {
 			// 	// waring token amount is greater than remaining blance
 			// }
-			console.log(phone, amount);
 			const tx = await contract.createClaim(Number(phone), Number(amount));
+			return tx.wait();
+		},
+		async verifyCharge(phone, otp) {
+			const contract = await this.getContract();
+			const tx = await contract.getTokensFromClaim(Number(phone), otp);
 			return tx.wait();
 		}
 	};
 };
 
-const TokenService = async (agencyAddress, wallet) => {
-	const agency = await getAgencyDetails(agencyAddress);
-	const contract = agency.tokenContract.connect(wallet);
+const TokenService = (agencyAddress, wallet) => {
 	return {
-		contract,
-		getBalance() {}
+		async getContract() {
+			const agency = await getAgencyDetails(agencyAddress);
+			return wallet ? agency.tokenContract.connect(wallet) : agency.tokenContract;
+		},
+		async getBalance(address) {
+			if (!address) address = await DataService.getAddress();
+			const contract = await this.getContract();
+			return contract.balanceOf(address);
+		}
 	};
 };
 

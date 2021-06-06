@@ -123,6 +123,12 @@ const DataService = {
 		return db.agencies.toArray();
 	},
 
+	async getDefaultAgency() {
+		let agencies = await this.listAgencies();
+		if (!agencies) return null;
+		return agencies[0];
+	},
+
 	addTx(tx) {
 		return db.transactions.put(tx);
 	},

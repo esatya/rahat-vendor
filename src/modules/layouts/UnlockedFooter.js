@@ -12,13 +12,13 @@ import ActionSheet from '../global/ActionSheet';
 import { AppContext } from '../../contexts/AppContext';
 import { APP_CONSTANTS, CONTRACT } from '../../constants';
 import DataService from '../../services/db';
-import { RahatService } from '../../services/chain';
+import { RahatService, TokenService } from '../../services/chain';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function UnlockedFooter() {
 	let history = useHistory();
-	const { saveScannedAddress, wallet, network } = useContext(AppContext);
+	const { saveScannedAddress, wallet, network, setTokenBalance } = useContext(AppContext);
 	const [scanModal, setScanModal] = useState(false);
 	const [showActionSheet, setShowActionSheet] = useState(null);
 	const [loadingModal, setLoadingModal] = useState(false);
@@ -32,11 +32,9 @@ export default function UnlockedFooter() {
 
 	const chargeCustomer = async () => {
 		setLoadingModal(true);
-		const agency = await DataService.listAgencies();
-		const agencyAddress = agency[0].address;
-		const rahat = RahatService(agencyAddress, wallet);
+		const agency = await DataService.getDefaultAgency();
+		const rahat = RahatService(agency.address, wallet);
 		const receipt = await rahat.chargeCustomer(chargeData.phone, chargeData.amount);
-		console.log(receipt);
 		setLoadingModal(false);
 		return setShowActionSheet('otp');
 	};
@@ -60,27 +58,24 @@ export default function UnlockedFooter() {
 
 	const verifyCharge = async () => {
 		setLoadingModal(true);
-		const agency = await DataService.listAgencies();
-		const agencyAddress = agency[0].address;
-		const rahatContract = Contract({ wallet, address: agencyAddress, type: CONTRACT.RAHAT }).get();
+		const agency = await DataService.getDefaultAgency();
+		const rahat = RahatService(agency.address, wallet);
+		const receipt = await rahat.verifyCharge(chargeData.phone, otp);
 
-		const rahatContractSigner = rahatContract.connect(wallet);
-
-		const tx = await rahatContractSigner.getTokensFromClaim(Number(chargeData.phone), otp);
-		const receipt = await tx.wait();
-		setLoadingModal(false);
-		setShowActionSheet(null);
 		await DataService.addTx({
 			hash: receipt.transactionHash,
-			type: 'receive',
+			type: 'charge',
 			timestamp: Date.now(),
 			amount: chargeData.amount,
 			to: 'xxx',
 			from: chargeData.phone,
 			status: 'success'
 		});
+		setLoadingModal(false);
+		setShowActionSheet(null);
 		Swal.fire('Success', 'Transaction completed.');
-		await getBalance();
+		let tokenBalance = await TokenService(agency.address).getBalance();
+		setTokenBalance(tokenBalance.toNumber());
 	};
 
 	const handleQRLogin = payload => {
