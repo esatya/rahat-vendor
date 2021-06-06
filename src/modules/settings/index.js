@@ -8,9 +8,16 @@ export default function Index() {
 	const [profileImage, setProfileImage] = useState(
 		'https://secure.gravatar.com/avatar/cdfda85820e903a90a89e02903223376?s=180&d=identicon'
 	);
+	const [profile, setProfile] = useState({ name: '', phone: '' });
+
+	const getProfile = async () => {
+		const profileData = await DataService.getProfile();
+		setProfile({ name: profileData.fullName, phone: profileData.phone });
+	};
 
 	useEffect(() => {
 		(async () => {
+			await getProfile();
 			setProfileImage(await DataService.get('profileImage'));
 		})();
 	}, []);
@@ -22,6 +29,7 @@ export default function Index() {
 					<div className="avatar-section">
 						<img src={profileImage} alt="avatar" className="imaged w100 rounded" />
 					</div>
+					<p>{profile.name}</p>
 				</div>
 
 				<div className="listview-title mt-1">Settings</div>
