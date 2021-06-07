@@ -78,7 +78,7 @@ export default function Main() {
 				return;
 			}
 			await DataService.saveProfileIdCard(previewImage);
-			let profileImage = DataService.get('profileImage');
+			let profileImage = await DataService.get('profileImage');
 
 			const res = await Wallet.create(profile.phone);
 			if (res) {
@@ -89,9 +89,9 @@ export default function Main() {
 					name: profile.name,
 					phone: profile.phone,
 					email: profile.email,
-					address: profile.address
-					//profileImage,
-					//idCard: previewImage
+					address: profile.address,
+					photo: profileImage,
+					govt_id_image: previewImage
 				});
 				await DataService.saveWallet(encryptedWallet);
 				DataService.saveAddress(wallet.address);
