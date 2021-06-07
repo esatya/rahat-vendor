@@ -1,5 +1,6 @@
 module.exports = {
 	INIT_APP: 'init_app',
+	SET_AGENCY: 'set_agency',
 	SET_NETWORK: 'set_network',
 	SET_HASWALLET: 'set_haswallet',
 	SET_WALLET: 'set_wallet',

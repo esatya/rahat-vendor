@@ -57,6 +57,11 @@ const TokenService = (agencyAddress, wallet) => {
 			if (!address) address = await DataService.getAddress();
 			const contract = await this.getContract();
 			return contract.balanceOf(address);
+		},
+		async transfer(address, amount) {
+			const contract = await this.getContract();
+			const tx = await contract.transfer(address, Number(amount));
+			return tx.wait();
 		}
 	};
 };

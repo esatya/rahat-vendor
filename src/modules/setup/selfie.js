@@ -42,6 +42,7 @@ export default function Main() {
 			height: camContainerRef.current.offsetWidth * 0.84,
 			facingMode: 'user'
 		});
+		return function cleanup() {};
 	}, []);
 
 	return (

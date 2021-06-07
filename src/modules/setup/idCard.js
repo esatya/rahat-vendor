@@ -19,6 +19,7 @@ export default function Main() {
 		height: 50
 	});
 	const [previewImage, setPreviewImage] = useState('');
+	const [showPageLoader, setShowPageLoader] = useState(true);
 	const webcamRef = React.useRef(null);
 
 	const capture = () => {
@@ -111,75 +112,91 @@ export default function Main() {
 		// 	height: camContainerRef.current.offsetWidth * 0.84,
 		// 	facingMode: 'user'
 		// });
+		const timer = setTimeout(() => {
+			setShowPageLoader(false);
+		}, 1000);
+		return () => clearTimeout(timer);
 	}, []);
 
 	return (
 		<>
-			<Loading message={loading} showModal={loading !== null} />
-			<div className="section">
-				<div className="text-center p-2">
-					<img src="/assets/img/brand/logo-512.png" alt="alt" width="130" />
+			{showPageLoader ? (
+				<div id="loader">
+					<img src="/assets/img/brand/icon-white-128.png" alt="icon" className="loading-icon" />
 				</div>
-				<div className="card1">
-					<div className="card-body text-center">
-						<h3 className="mb-2">
-							Take a picture of your ID card
-							<small>
-								<br />
-								Citizenship, Passport, License or National ID
-							</small>
-						</h3>
-
-						{previewImage ? (
-							<img
-								alt="preview"
-								src={previewImage}
-								style={{
-									borderRadius: '10%',
-									width: '100%',
-									border: '3px solid #958d9e'
-								}}
-							/>
-						) : (
-							<Webcam
-								className=""
-								audio={false}
-								ref={webcamRef}
-								screenshotFormat="image/jpeg"
-								videoConstraints={videoConstraints}
-								style={{
-									borderRadius: '10%',
-									width: '100%',
-									border: '3px solid #958d9e'
-								}}
-							/>
-						)}
-					</div>
-				</div>
-				<div className="pl-5 pr-5">
-					{previewImage ? (
-						<div className="text-center">
-							<button type="button" className="btn btn-lg btn-block btn-success mt-1" onClick={save}>
-								Complete setup
-							</button>
-							<button
-								type="button"
-								className="btn btn btn-block btn-outline-secondary mt-5"
-								style={{ width: 200 }}
-								onClick={() => setPreviewImage(null)}
-							>
-								<BiReset className="ion-icon" />
-								Retake Picture
-							</button>
+			) : (
+				<>
+					<Loading message={loading} showModal={loading !== null} />
+					<div className="section">
+						<div className="text-center p-2">
+							<img src="/assets/img/brand/logo-512.png" alt="alt" width="130" />
 						</div>
-					) : (
-						<button type="button" className="btn btn-lg btn-block btn-dark mt-1" onClick={capture}>
-							<IoCamera className="ion-icon" />
-							Take Picture
-						</button>
-					)}
-				</div>
-			</div>
+						<div className="card1">
+							<div className="card-body text-center">
+								<h3 className="mb-2">
+									Take a picture of your ID card
+									<small>
+										<br />
+										Citizenship, Passport, License or National ID
+									</small>
+								</h3>
+
+								{previewImage ? (
+									<img
+										alt="preview"
+										src={previewImage}
+										style={{
+											borderRadius: '10%',
+											width: '100%',
+											border: '3px solid #958d9e'
+										}}
+									/>
+								) : (
+									<Webcam
+										className=""
+										audio={false}
+										ref={webcamRef}
+										screenshotFormat="image/jpeg"
+										videoConstraints={videoConstraints}
+										style={{
+											borderRadius: '10%',
+											width: '100%',
+											border: '3px solid #958d9e'
+										}}
+									/>
+								)}
+							</div>
+						</div>
+						<div className="pl-5 pr-5">
+							{previewImage ? (
+								<div className="text-center">
+									<button
+										type="button"
+										className="btn btn-lg btn-block btn-success mt-1"
+										onClick={save}
+									>
+										Complete setup
+									</button>
+									<button
+										type="button"
+										className="btn btn btn-block btn-outline-secondary mt-5"
+										style={{ width: 200 }}
+										onClick={() => setPreviewImage(null)}
+									>
+										<BiReset className="ion-icon" />
+										Retake Picture
+									</button>
+								</div>
+							) : (
+								<button type="button" className="btn btn-lg btn-block btn-dark mt-1" onClick={capture}>
+									<IoCamera className="ion-icon" />
+									Take Picture
+								</button>
+							)}
+						</div>
+					</div>
+				</>
+			)}
 		</>
 	);
 }

@@ -64,6 +64,7 @@ export default function UnlockedFooter() {
 		setLoadingModal(true);
 		const agency = await DataService.getDefaultAgency();
 		try {
+			setShowActionSheet(null);
 			const rahat = RahatService(agency.address, wallet);
 			const receipt = await rahat.verifyCharge(chargeData.phone, otp);
 			const tx = {
@@ -79,6 +80,7 @@ export default function UnlockedFooter() {
 			Swal.fire('Success', 'Transaction completed.', 'success');
 			addRecentTx(tx);
 			await DataService.addTx(tx);
+			history.push(`/tx/${receipt.transactionHash}`);
 		} catch (e) {
 			const tx = {
 				hash: chargeRequestHash,

@@ -8,7 +8,14 @@ const AppReducer = (state, action) => {
 				address: action.data.address,
 				network: action.data.network,
 				hasWallet: action.data.hasWallet,
-				balance: action.data.balance
+				tokenBalance: action.data.balance,
+				agency: action.data.agency
+			};
+
+		case APP_ACTIONS.SET_AGENCY:
+			return {
+				...state,
+				agency: action.data
 			};
 
 		case APP_ACTIONS.SET_NETWORK:

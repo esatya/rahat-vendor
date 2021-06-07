@@ -26,9 +26,10 @@ export default function Main() {
 			addRecentTx(txs.slice(0, 3));
 			const timer = setTimeout(() => {
 				setShowPageLoader(false);
-			}, 1000);
+			}, 300);
 			return () => clearTimeout(timer);
 		})();
+		return function cleanup() {};
 	}, []);
 
 	if (!hasWallet) {

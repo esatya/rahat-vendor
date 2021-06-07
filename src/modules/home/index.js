@@ -37,8 +37,8 @@ function App() {
 				<PrivateRoute exact path="/profile" component={Profile} wallet={wallet} />
 				<PrivateRoute exact path="/settings" component={Settings} wallet={wallet} />
 				<PrivateRoute exact path="/profile" component={Profile} wallet={wallet} />
-				<PrivateRoute exact path="/transfer/:contract" component={Transfer} wallet={wallet} />
-				<PrivateRoute exact path="/transfer/:contract/:address" component={Transfer} wallet={wallet} />
+				<PrivateRoute exact path="/transfer" component={Transfer} wallet={wallet} />
+				<PrivateRoute exact path="/transfer/:address" component={Transfer} wallet={wallet} />
 				<PrivateRoute exact path="/google/backup" component={GoogleBackup} wallet={wallet} />
 				<Route path="*" component={Main} />
 			</Switch>

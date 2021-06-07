@@ -16,19 +16,14 @@ import DataService from '../../services/db';
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function Index(props) {
-	const { saveScannedAddress, saveSendingTokenName, network, wallet } = useContext(AppContext);
+	const { agency, wallet } = useContext(AppContext);
 	let history = useHistory();
-
-	let tokenAddress = props.match.params.contract;
-	let address = props.match.params.address;
-
-	const [tokenDetails, setTokenDetails] = useState(null);
+	let toAddress = props.match.params.address;
 
 	const [sendAmount, setSendAmount] = useState('');
 	const [sendToAddress, setSendToAddress] = useState('');
-	const [loadingModal, setLoadingModal] = useState(false);
+	const [loading, showLoading] = useState(null);
 	const [scanModal, setScanModal] = useState(false);
-	const [sendingToken, setSendingTokenSymbol] = useState('');
 
 	const handleScanModalToggle = () => setScanModal(!scanModal);
 
@@ -64,11 +59,6 @@ export default function Index(props) {
 		}
 	};
 
-	const saveTokenNameToCtx = tokenName => {
-		if (tokenName === 'ethereum') saveSendingTokenName('ethereum');
-		else saveSendingTokenName(tokenName);
-	};
-
 	const handleSendToChange = e => {
 		setSendToAddress(e.target.value);
 	};
@@ -78,50 +68,16 @@ export default function Index(props) {
 	};
 
 	const resetFormStates = () => {
-		setLoadingModal(false);
+		showLoading(null);
 		setSendAmount('');
-		setSendingTokenSymbol('');
 		setSendToAddress('');
-	};
-
-	const sendERCSuccess = (sendAmount, sendToAddress) => {
-		Swal.fire({
-			title: 'Success',
-			html: `You sent <b>${sendAmount}</b> ${sendingToken} to <b>${sendToAddress}</b>.`,
-			icon: 'success',
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Okay'
-		}).then(result => {
-			if (result.value) {
-				history.push('/assets');
-			}
-		});
-	};
-
-	const sendSuccess = (data, receipt) => {
-		resetFormStates();
-		Swal.fire({
-			title: 'Success',
-			html: `You sent <b>${data.sendAmount}</b> ethers to <b>${data.sendToAddress}</b>.<br>
-      Your confirmation code is <b>${receipt.hash}</b>.<br>So far your account has completed ${
-				receipt.nonce + 1
-			} transactions.`,
-			icon: 'success',
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Okay'
-		}).then(result => {
-			if (result.value) {
-				history.push('/assets');
-			}
-		});
 	};
 
 	const confirmAndSend = async data => {
 		const isConfirm = await Swal.fire({
 			title: 'Are you sure?',
-			html: `You are sending <b>${data.sendAmount} ${sendingToken}</b> to <b>${data.sendToAddress}</b>.<br><small>Please double check the address and the amount.</small>`,
+			html: `You are sending <b>${data.sendAmount}</b> to <b>${data.sendToAddress}</b>.<br>
+				<small>Please double check the address and the amount.</small>`,
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
@@ -136,41 +92,25 @@ export default function Index(props) {
 	const send = async data => {
 		try {
 			if (!ethers.utils.isAddress(data.sendToAddress)) throw Error('Destination address is invalid');
-			setLoadingModal(true);
-			setTimeout(async () => {
-				try {
-					if (tokenDetails.address === 'default') await sendEther(data);
-					else await sendERCToken();
-				} catch (e) {
-					Swal.fire('ERROR', e.error.message, 'error');
-				} finally {
-					resetFormStates();
-				}
-			}, 250);
+			showLoading('Transferring tokens. Please wait...');
+			console.log(agency.address);
+			let tknService = TokenService(agency.address, wallet);
+			let receipt = await tknService.transfer(data.sendToAddress, data.sendAmount);
+			resetFormStates();
+			DataService.addTx({
+				hash: receipt.transactionHash,
+				type: 'send',
+				timestamp: Date.now(),
+				amount: data.sendAmount,
+				to: data.sendToAddress,
+				from: wallet.address,
+				status: 'success'
+			});
+			history.push(`/tx/${receipt.transactionHash}`);
 		} catch (e) {
 			Swal.fire('ERROR', e.message, 'error');
-		}
-	};
-
-	const sendERCToken = async () => {
-		try {
-			const contract = TokenService(tokenDetails.address, wallet);
-			await contract.transfer(sendToAddress, sendAmount);
-			sendERCSuccess(sendAmount, sendToAddress);
-		} catch (err) {
-			Swal.fire('ERROR', err.message, 'error');
-		}
-	};
-
-	const sendEther = async data => {
-		try {
-			const receipt = await wallet.sendTransaction({
-				to: data.sendToAddress,
-				value: ethers.utils.parseEther(data.sendAmount.toString())
-			});
-			sendSuccess(data, receipt);
-		} catch (err) {
-			Swal.fire('ERROR', err.message, 'error');
+		} finally {
+			resetFormStates();
 		}
 	};
 
@@ -189,16 +129,9 @@ export default function Index(props) {
 
 	useEffect(() => {
 		(async () => {
-			if (address) setSendToAddress(address);
-			const token = await DataService.getAsset(tokenAddress);
-			if (token) setTokenDetails(token);
-			else {
-				Swal.fire('ERROR', 'Asset not found.', 'error').then(a => {
-					history.push('/assets');
-				});
-			}
+			if (toAddress) setSendToAddress(toAddress);
 		})();
-	}, [address, history, tokenAddress]);
+	}, [toAddress]);
 
 	// useEffect(() => {
 	// 	const _tokens = [];
@@ -246,20 +179,12 @@ export default function Index(props) {
 					/>
 				</div>
 			</ModalWrapper>
-			<Loading showModal={loadingModal} message="Transferring tokens. Please wait..." />
+			<Loading showModal={loading !== null} message={loading} />
 			<AppHeader currentMenu="Transfer" />
 			<div id="appCapsule">
 				<div id="cmpMain">
 					<div className="section mt-2 mb-5">
-						<div className="wide-block pt-2 pb-2">
-							<div className="alert alert-primary mb-1" role="alert" style={{ fontSize: '1rem' }}>
-								Token Name : <strong>{tokenDetails && tokenDetails.name}</strong> <br />
-								Current Balance : <strong>{tokenDetails && tokenDetails.balance}</strong> <br />
-								Current Network : <strong>{network && network.display}</strong>
-							</div>
-						</div>
-
-						<div className="card mt-5" id="cmpTransfer">
+						<div className="card mt-5">
 							<div className="card-body">
 								<form>
 									<div className="form-group boxed" style={{ padding: 0 }}>

@@ -36,6 +36,7 @@ const DataService = {
 	},
 	async getProfile() {
 		let profile = await this.get('profile');
+		if (profile) profile.img = await this.get('profileImage');
 		return profile;
 	},
 

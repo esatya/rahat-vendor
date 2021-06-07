@@ -11,7 +11,7 @@ export default function Main() {
 			<AppHeader
 				currentMenu="Transactions"
 				actionButton={
-					<Link to="/transfer/ethereum" className="headerButton">
+					<Link to="/transfer" className="headerButton">
 						<IoSendOutline className="ion-icon" />
 					</Link>
 				}
