@@ -16,7 +16,7 @@ import DataService from '../../services/db';
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function Index(props) {
-	const { agency, wallet } = useContext(AppContext);
+	const { agency, wallet, setTokenBalance } = useContext(AppContext);
 	let history = useHistory();
 	let toAddress = props.match.params.address;
 
@@ -107,6 +107,8 @@ export default function Index(props) {
 				status: 'success'
 			});
 			history.push(`/tx/${receipt.transactionHash}`);
+			let tokenBalance = await TokenService(agency.address).getBalance();
+			setTokenBalance(tokenBalance.toNumber());
 		} catch (e) {
 			Swal.fire('ERROR', e.message, 'error');
 		} finally {

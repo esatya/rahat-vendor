@@ -80,7 +80,7 @@ export default function Main() {
 				return;
 			}
 			await DataService.saveProfileIdCard(previewImage);
-			let profileImage = DataService.get('profileImage');
+			let profileImage = await DataService.get('profileImage');
 
 			const res = await Wallet.create(profile.phone);
 			if (res) {
