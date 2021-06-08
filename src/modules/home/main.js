@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
@@ -9,7 +9,8 @@ import DataService from '../../services/db';
 var QRCode = require('qrcode.react');
 
 export default function Main() {
-	const { hasWallet, wallet, tokenBalance, recentTx, addRecentTx } = useContext(AppContext);
+	const history = useHistory();
+	const { hasWallet, wallet, tokenBalance, recentTx, addRecentTx, agency } = useContext(AppContext);
 	const [showPageLoader, setShowPageLoader] = useState(true);
 
 	const cardBody = useRef();
@@ -20,20 +21,51 @@ export default function Main() {
 		else return 280;
 	};
 
+	const checkVendorStatus = async () => {
+		//update API to only query relevant agency.
+		if (!wallet) return;
+		let data = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/${wallet.address}`).then(r => {
+			if (!r.ok) throw Error(r.message);
+			return r.json();
+		});
+
+		if (!data.agencies.length) return history.push('/setup/idcard');
+		let status = data.agencies[0].status;
+
+		if (status !== 'active') {
+			let dagency = Object.assign(agency, { isApproved: false });
+			await DataService.updateAgency(dagency.address, dagency);
+			history.push('/setup/pending');
+		}
+	};
+
 	useEffect(() => {
+		let timer1 = null;
 		(async () => {
 			let txs = await DataService.listTx();
 			addRecentTx(txs.slice(0, 3));
 			const timer = setTimeout(() => {
 				setShowPageLoader(false);
 			}, 300);
-			return () => clearTimeout(timer);
+			timer1 = setTimeout(async () => {
+				await checkVendorStatus();
+			}, 3000);
+			return () => {
+				clearTimeout(timer);
+				clearTimeout(timer1);
+			};
 		})();
-		return function cleanup() {};
+		return function cleanup() {
+			if (timer1) clearTimeout(timer1);
+		};
 	}, []);
 
 	if (!hasWallet) {
 		return <Redirect to="/setup" />;
+	}
+
+	if (agency && !agency.isApproved) {
+		return <Redirect to="/setup/pending" />;
 	}
 
 	return (

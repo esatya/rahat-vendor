@@ -12,13 +12,12 @@ import DataService from '../../services/db';
 
 export default function Main() {
 	const history = useHistory();
-	const { setHasWallet, setWallet } = useContext(AppContext);
+	const { setHasWallet, setWallet, setAgency } = useContext(AppContext);
 	const [loading, showLoading] = useState(null);
 	const [videoConstraints] = useState({
 		facingMode: 'environment',
 		forceScreenshotSourceSize: true,
-		screenshotQuality: 1,
-		minScreenshotWidth: 1024
+		screenshotQuality: 1
 	});
 	const [previewImage, setPreviewImage] = useState('');
 	const [showPageLoader, setShowPageLoader] = useState(true);
@@ -41,15 +40,18 @@ export default function Main() {
 			return r.json();
 		});
 
-		await DataService.addAgency({
+		const agencyData = {
 			api: process.env.REACT_APP_DEFAULT_AGENCY_API,
 			address: appData.agency.contracts.rahat,
 			network: appData.networkUrl,
 			tokenAddress: appData.agency.contracts.token,
 			name: appData.agency.name,
 			email: appData.agency.email,
-			isRegistered: false
-		});
+			isApproved: false
+		};
+		let agy = await DataService.addAgency(agencyData);
+		setAgency(agencyData);
+		console.log(agy);
 
 		await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/register`, {
 			method: 'post',
@@ -62,6 +64,8 @@ export default function Main() {
 			if (!r.ok) throw Error(r.message);
 			return r.json();
 		});
+
+		return agencyData;
 	};
 
 	const save = async event => {
@@ -100,7 +104,7 @@ export default function Main() {
 				setWallet(wallet);
 				setHasWallet(true);
 				showLoading(null);
-				history.push('/');
+				history.push('/pending');
 			}
 		} catch (err) {
 			Swal.fire('ERROR', err.message, 'error');

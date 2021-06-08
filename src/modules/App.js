@@ -6,6 +6,7 @@ import Setup from '../modules/setup';
 import SetupProfile from '../modules/setup/profile';
 import SetupSelfie from '../modules/setup/selfie';
 import SetupIdCard from '../modules/setup/idCard';
+import SetupPending from '../modules/setup/pendingApproval';
 import UnlockWallet from '../modules/wallet/unlock';
 import GoogleRestore from '../modules/misc/googleRestore';
 import CreateWallet from '../modules/wallet/create';
@@ -24,6 +25,7 @@ function App() {
 						<Route exact path="/setup/profile" component={SetupProfile} />
 						<Route exact path="/setup/selfie" component={SetupSelfie} />
 						<Route exact path="/setup/idcard" component={SetupIdCard} />
+						<Route exact path="/setup/pending" component={SetupPending} />
 						<Route exact path="/create" component={CreateWallet} />
 						<Route exact path="/unlock" component={UnlockWallet} />
 						<Route exact path="/google/restore" component={GoogleRestore} />

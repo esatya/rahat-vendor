@@ -39,7 +39,7 @@ export default function Main() {
 						<IoWalletOutline className="ion-icon" aria-label="Restore Using Google" />
 						Register as Vendor
 					</Link>
-					<Link
+					{/* <Link
 						to="/setup/profile"
 						id="btnSetupWallet"
 						type="button"
@@ -47,7 +47,7 @@ export default function Main() {
 					>
 						<IoLogoGoogle className="ion-icon" aria-label="Restore Using Google" />
 						Register using Google
-					</Link>
+					</Link> */}
 				</div>
 			</div>
 		</>

@@ -8,7 +8,7 @@ db.version(DB.VERSION).stores({
 	data: 'name,data',
 	documents: 'hash,type,name,file,encryptedFile,createdAt,inIpfs',
 	assets: 'address,type,name,symbol,decimal,balance,network',
-	agencies: 'address,name,api,network,rahatAddress,tokenAddress,phone,email,logo,isRegistered',
+	agencies: 'address,name,api,network,rahatAddress,tokenAddress,phone,email,logo,isApproved',
 	transactions: 'hash,type,timestamp,amount,to,from,status,image'
 });
 

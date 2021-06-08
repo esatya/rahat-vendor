@@ -98,7 +98,7 @@ export default function Main() {
 							</div>
 							<div className="form-group basic">
 								<div className="input-wrapper">
-									<label className="label">Email Address (optional)</label>
+									<label className="label">Email Address</label>
 									<Form.Control
 										type="email"
 										className="form-control"
@@ -106,6 +106,7 @@ export default function Main() {
 										placeholder="Enter email"
 										value={profile.email}
 										onChange={updateProfile}
+										required
 									/>
 									<i className="clear-input">
 										<IoCloseCircle className="ion-icon" />
