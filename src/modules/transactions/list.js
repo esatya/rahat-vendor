@@ -26,7 +26,7 @@ const TxList = ({ limit, transactions = [] }) => {
 				if (t.type === 'send') {
 					t.name = 'Send Tokens';
 					t.icon = (
-						<div className="icon-box bg-danger">
+						<div className="icon-box bg-warning">
 							<IoArrowForwardOutline className="ion-icon" />
 						</div>
 					);

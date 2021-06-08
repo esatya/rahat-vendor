@@ -26,7 +26,7 @@ export default function Main(props) {
 			if (t.type === 'send') {
 				t.name = 'Send Tokens';
 				t.icon = (
-					<div className="iconbox bg-danger">
+					<div className="iconbox bg-warning">
 						<IoArrowForwardOutline className="ion-icon" />
 					</div>
 				);

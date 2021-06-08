@@ -9,9 +9,10 @@ import DataService from '../../services/db';
 export default function Main() {
 	const history = useHistory();
 	const [videoConstraints, setVideoConstraints] = useState({
-		width: 350,
-		height: 350,
-		facingMode: 'user'
+		facingMode: 'user',
+		forceScreenshotSourceSize: true,
+		screenshotQuality: 1,
+		minScreenshotWidth: 1024
 	});
 	const [previewImage, setPreviewImage] = useState('');
 
@@ -38,9 +39,10 @@ export default function Main() {
 
 	useEffect(() => {
 		setVideoConstraints({
-			width: camContainerRef.current.offsetWidth * 0.84,
-			height: camContainerRef.current.offsetWidth * 0.84,
-			facingMode: 'user'
+			facingMode: 'user',
+			forceScreenshotSourceSize: true,
+			screenshotQuality: 1,
+			minScreenshotWidth: 1024
 		});
 		return function cleanup() {};
 	}, []);
@@ -69,14 +71,22 @@ export default function Main() {
 								style={{ borderRadius: '100%', width: '100%', border: '3px solid #958d9e' }}
 							/>
 						) : (
-							<Webcam
-								className="video-flipped"
-								audio={false}
-								ref={webcamRef}
-								screenshotFormat="image/jpeg"
-								videoConstraints={videoConstraints}
-								style={{ borderRadius: '100%', border: '5px solid #958d9e' }}
-							/>
+							<div>
+								<Webcam
+									className="video-flipped"
+									audio={false}
+									ref={webcamRef}
+									screenshotFormat="image/jpeg"
+									videoConstraints={videoConstraints}
+									style={{
+										borderRadius: '100%',
+										width: '99%',
+										height: '100%',
+										border: '5px solid #958d9e',
+										padding: 2
+									}}
+								/>
+							</div>
 						)}
 					</div>
 				</div>

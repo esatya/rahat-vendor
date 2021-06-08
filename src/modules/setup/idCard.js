@@ -16,7 +16,9 @@ export default function Main() {
 	const [loading, showLoading] = useState(null);
 	const [videoConstraints] = useState({
 		facingMode: 'environment',
-		height: 50
+		forceScreenshotSourceSize: true,
+		screenshotQuality: 1,
+		minScreenshotWidth: 1024
 	});
 	const [previewImage, setPreviewImage] = useState('');
 	const [showPageLoader, setShowPageLoader] = useState(true);
@@ -42,7 +44,7 @@ export default function Main() {
 		await DataService.addAgency({
 			api: process.env.REACT_APP_DEFAULT_AGENCY_API,
 			address: appData.agency.contracts.rahat,
-			network: process.env.REACT_APP_DEFAULT_NETWORK,
+			network: appData.networkUrl,
 			tokenAddress: appData.agency.contracts.token,
 			name: appData.agency.name,
 			email: appData.agency.email,
@@ -89,9 +91,9 @@ export default function Main() {
 					name: profile.name,
 					phone: profile.phone,
 					email: profile.email,
-					address: profile.address
-					//profileImage,
-					//idCard: previewImage
+					address: profile.address,
+					photo: profileImage,
+					govt_id_image: previewImage
 				});
 				await DataService.saveWallet(encryptedWallet);
 				DataService.saveAddress(wallet.address);
