@@ -78,7 +78,6 @@ export default function UnlockedFooter() {
 			};
 
 			Swal.fire('Success', 'Transaction completed.', 'success');
-			addRecentTx(tx);
 			await DataService.addTx(tx);
 			history.push(`/tx/${receipt.transactionHash}`);
 		} catch (e) {
