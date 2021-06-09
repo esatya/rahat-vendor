@@ -7,8 +7,9 @@ import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
 import DataService from '../../services/db';
 import ActionSheet from '../global/ActionSheet';
-import { RahatService, TokenService } from '../../services/chain';
+import { TokenService } from '../../services/chain';
 import Loading from '../global/Loading';
+import { IoArrowDownCircleOutline } from 'react-icons/io5';
 
 var QRCode = require('qrcode.react');
 
@@ -178,22 +179,17 @@ export default function Main() {
 								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
-							<a
-								href="#redeem"
-								className="item"
+							<button
+								className="item button-link"
 								onClick={() => (wallet ? setRedeemModal(true) : setRedeemModal(false))}
 							>
-								<div className="icon-wrapper bg-danger">
-									<ion-icon
-										name="heart"
-										role="img"
-										className="md hydrated"
-										aria-label="arrow down outline"
-									></ion-icon>
+								<div className="col">
+									<div className="action-button">
+										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '50px' }} />
+									</div>
 								</div>
-
 								<strong>Redeem</strong>
-							</a>
+							</button>
 						</div>
 					</div>
 				</div>
