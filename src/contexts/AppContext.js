@@ -67,6 +67,7 @@ export const AppContextProvider = ({ children }) => {
 	}
 
 	function addRecentTx(tx) {
+		setRecentTx([]);
 		if (!Array.isArray(tx)) tx = [tx];
 		const arr = [...tx, ...recentTx];
 		setRecentTx(arr.slice(0, 3));

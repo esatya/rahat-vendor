@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Link } from 'react-router-dom';
 import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
-import { GiReceiveMoney } from 'react-icons/gi';
+import { GiReceiveMoney, GiMoneyStack } from 'react-icons/gi';
 import { BiError } from 'react-icons/bi';
 import Moment from 'react-moment';
 
@@ -36,6 +36,14 @@ const TxList = ({ limit, transactions = [] }) => {
 					t.icon = (
 						<div className="icon-box bg-primary">
 							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === 'redeem') {
+					t.name = 'Redeem Tokens';
+					t.icon = (
+						<div className="iconbox bg-primary">
+							<GiMoneyStack className="ion-icon" />
 						</div>
 					);
 				}
