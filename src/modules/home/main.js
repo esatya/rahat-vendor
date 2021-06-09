@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useHistory, Redirect } from 'react-router-dom';
-import { Modal, Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
@@ -178,7 +178,11 @@ export default function Main() {
 								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
-							<a href="#" className="item" onClick={() => setRedeemModal(true)}>
+							<a
+								href="#redeem"
+								className="item"
+								onClick={() => (wallet ? setRedeemModal(true) : setRedeemModal(false))}
+							>
 								<div className="icon-wrapper bg-danger">
 									<ion-icon
 										name="heart"
