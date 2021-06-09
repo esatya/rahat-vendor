@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Moment from 'react-moment';
 import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
-import { GiReceiveMoney } from 'react-icons/gi';
+import { GiReceiveMoney, GiMoneyStack } from 'react-icons/gi';
 import { BiError } from 'react-icons/bi';
 
 import AppHeader from '../layouts/AppHeader';
@@ -36,6 +36,14 @@ export default function Main(props) {
 				t.icon = (
 					<div className="iconbox bg-primary">
 						<IoArrowDownOutline className="ion-icon" />
+					</div>
+				);
+			}
+			if (t.type === 'redeem') {
+				t.name = 'Redeem Tokens';
+				t.icon = (
+					<div className="iconbox bg-primary">
+						<GiMoneyStack className="ion-icon" />
 					</div>
 				);
 			}

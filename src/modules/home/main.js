@@ -46,14 +46,41 @@ export default function Main() {
 		}
 	};
 
+	const confirmAndRedeemToken = async data => {
+		setRedeemModal(false);
+		const isConfirm = await Swal.fire({
+			title: 'Are you sure?',
+			html: `You are sending <b>${redeemAmount}</b> token to redeem it for cash`,
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No'
+		});
+		if (isConfirm.value) {
+			redeemToken();
+		} else {
+			resetFormStates();
+		}
+	};
+
 	const redeemToken = async () => {
-		console.log('redeeming token');
-		//choose a financial institute to redeem token
+		//TODO choose a financial institute to redeem token
 		let tknService = TokenService(agency.address, wallet);
 		showLoading('Transferring tokens to redeem. Please wait...');
-		let receipt = await tknService.transfer('0xF30f5e922B5764B9ebe52389Ab3047B6bE0F13FE', Number(redeemAmount));
+		let receipt = await tknService.transfer(agency.adminAddress, Number(redeemAmount));
 		resetFormStates();
-		console.log('transfered');
+		const tx = {
+			hash: receipt.transactionHash,
+			type: 'redeem',
+			timestamp: Date.now(),
+			amount: redeemAmount,
+			to: 'agency',
+			from: wallet.address,
+			status: 'success'
+		};
+		await DataService.addTx(tx);
+		history.push(`/tx/${receipt.transactionHash}`);
 		Swal.fire('Success', 'Transaction sent for Redemption', 'success');
 		let tokenBalance = await TokenService(agency.address).getBalance();
 		setTokenBalance(tokenBalance.toNumber());
@@ -113,7 +140,7 @@ export default function Main() {
 				buttonName="Redeem"
 				showModal={redeemModal}
 				onHide={() => setRedeemModal(false)}
-				handleSubmit={redeemToken}
+				handleSubmit={confirmAndRedeemToken}
 			>
 				<div className="form-group basic">
 					<div className="input-wrapper">

@@ -43,6 +43,7 @@ export default function Main() {
 		const agencyData = {
 			api: process.env.REACT_APP_DEFAULT_AGENCY_API,
 			address: appData.agency.contracts.rahat,
+			adminAddress: appData.agency.contracts.rahat_admin,
 			network: appData.networkUrl,
 			tokenAddress: appData.agency.contracts.token,
 			name: appData.agency.name,
@@ -107,6 +108,7 @@ export default function Main() {
 				history.push('/pending');
 			}
 		} catch (err) {
+			console.log(err);
 			Swal.fire('ERROR', err.message, 'error');
 			showLoading(null);
 		}
