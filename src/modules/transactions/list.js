@@ -42,7 +42,7 @@ const TxList = ({ limit, transactions = [] }) => {
 				if (t.type === 'redeem') {
 					t.name = 'Redeem Tokens';
 					t.icon = (
-						<div className="iconbox bg-primary">
+						<div className="icon-box bg-primary">
 							<GiMoneyStack className="ion-icon" />
 						</div>
 					);
