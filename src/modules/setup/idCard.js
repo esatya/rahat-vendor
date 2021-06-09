@@ -52,7 +52,7 @@ export default function Main() {
 		let agy = await DataService.addAgency(agencyData);
 		setAgency(agencyData);
 		console.log(agy);
-
+		if (!data.email) delete data.email;
 		await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/register`, {
 			method: 'post',
 			headers: {

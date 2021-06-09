@@ -106,7 +106,6 @@ export default function Main() {
 										placeholder="Enter email"
 										value={profile.email}
 										onChange={updateProfile}
-										required
 									/>
 									<i className="clear-input">
 										<IoCloseCircle className="ion-icon" />
