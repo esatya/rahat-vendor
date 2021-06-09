@@ -191,6 +191,7 @@ export default function UnlockedFooter() {
 			<Loading message="Transaction in process. Please wait..." showModal={loadingModal} />
 			<ActionSheet
 				title="Charge Customer"
+				buttonName="Charge"
 				showModal={showActionSheet === 'charge'}
 				handleSubmit={chargeCustomer}
 				onHide={() => {
@@ -241,6 +242,7 @@ export default function UnlockedFooter() {
 
 			<ActionSheet
 				title="Verification OTP"
+				buttonName="Verify"
 				showModal={showActionSheet === 'otp'}
 				onHide={() => {
 					setOtp('');

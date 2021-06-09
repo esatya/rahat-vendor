@@ -1,17 +1,24 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useHistory, Redirect } from 'react-router-dom';
-
+import { Modal, Form } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
 import DataService from '../../services/db';
+import ActionSheet from '../global/ActionSheet';
+import { RahatService, TokenService } from '../../services/chain';
+import Loading from '../global/Loading';
 
 var QRCode = require('qrcode.react');
 
 export default function Main() {
 	const history = useHistory();
-	const { hasWallet, wallet, tokenBalance, recentTx, addRecentTx, agency } = useContext(AppContext);
+	const { hasWallet, wallet, tokenBalance, recentTx, setTokenBalance, addRecentTx, agency } = useContext(AppContext);
 	const [showPageLoader, setShowPageLoader] = useState(true);
+	const [redeemModal, setRedeemModal] = useState(false);
+	const [redeemAmount, setRedeemAmount] = useState('');
+	const [loading, showLoading] = useState(null);
 
 	const cardBody = useRef();
 	const { width } = useResize(cardBody);
@@ -37,6 +44,31 @@ export default function Main() {
 			await DataService.updateAgency(dagency.address, dagency);
 			history.push('/setup/pending');
 		}
+	};
+
+	const redeemToken = async () => {
+		console.log('redeeming token');
+		//choose a financial institute to redeem token
+		let tknService = TokenService(agency.address, wallet);
+		showLoading('Transferring tokens to redeem. Please wait...');
+		let receipt = await tknService.transfer('0xF30f5e922B5764B9ebe52389Ab3047B6bE0F13FE', Number(redeemAmount));
+		resetFormStates();
+		console.log('transfered');
+		Swal.fire('Success', 'Transaction sent for Redemption', 'success');
+		let tokenBalance = await TokenService(agency.address).getBalance();
+		setTokenBalance(tokenBalance.toNumber());
+	};
+	const updateRedeemAmount = e => {
+		let formData = new FormData(e.target.form);
+		let data = {};
+		formData.forEach((value, key) => (data[key] = value));
+		setRedeemAmount(data.redeemAmount);
+	};
+
+	const resetFormStates = () => {
+		showLoading(null);
+		setRedeemAmount('');
+		setRedeemModal(false);
 	};
 
 	useEffect(() => {
@@ -75,6 +107,40 @@ export default function Main() {
 					<img src="/assets/img/brand/icon-white-128.png" alt="icon" className="loading-icon" />
 				</div>
 			)}
+			<Loading showModal={loading !== null} message={loading} />
+			<ActionSheet
+				title="Redeem Token"
+				buttonName="Redeem"
+				showModal={redeemModal}
+				onHide={() => setRedeemModal(false)}
+				handleSubmit={redeemToken}
+			>
+				<div className="form-group basic">
+					<div className="input-wrapper">
+						<label className="label">Enter Amount</label>
+						<div className="input-group mb-3">
+							<div className="input-group-prepend">
+								<span className="input-group-text" id="input14">
+									Rs.
+								</span>
+							</div>
+							<Form.Control
+								type="number"
+								name="redeemAmount"
+								className="form-control"
+								placeholder="Redeem"
+								value={redeemAmount}
+								onChange={updateRedeemAmount}
+								required
+							/>
+							{/* <input type="number" className="form-control" id="text11" placeholder="Enter OTP" /> */}
+							<i className="clear-input">
+								<ion-icon name="close-circle"></ion-icon>
+							</i>
+						</div>
+					</div>
+				</div>
+			</ActionSheet>
 
 			<div id="appCapsule">
 				<div className="section wallet-card-section pt-1">
@@ -85,6 +151,18 @@ export default function Main() {
 								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
+							<a href="#" className="item" onClick={() => setRedeemModal(true)}>
+								<div className="icon-wrapper bg-danger">
+									<ion-icon
+										name="heart"
+										role="img"
+										className="md hydrated"
+										aria-label="arrow down outline"
+									></ion-icon>
+								</div>
+
+								<strong>Redeem</strong>
+							</a>
 						</div>
 					</div>
 				</div>

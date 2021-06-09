@@ -3,7 +3,7 @@ import { Modal, Form } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 export default function ActionSheet(props) {
-	const { handleSubmit, modalSize, showModal, title, onHide, onShow } = props;
+	const { handleSubmit, modalSize, showModal, title, onHide, onShow, buttonName } = props;
 	return (
 		<>
 			<Modal
@@ -30,7 +30,7 @@ export default function ActionSheet(props) {
 									onClick={handleSubmit}
 									className="btn btn-primary btn-block btn-lg"
 								>
-									Charge
+									{buttonName}
 								</button>
 							</div>
 						</div>

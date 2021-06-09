@@ -28,10 +28,10 @@ export default function Header() {
 					<img src="assets/img/brand/icon-white-128.png" width="22" alt="logo" className="logo" />
 					&nbsp; Rahat Vendor
 				</div>
-				<div class="right">
+				<div className="right">
 					<Dropdown drop="down">
 						<Dropdown.Toggle variant="link" bsPrefix="p-0">
-							<img src={profileImage} alt="profile" class="imaged w32" />
+							<img src={profileImage} alt="profile" className="imaged w32" />
 						</Dropdown.Toggle>
 
 						<Dropdown.Menu>
