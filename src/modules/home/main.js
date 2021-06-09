@@ -1,14 +1,15 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useHistory, Redirect } from 'react-router-dom';
-import { Modal, Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { useResize } from '../../utils/react-utils';
 import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
 import DataService from '../../services/db';
 import ActionSheet from '../global/ActionSheet';
-import { RahatService, TokenService } from '../../services/chain';
+import { TokenService } from '../../services/chain';
 import Loading from '../global/Loading';
+import { IoArrowDownCircleOutline } from 'react-icons/io5';
 
 var QRCode = require('qrcode.react');
 
@@ -47,13 +48,11 @@ export default function Main() {
 	};
 
 	const redeemToken = async () => {
-		console.log('redeeming token');
 		//choose a financial institute to redeem token
 		let tknService = TokenService(agency.address, wallet);
 		showLoading('Transferring tokens to redeem. Please wait...');
-		let receipt = await tknService.transfer('0xF30f5e922B5764B9ebe52389Ab3047B6bE0F13FE', Number(redeemAmount));
+		await tknService.transfer('0xF30f5e922B5764B9ebe52389Ab3047B6bE0F13FE', Number(redeemAmount));
 		resetFormStates();
-		console.log('transfered');
 		Swal.fire('Success', 'Transaction sent for Redemption', 'success');
 		let tokenBalance = await TokenService(agency.address).getBalance();
 		setTokenBalance(tokenBalance.toNumber());
@@ -151,18 +150,14 @@ export default function Main() {
 								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
-							<a href="#" className="item" onClick={() => setRedeemModal(true)}>
-								<div className="icon-wrapper bg-danger">
-									<ion-icon
-										name="heart"
-										role="img"
-										className="md hydrated"
-										aria-label="arrow down outline"
-									></ion-icon>
+							<button className="item button-link" onClick={() => setRedeemModal(true)}>
+								<div className="col">
+									<div className="action-button">
+										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '50px' }} />
+									</div>
 								</div>
-
 								<strong>Redeem</strong>
-							</a>
+							</button>
 						</div>
 					</div>
 				</div>

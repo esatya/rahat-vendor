@@ -1,0 +1,40 @@
+.circleSelfie {
+  border-radius: 50%!important;
+  width : 300px;
+  height: 300px;
+  object-fit: cover;
+  border: 5px solid #958d9e;
+}
+
+.selfieWrapper {
+  width: 100%;
+  height: auto;
+}
+
+.idCardWrapper {
+  width: 100%;
+  height: 350px;
+}
+
+.idCardSnapper {
+  border-radius: 10%;
+  width: 300px;
+  height: 350px;
+  object-fit: cover;
+  border: 3px solid #958d9e;
+}
+
+.button-link {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+  .button-link:hover,
+  .button-link:focus {
+    text-decoration: none;
+  }

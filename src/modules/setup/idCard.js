@@ -14,10 +14,12 @@ export default function Main() {
 	const history = useHistory();
 	const { setHasWallet, setWallet, setAgency } = useContext(AppContext);
 	const [loading, showLoading] = useState(null);
-	const [videoConstraints] = useState({
+	const [videoConstraints, setVideoConstraints] = useState({
 		facingMode: 'environment',
 		forceScreenshotSourceSize: true,
-		screenshotQuality: 1
+		screenshotQuality: 1,
+		width: 1280,
+		height: 720
 	});
 	const [previewImage, setPreviewImage] = useState('');
 	const [showPageLoader, setShowPageLoader] = useState(true);
@@ -25,12 +27,6 @@ export default function Main() {
 
 	const capture = () => {
 		const imageSrc = webcamRef.current.getScreenshot();
-		// fetch(imageSrc)
-		// 	.then(res => {
-		// 		const result = res.blob();
-		// 		resolve(result);
-		// 	})
-		// 	.catch(err => reject(err));
 		setPreviewImage(imageSrc);
 	};
 
@@ -49,10 +45,10 @@ export default function Main() {
 			email: appData.agency.email,
 			isApproved: false
 		};
-		let agy = await DataService.addAgency(agencyData);
+		await DataService.addAgency(agencyData);
 		setAgency(agencyData);
-		console.log(agy);
 		if (!data.email) delete data.email;
+
 		await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/register`, {
 			method: 'post',
 			headers: {
@@ -113,11 +109,17 @@ export default function Main() {
 	};
 
 	useEffect(() => {
-		// setVideoConstraints({
-		// 	width: camContainerRef.current.offsetWidth * 0.84,
-		// 	height: camContainerRef.current.offsetWidth * 0.84,
-		// 	facingMode: 'user'
-		// });
+		setVideoConstraints({
+			facingMode: 'environment',
+			forceScreenshotSourceSize: true,
+			screenshotQuality: 1,
+			width: 1280,
+			height: 720
+		});
+		return function cleanup() {};
+	}, []);
+
+	useEffect(() => {
 		const timer = setTimeout(() => {
 			setShowPageLoader(false);
 		}, 1000);
@@ -158,18 +160,19 @@ export default function Main() {
 										}}
 									/>
 								) : (
-									<Webcam
-										className=""
-										audio={false}
-										ref={webcamRef}
-										screenshotFormat="image/jpeg"
-										videoConstraints={videoConstraints}
-										style={{
-											borderRadius: '10%',
-											width: '100%',
-											border: '3px solid #958d9e'
-										}}
-									/>
+									<div className="idCardWrapper">
+										<Webcam
+											audio={false}
+											ref={webcamRef}
+											height={720}
+											width={1280}
+											minScreenshotWidth={1024}
+											minScreenshotHeight={720}
+											screenshotFormat="image/png"
+											videoConstraints={videoConstraints}
+											className="idCardSnapper"
+										/>
+									</div>
 								)}
 							</div>
 						</div>

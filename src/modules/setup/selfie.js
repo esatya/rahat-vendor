@@ -64,27 +64,17 @@ export default function Main() {
 						</h3>
 
 						{previewImage ? (
-							<img
-								className="video-flipped"
-								alt="preview"
-								src={previewImage}
-								style={{ borderRadius: '100%', width: '100%', border: '3px solid #958d9e' }}
-							/>
+							<img className="video-flipped circleSelfie" alt="preview" src={previewImage} />
 						) : (
-							<div>
+							<div className="selfieWrapper">
 								<Webcam
-									className="video-flipped"
 									audio={false}
 									ref={webcamRef}
-									screenshotFormat="image/jpeg"
+									className="circleSelfie"
+									minScreenshotWidth={1024}
+									minScreenshotHeight={720}
+									screenshotFormat="image/png"
 									videoConstraints={videoConstraints}
-									style={{
-										borderRadius: '100%',
-										width: '99%',
-										height: '100%',
-										border: '5px solid #958d9e',
-										padding: 2
-									}}
 								/>
 							</div>
 						)}
