@@ -6,7 +6,7 @@ const networkList = [
 	},
 	{
 		name: 'rumsan_test',
-		url: 'https://testnetwork.esatya.io',
+		url: process.env.REACT_APP_DEFAULT_NETWORK,
 		display: 'Rumsan Test Network',
 		default: true
 	},
