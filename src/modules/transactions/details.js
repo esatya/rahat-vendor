@@ -54,6 +54,8 @@ export default function Main(props) {
 					</div>
 				);
 			}
+			t.hash = `${t.hash.slice(0, 10)}....`;
+			t.to = `${t.to.slice(0, 10)}....`;
 			setTx(t);
 		})();
 	}, []);
@@ -84,7 +86,7 @@ export default function Main(props) {
 						</li>
 						<li>
 							<strong>Tx Hash</strong>
-							<span>{tx.hash}</span>
+							<span style={{ overflow: 'hidden' }}>{tx.hash}</span>
 						</li>
 						<li>
 							<strong>Date</strong>
