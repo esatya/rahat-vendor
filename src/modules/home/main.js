@@ -185,7 +185,7 @@ export default function Main() {
 							>
 								<div className="col">
 									<div className="action-button">
-										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '50px' }} />
+										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '40px' }} />
 									</div>
 								</div>
 								<strong>Redeem</strong>

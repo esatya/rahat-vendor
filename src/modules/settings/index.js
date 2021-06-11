@@ -41,7 +41,7 @@ export default function Index() {
 							</div>
 						</Link>
 					</li>
-					<li>
+					{/* <li>
 						<Link to="/backup" className="item">
 							<div className="in">
 								<div>
@@ -53,7 +53,7 @@ export default function Index() {
 								</div>
 							</div>
 						</Link>
-					</li>
+					</li> */}
 				</ul>
 			</div>
 		</>

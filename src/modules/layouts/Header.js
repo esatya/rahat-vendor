@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IoHomeOutline, IoPersonOutline, IoLockClosedOutline, IoSendOutline } from 'react-icons/io5';
 import { Dropdown } from 'react-bootstrap';
+import { AppContext } from '../../contexts/AppContext';
 
 import DataService from '../../services/db';
 
 export default function Header() {
 	const history = useHistory();
 	const [profileImage, setProfileImage] = useState(null);
+	const { setWallet } = useContext(AppContext);
 
 	useEffect(() => {
 		(async () => {
@@ -43,7 +45,7 @@ export default function Header() {
 								<IoPersonOutline className="ion-icon" />
 								My Profile
 							</Dropdown.Item>
-							<Dropdown.Item onClick={() => console.log('xxx')}>
+							<Dropdown.Item onClick={() => setWallet(null)}>
 								<IoLockClosedOutline className="ion-icon" />
 								Lock App
 							</Dropdown.Item>
