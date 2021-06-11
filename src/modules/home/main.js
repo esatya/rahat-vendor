@@ -3,6 +3,7 @@ import { useHistory, Redirect } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { useResize } from '../../utils/react-utils';
+import { isOffline } from '../../utils';
 import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
 import DataService from '../../services/db';
@@ -179,17 +180,25 @@ export default function Main() {
 								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
-							<button
-								className="item button-link"
-								onClick={() => (wallet ? setRedeemModal(true) : setRedeemModal(false))}
-							>
-								<div className="col">
-									<div className="action-button">
-										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '40px' }} />
+							{wallet && (
+								<button
+									className="item button-link"
+									onClick={() => {
+										if (isOffline()) return;
+										setRedeemModal(true);
+									}}
+								>
+									<div className="col">
+										<div className="action-button">
+											<IoArrowDownCircleOutline
+												className="ion-icon"
+												style={{ fontSize: '40px' }}
+											/>
+										</div>
 									</div>
-								</div>
-								<strong>Redeem</strong>
-							</button>
+									<strong>Redeem</strong>
+								</button>
+							)}
 						</div>
 					</div>
 				</div>

@@ -1,3 +1,17 @@
+import Swal from 'sweetalert2';
+
+export function isOffline(msg) {
+	if (!navigator.onLine) {
+		Swal.fire({
+			title: 'OFFLINE',
+			icon: 'error',
+			text:
+				msg || 'Cannot perform this action while you are offline. Please connect to the Internet and try again.'
+		});
+		return true;
+	} else return false;
+}
+
 export function mergeAndRemoveDuplicate(array1 = [], array2 = [], keyName) {
 	const array3 = [...array1, ...array2];
 	// Return unique array on the basis of keyName.

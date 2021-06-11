@@ -11,6 +11,7 @@ import AppHeader from '../layouts/AppHeader';
 import ModalWrapper from '../global/ModalWrapper';
 import { APP_CONSTANTS } from '../../constants';
 import { TokenService } from '../../services/chain';
+import { isOffline } from '../../utils';
 import DataService from '../../services/db';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
@@ -117,12 +118,8 @@ export default function Index(props) {
 	};
 
 	const handleSendClick = () => {
-		if (!navigator.onLine)
-			return Swal.fire({
-				title: 'OFFLINE',
-				icon: 'error',
-				text: 'Cannot transfer while you are offline. Please connect to the Internet and try again.'
-			});
+		if (isOffline('Cannot transfer while you are offline. Please connect to the Internet and try again.')) return;
+
 		if (!sendAmount || !sendToAddress) {
 			return Swal.fire({ title: 'ERROR', icon: 'error', text: 'Send amount and receiver address is required' });
 		}

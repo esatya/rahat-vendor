@@ -12,6 +12,7 @@ import ActionSheet from '../global/ActionSheet';
 import { AppContext } from '../../contexts/AppContext';
 import { APP_CONSTANTS } from '../../constants';
 import DataService from '../../services/db';
+import { isOffline } from '../../utils';
 import { RahatService, TokenService } from '../../services/chain';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
@@ -288,7 +289,14 @@ export default function UnlockedFooter() {
 							<strong>Transactions</strong>
 						</div>
 					</Link>
-					<a href="#home" className="item" onClick={() => setShowActionSheet('charge')}>
+					<a
+						href="#home"
+						className="item"
+						onClick={() => {
+							if (isOffline()) return;
+							setShowActionSheet('charge');
+						}}
+					>
 						<div className="col">
 							<div className="action-button large">
 								<GiReceiveMoney className="ion-icon" />

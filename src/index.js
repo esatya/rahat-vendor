@@ -6,5 +6,5 @@ import reportWebVitals from './reportWebVitals';
 import './assets/custom/styles.css';
 
 ReactDOM.render(<App />, document.getElementById('root'));
-serviceWorkerRegistration.unregister();
+serviceWorkerRegistration.register();
 reportWebVitals();

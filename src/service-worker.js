@@ -52,7 +52,10 @@ registerRoute(
 	// Add in any other file extensions or routing criteria as needed.
 	({ url }) =>
 		url.origin === self.location.origin &&
-		(url.pathname.endsWith('.png') || url.pathname.endsWith('.css') || url.pathname.endsWith('.js')), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+		(url.pathname.endsWith('.png') ||
+			url.pathname.endsWith('.css') ||
+			url.pathname.endsWith('.ico') ||
+			url.pathname.endsWith('.js')), // Customize this strategy as needed, e.g., by changing to CacheFirst.
 	new StaleWhileRevalidate({
 		cacheName: 'assets',
 		plugins: [
