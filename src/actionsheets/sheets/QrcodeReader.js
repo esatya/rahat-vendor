@@ -68,7 +68,7 @@ export default function Camera(props) {
 						minHeight: 200
 					}}
 				>
-					{loading === null && (
+					{showModal && loading === null && (
 						<QrReader
 							delay={SCAN_DELAY}
 							style={SCANNER_PREVIEW_STYLE}

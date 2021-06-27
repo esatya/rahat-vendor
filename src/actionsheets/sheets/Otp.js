@@ -31,7 +31,6 @@ export default function ChargeDetails(props) {
 				status: 'success'
 			};
 
-			Swal.fire('Success', 'Transaction completed.', 'success');
 			await DataService.addTx(tx);
 			history.push(`/tx/${receipt.transactionHash}`);
 		} catch (e) {

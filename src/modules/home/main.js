@@ -83,7 +83,6 @@ export default function Main() {
 		};
 		await DataService.addTx(tx);
 		history.push(`/tx/${receipt.transactionHash}`);
-		Swal.fire('Success', 'Transaction sent for Redemption', 'success');
 		let tokenBalance = await TokenService(agency.address).getBalance();
 		setTokenBalance(tokenBalance.toNumber());
 	};
