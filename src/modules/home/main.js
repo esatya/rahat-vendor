@@ -7,7 +7,7 @@ import { isOffline } from '../../utils';
 import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
 import DataService from '../../services/db';
-import ActionSheet from '../global/ActionSheet';
+import ActionSheet from '../../actionsheets/sheets/ActionSheet';
 import { TokenService } from '../../services/chain';
 import Loading from '../global/Loading';
 import { IoArrowDownCircleOutline } from 'react-icons/io5';
@@ -101,6 +101,10 @@ export default function Main() {
 	};
 
 	useEffect(() => {
+		if (agency)
+			TokenService(agency.address)
+				.getBalance()
+				.then(bal => setTokenBalance(bal.toNumber()));
 		let timer1 = null;
 		(async () => {
 			let txs = await DataService.listTx();

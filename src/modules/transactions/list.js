@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { GiReceiveMoney, GiMoneyStack } from 'react-icons/gi';
@@ -57,7 +57,7 @@ const TxList = ({ limit, transactions = [] }) => {
 			}
 			setTx(txs);
 		})();
-	}, [transactions]);
+	}, [transactions, limit]);
 
 	return (
 		<>

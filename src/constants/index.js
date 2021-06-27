@@ -8,13 +8,6 @@ module.exports = {
 			width: 400,
 			display: 'flex',
 			justifyContent: 'center'
-		},
-		SCANNER_CAM_STYLE: {
-			display: 'flex',
-			justifyContent: 'center',
-			marginTop: '-50px',
-			padding: '50px',
-			marginBottom: '25px'
 		}
 	},
 	BACKUP: {

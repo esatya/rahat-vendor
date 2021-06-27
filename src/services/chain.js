@@ -32,7 +32,7 @@ const RahatService = (agencyAddress, wallet) => {
 		},
 		async chargeCustomer(phone, amount) {
 			const contract = await this.getContract();
-			let benBalance = await contract.tokenBalance(phone);
+			//let benBalance = await contract.tokenBalance(phone);
 			// if (amount > benBalance.toNumber()) {
 			// 	// waring token amount is greater than remaining blance
 			// }

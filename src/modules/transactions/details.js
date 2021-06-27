@@ -58,7 +58,7 @@ export default function Main(props) {
 			t.to = `${t.to.slice(0, 10)}....`;
 			setTx(t);
 		})();
-	}, []);
+	}, [hash]);
 
 	return (
 		<>

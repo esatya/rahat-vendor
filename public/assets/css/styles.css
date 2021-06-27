@@ -1165,7 +1165,7 @@ blockquote.blockquote .blockquote-footer {
 	justify-content: center
 }
 
-#loader .loading-icon {
+.loading-icon {
 	width: 42px;
 	height: auto;
 	animation: loadingAnimation 1s infinite

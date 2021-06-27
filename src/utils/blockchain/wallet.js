@@ -1,4 +1,4 @@
-import { ethers, getDefaultProvider } from 'ethers';
+import { ethers } from 'ethers';
 
 import DataService from '../../services/db';
 

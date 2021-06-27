@@ -94,7 +94,6 @@ export default function Index(props) {
 		try {
 			if (!ethers.utils.isAddress(data.sendToAddress)) throw Error('Destination address is invalid');
 			showLoading('Transferring tokens. Please wait...');
-			console.log(agency.address);
 			let tknService = TokenService(agency.address, wallet);
 			let receipt = await tknService.transfer(data.sendToAddress, data.sendAmount);
 			resetFormStates();
