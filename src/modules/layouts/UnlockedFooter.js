@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { GrTransaction } from 'react-icons/gr';
 import { useIcon } from '../../utils/react-utils';
 import { isOffline } from '../../utils';
 import ChargeActionSheet from '../../actionsheets/Charge';
+import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 
 export default function UnlockedFooter() {
-	const [showChargeAction, setShowChargeAction] = useState(false);
+	const { setActiveSheet, showLoading } = useContext(ActionSheetContext);
+	//const [showChargeAction, setShowChargeAction] = useState(false);
+
+	//const handleChargeActionToggle = () => setShowChargeAction(!showChargeAction);
 
 	return (
 		<>
-			<ChargeActionSheet show={showChargeAction} hide={() => setShowChargeAction(false)} />
+			<ChargeActionSheet />
 
 			<div className="footer-unlocked">
 				<div className="appBottomMenu">
@@ -26,7 +30,7 @@ export default function UnlockedFooter() {
 						className="item"
 						onClick={() => {
 							if (isOffline()) return;
-							setShowChargeAction(true);
+							setActiveSheet('qrcode-reader');
 						}}
 					>
 						<div className="col">

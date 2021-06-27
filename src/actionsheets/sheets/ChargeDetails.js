@@ -9,9 +9,9 @@ import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 import ActionSheet from './ActionSheet';
 
 export default function ChargeDetails(props) {
-	const { onHide, showModal, setActiveSheet } = props;
+	const { onHide, showModal } = props;
 
-	const { showLoading, data, setData } = useContext(ActionSheetContext);
+	const { showLoading, data, setData, setActiveSheet } = useContext(ActionSheetContext);
 	const { wallet } = useContext(AppContext);
 
 	const chargeCustomer = async () => {

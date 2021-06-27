@@ -11,9 +11,9 @@ import { APP_CONSTANTS } from '../../constants';
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE } = APP_CONSTANTS;
 
 export default function Camera(props) {
-	const { modalSize, onHide, showModal, setActiveSheet } = props;
+	const { modalSize, onHide, showModal } = props;
 	const { wallet } = useContext(AppContext);
-	const { showLoading, loading, setData } = useContext(ActionSheetContext);
+	const { showLoading, loading, setData, setActiveSheet } = useContext(ActionSheetContext);
 
 	const handleScanError = err => {
 		alert('Oops, scanning failed. Please try again');

@@ -8,6 +8,7 @@ export const ActionSheetContext = createContext(initialState);
 export const ActionSheetContextProvider = ({ children }) => {
 	const [state, setState] = useState(initialState);
 	const [data, updateData] = useState({});
+	const [activeSheet, setActiveSheet] = useState(null);
 
 	const showLoading = msg => {
 		setState({ ...state, loading: msg });
@@ -28,9 +29,11 @@ export const ActionSheetContextProvider = ({ children }) => {
 			value={{
 				loading: state.loading,
 				data,
+				activeSheet,
 				setData,
 				initData,
-				showLoading
+				showLoading,
+				setActiveSheet
 			}}
 		>
 			{children}

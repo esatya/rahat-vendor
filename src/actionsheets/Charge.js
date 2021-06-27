@@ -3,17 +3,13 @@ import { ChargeDetails, OTP, QrcodeReader } from './sheets';
 import { ActionSheetContext } from '../contexts/ActionSheetContext';
 
 export default function ChargeAction(props) {
-	const { show, hide } = props;
-	const { initData, showLoading, setData } = useContext(ActionSheetContext);
-
-	const [activeSheet, setActiveSheet] = useState(null);
+	const { initData, showLoading, setData, activeSheet, setActiveSheet } = useContext(ActionSheetContext);
 
 	let init = useCallback(async () => {
 		initData({ phone: '', amount: '', otp: '', chargeTxHash: null });
 	}, [initData]);
 
 	const onHide = () => {
-		hide();
 		setData({ phone: '', amount: '', otp: '', chargeTxHash: null });
 		setActiveSheet(null);
 		showLoading(null);
@@ -21,21 +17,11 @@ export default function ChargeAction(props) {
 
 	useEffect(init, []);
 
-	useEffect(() => {
-		if (show) {
-			setActiveSheet('qrcode-reader');
-		}
-	}, [show]);
-
 	return (
 		<>
-			<QrcodeReader setActiveSheet={setActiveSheet} onHide={onHide} showModal={activeSheet === 'qrcode-reader'} />
-			<ChargeDetails
-				setActiveSheet={setActiveSheet}
-				onHide={onHide}
-				showModal={activeSheet === 'charge-details'}
-			/>
-			<OTP setActiveSheet={setActiveSheet} onHide={onHide} showModal={activeSheet === 'otp'} />
+			<QrcodeReader onHide={onHide} showModal={activeSheet === 'qrcode-reader'} />
+			<ChargeDetails onHide={onHide} showModal={activeSheet === 'charge-details'} />
+			<OTP onHide={onHide} showModal={activeSheet === 'otp'} />
 		</>
 	);
 }

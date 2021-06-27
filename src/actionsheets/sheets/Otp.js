@@ -11,9 +11,9 @@ import ActionSheet from './ActionSheet';
 
 export default function ChargeDetails(props) {
 	const history = useHistory();
-	const { onHide, showModal, setActiveSheet } = props;
+	const { onHide, showModal } = props;
 	const { wallet, setTokenBalance, addRecentTx } = useContext(AppContext);
-	const { showLoading, data, setData } = useContext(ActionSheetContext);
+	const { showLoading, data, setData, setActiveSheet } = useContext(ActionSheetContext);
 
 	const verifyCharge = async () => {
 		showLoading('Verifying OTP');
