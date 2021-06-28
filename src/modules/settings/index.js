@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import DataService from '../../services/db';
 import AppHeader from '../layouts/AppHeader';
+import PackageJson from '../../../package.json';
 
 export default function Index() {
 	const [profileImage, setProfileImage] = useState(
@@ -55,6 +56,9 @@ export default function Index() {
 						</Link>
 					</li> */}
 				</ul>
+				<div className="text-center mt-4">
+					<small>version: {PackageJson.version}</small>
+				</div>
 			</div>
 		</>
 	);
