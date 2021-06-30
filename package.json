@@ -1,15 +1,7 @@
 {
-  "name": "rahat-vendor",
-  "version": "1.0.0",
+  "name": "rahat-vendor-app",
+  "version": "2.0.3",
   "description": "Mobile friendly vendor web application for Rahat.",
-  "main": "app.js",
-  "scripts": {
-    "start": "cross-env ENV_TYPE=development nodemon ./bin/www",
-    "client": "cd ./client && yarn dev",
-    "setup": "yarn install && cd ./client && yarn install",
-    "build": "ENV_TYPE=production yarn install && cd ./client && yarn install && yarn run prod",
-    "production": "yarn build && ENV_TYPE=production node ./bin/www"
-  },
   "keywords": [],
   "author": {
     "email": "team@esatya.io",
@@ -26,22 +18,75 @@
     "type": "git",
     "url": "https://github.com/esatya/rahat-vendor.git"
   },
-  "nodemonConfig": {
-    "ignore": [
-      "public/*",
-      "client/*",
-      "config/*"
-    ]
-  },
   "dependencies": {
-    "config": "^3.3.1",
-    "cors": "^2.8.5",
-    "ejs": "^3.1.3",
-    "express": "^4.16.3"
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "bootstrap": "^4.5.1",
+    "crypto-js": "^4.0.0",
+    "dexie": "^3.0.3",
+    "eth-crypto": "^1.9.0",
+    "ethers": "^5.2.0",
+    "gapi-script": "^1.0.2",
+    "history": "^5.0.0",
+    "ipfs-http-client": "^49.0.2",
+    "ipfs-only-hash": "^4.0.0",
+    "moment": "^2.29.1",
+    "qrcode.react": "^1.0.1",
+    "react": "^17.0.2",
+    "react-bootstrap": "^1.6.0",
+    "react-dom": "^17.0.2",
+    "react-icons": "^4.2.0",
+    "react-moment": "^1.1.1",
+    "react-qr-reader": "^2.2.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "react-webcam": "^5.2.4",
+    "store": "^2.0.12",
+    "sweetalert2": "^10.13.0",
+    "web-vitals": "^0.2.4",
+    "workbox-background-sync": "^5.1.3",
+    "workbox-broadcast-update": "^5.1.3",
+    "workbox-cacheable-response": "^5.1.3",
+    "workbox-core": "^5.1.3",
+    "workbox-expiration": "^5.1.3",
+    "workbox-google-analytics": "^5.1.3",
+    "workbox-navigation-preload": "^5.1.3",
+    "workbox-precaching": "^5.1.3",
+    "workbox-range-requests": "^5.1.3",
+    "workbox-routing": "^5.1.3",
+    "workbox-strategies": "^5.1.3",
+    "workbox-streams": "^5.1.3"
   },
   "devDependencies": {
-    "eslint": "^7.4.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "prettier": "^2.3.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
