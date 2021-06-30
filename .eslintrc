@@ -1,0 +1,12 @@
+{
+	"extends": ["react-app", "plugin:prettier/recommended"],
+	"rules": {
+		"no-undef": "off",
+		"prettier/prettier": [
+			"error",
+			{
+				"endOfLine": "auto"
+			}
+		]
+	}
+}
