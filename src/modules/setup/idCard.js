@@ -1,10 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IoCamera } from 'react-icons/io5';
+import { IoRadioButtonOff } from 'react-icons/io5';
 import { BiReset } from 'react-icons/bi';
 import Webcam from 'react-webcam';
 import Swal from 'sweetalert2';
-
 import Loading from '../global/Loading';
 import Wallet from '../../utils/blockchain/wallet';
 import { AppContext } from '../../contexts/AppContext';
@@ -156,18 +155,20 @@ export default function Main() {
 										alt="preview"
 										src={previewImage}
 										style={{
-											borderRadius: '10%',
+											borderRadius: '10px',
 											width: '100%',
-											border: '3px solid #958d9e'
+											height: '350px',
+											border: '3px solid #958d9e',
+											marginTop: '30px'
 										}}
 									/>
 								) : (
-									<div className="idCardWrapper">
+									<div className="idCardWrapper mt-4">
 										<Webcam
 											audio={false}
 											ref={webcamRef}
 											height={720}
-											width={1280}
+											width="100%"
 											minScreenshotWidth={1024}
 											minScreenshotHeight={720}
 											screenshotFormat="image/png"
@@ -178,31 +179,33 @@ export default function Main() {
 								)}
 							</div>
 						</div>
-						<div className="pl-5 pr-5">
+						<div className="pl-4 pr-4">
 							{previewImage ? (
 								<div className="text-center">
 									<button
 										type="button"
-										className="btn btn-lg btn-block btn-success mt-1"
-										onClick={save}
-									>
-										Complete setup
-									</button>
-									<button
-										type="button"
-										className="btn btn btn-block btn-outline-secondary mt-5"
-										style={{ width: 200 }}
+										className="btn btn-lg btn-block btn-outline-primary mt-1"
 										onClick={() => setPreviewImage(null)}
 									>
 										<BiReset className="ion-icon" />
 										Retake Picture
 									</button>
+									<button
+										type="button"
+										className="btn btn-lg btn-block btn-success mt-3 mb-2"
+										onClick={save}
+									>
+										Complete setup
+									</button>
 								</div>
 							) : (
-								<button type="button" className="btn btn-lg btn-block btn-dark mt-1" onClick={capture}>
-									<IoCamera className="ion-icon" />
-									Take Picture
-								</button>
+								<div className="d-flex justify-content-between align-items-center mt-1 mb-3">
+									<div style={{ width: '40px', height: '40px' }}></div>
+									<div className="btn-shutter" onClick={capture}>
+										<IoRadioButtonOff className="btn-shutter-icon" />
+									</div>
+									<div style={{ width: '40px', height: '40px' }}></div>
+								</div>
 							)}
 						</div>
 					</div>

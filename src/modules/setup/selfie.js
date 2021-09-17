@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IoCamera } from 'react-icons/io5';
 import { BiReset } from 'react-icons/bi';
 import Webcam from 'react-webcam';
+import { IoChevronForwardOutline, IoSyncOutline, IoRadioButtonOff } from 'react-icons/io5';
 
 import DataService from '../../services/db';
 
@@ -20,6 +20,12 @@ export default function Main() {
 	const camContainerRef = React.useRef();
 	//const { width, height } = useResize(camContainerRef);
 
+	const handleFaceChange = () => {
+		const { facingMode } = videoConstraints;
+		const face = facingMode === 'environment' ? 'user' : 'environment';
+		setVideoConstraints({ ...videoConstraints, facingMode: face });
+	};
+
 	const capture = () => {
 		const imageSrc = webcamRef.current.getScreenshot();
 		// fetch(imageSrc)
@@ -34,6 +40,11 @@ export default function Main() {
 	const save = async event => {
 		event.preventDefault();
 		await DataService.saveProfileImage(previewImage);
+		history.push('/setup/idcard');
+	};
+
+	const skip = async event => {
+		event.preventDefault();
 		history.push('/setup/idcard');
 	};
 
@@ -55,23 +66,23 @@ export default function Main() {
 				</div>
 				<div className="card1">
 					<div className="card-body text-center" ref={camContainerRef}>
-						<h3 className="mb-2">
+						<h2 className="mb-1">
 							Take a selfie
 							<small>
 								<br />
 								Remember to smile :-)
 							</small>
-						</h3>
+						</h2>
 
 						{previewImage ? (
-							<img className="video-flipped circleSelfie" alt="preview" src={previewImage} />
+							<img className="video-flipped circleSelfie mt-4" alt="preview" src={previewImage} />
 						) : (
-							<div className="selfieWrapper">
+							<div className="selfieWrapper mt-3">
 								<Webcam
 									audio={false}
 									ref={webcamRef}
 									className="circleSelfie"
-									minScreenshotWidth={1024}
+									minScreenshotWidth="100%"
 									minScreenshotHeight={720}
 									screenshotFormat="image/png"
 									videoConstraints={videoConstraints}
@@ -80,27 +91,33 @@ export default function Main() {
 						)}
 					</div>
 				</div>
-				<div className="pl-5 pr-5">
+				<div className="pl-4 pr-4">
 					{previewImage ? (
 						<div className="text-center">
-							<button type="button" className="btn btn-lg btn-block btn-success mt-1" onClick={save}>
-								Continue to next step
-							</button>
 							<button
 								type="button"
-								className="btn btn btn-block btn-outline-secondary mt-5"
-								style={{ width: 200 }}
+								className="btn btn-lg btn-block btn-outline-primary mt-1"
 								onClick={() => setPreviewImage(null)}
 							>
 								<BiReset className="ion-icon" />
 								Retake Picture
 							</button>
+							<button type="button" className="btn btn-lg btn-block btn-success mt-3 mb-5" onClick={save}>
+								Continue to next step
+							</button>
 						</div>
 					) : (
-						<button type="button" className="btn btn-lg btn-block btn-dark mt-1" onClick={capture}>
-							<IoCamera className="ion-icon" />
-							Take Picture
-						</button>
+						<div className="d-flex justify-content-between align-items-center">
+							<div className="btn-faceChange" onClick={handleFaceChange}>
+								<IoSyncOutline className="btn-flipcamera" />
+							</div>
+							<div className="btn-shutter" onClick={capture}>
+								<IoRadioButtonOff className="btn-shutter-icon" />
+							</div>
+							<div className="btn-faceChange" onClick={skip}>
+								<IoChevronForwardOutline className="btn-skip" />
+							</div>
+						</div>
 					)}
 				</div>
 			</div>
