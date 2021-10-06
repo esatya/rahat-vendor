@@ -4,7 +4,6 @@ sandbox/
 config/
 public/js/app
 yarn.lock
-build/
 
 # Logs
 logs
@@ -64,6 +63,5 @@ typings/
 
 # dotenv environment variables file
 .env
-
-# next.js build output
-.next
+play/
+build/
