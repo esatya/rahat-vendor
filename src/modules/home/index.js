@@ -14,6 +14,7 @@ import Profile from '../settings/profile';
 import Transfer from '../transfer';
 import Transactions from '../transactions';
 import TxDetails from '../transactions/details';
+import AllTransactions from '../transactions/allTransactions';
 import GoogleBackup from '../misc/googleBackup';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
 				<Route exact path="/" component={Main} />
 				<PrivateRoute exact path="/tx" component={Transactions} wallet={wallet} />
 				<PrivateRoute exact path="/tx/:hash" component={TxDetails} wallet={wallet} />
+				<PrivateRoute exact path="/transaction" component={AllTransactions} wallet={wallet} />
 				<PrivateRoute exact path="/backup" component={BackupWallet} wallet={wallet} />
 				<PrivateRoute exact path="/networks" component={NetworkSettings} wallet={wallet} />
 				<PrivateRoute exact path="/profile" component={Profile} wallet={wallet} />
