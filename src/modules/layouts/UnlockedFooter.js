@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { GiReceiveMoney } from 'react-icons/gi';
 import { GrTransaction } from 'react-icons/gr';
+import { MdWebAsset } from 'react-icons/md';
 import { useIcon } from '../../utils/react-utils';
 import { isOffline } from '../../utils';
 import ChargeActionSheet from '../../actionsheets/Charge';
@@ -19,10 +20,10 @@ export default function UnlockedFooter() {
 
 			<div className="footer-unlocked">
 				<div className="appBottomMenu">
-					<Link to="/tx" className="item">
+					<Link to="/assets" className="item">
 						<div className="col">
-							<GrTransaction className="ion-icon" />
-							<strong>Transactions</strong>
+							<MdWebAsset className="ion-icon" />
+							<strong>Assets</strong>
 						</div>
 					</Link>
 					<a

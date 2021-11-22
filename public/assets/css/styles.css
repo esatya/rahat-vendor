@@ -1290,8 +1290,8 @@ a.badge-dark {
 	margin: 0;
 	color: #27173E;
 	background: #fff;
-	border-top: 1px solid #DCDCE9;
-	border-bottom: 1px solid #DCDCE9;
+	/* border-top: 1px solid #DCDCE9;
+	border-bottom: 1px solid #DCDCE9; */
 	line-height: 1.3em
 }
 
