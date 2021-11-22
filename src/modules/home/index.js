@@ -16,6 +16,8 @@ import Transactions from '../transactions';
 import TxDetails from '../transactions/details';
 import AllTransactions from '../transactions/allTransactions';
 import GoogleBackup from '../misc/googleBackup';
+import Charge from '../charge';
+import OTP from '../charge/otp';
 
 function App() {
 	const { initApp, wallet } = useContext(AppContext);
@@ -42,6 +44,16 @@ function App() {
 				<PrivateRoute exact path="/transfer" component={Transfer} wallet={wallet} />
 				<PrivateRoute exact path="/transfer/:address" component={Transfer} wallet={wallet} />
 				<PrivateRoute exact path="/google/backup" component={GoogleBackup} wallet={wallet} />
+				<PrivateRoute exact path="/charge/:beneficiary" component={Charge} wallet={wallet} />
+				<PrivateRoute exact path="/charge/:beneficiary/otp" component={OTP} wallet={wallet} />
+				<PrivateRoute exact path="/package/:tokenId" component={Charge} wallet={wallet} />
+				<PrivateRoute exact path="/charge/:beneficiary/package/:tokenId" component={Charge} wallet={wallet} />
+				<PrivateRoute exact path="/charge/:beneficiary/package/:tokenId/otp" component={Charge} wallet={wallet} />
+
+
+
+
+
 				<Route path="*" component={Main} />
 			</Switch>
 			<Footer />

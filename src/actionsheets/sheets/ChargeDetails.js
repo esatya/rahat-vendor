@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 
@@ -9,6 +10,7 @@ import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 import ActionSheet from './ActionSheet';
 
 export default function ChargeDetails(props) {
+	const history = useHistory();
 	const { onHide, showModal } = props;
 
 	const { showLoading, data, setData, setActiveSheet } = useContext(ActionSheetContext);
@@ -17,11 +19,14 @@ export default function ChargeDetails(props) {
 	const chargeCustomer = async () => {
 		showLoading('Charging customer account...');
 		try {
-			const agency = await DataService.getDefaultAgency();
-			const rahat = RahatService(agency.address, wallet);
-			let receipt = await rahat.chargeCustomer(data.phone, data.amount);
-			setData({ chargeTxHash: receipt.transactionHash });
-			setActiveSheet('otp');
+			// const agency = await DataService.getDefaultAgency();
+			// const rahat = RahatService(agency.address, wallet);
+			// let receipt = await rahat.chargeCustomer(data.phone, data.amount);
+			// setData({ chargeTxHash: receipt.transactionHash });
+			setActiveSheet('null');
+			history.push(`/charge/${data.phone}`)
+
+
 		} catch (e) {
 			console.log(e);
 			Swal.fire('Error', 'Transaction cancelled. Please try again.', 'error');
@@ -56,7 +61,7 @@ export default function ChargeDetails(props) {
 				</div>
 			</div>
 
-			<div className="form-group basic">
+			{/* <div className="form-group basic">
 				<label className="label">Enter Amount</label>
 				<div className="input-group mb-3">
 					<div className="input-group-prepend">
@@ -74,7 +79,7 @@ export default function ChargeDetails(props) {
 						required
 					/>
 				</div>
-			</div>
+			</div> */}
 		</ActionSheet>
 	);
 }
