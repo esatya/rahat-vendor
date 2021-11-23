@@ -42,7 +42,7 @@ export default function Asset() {
 						>
 							<ul className="listview image-listview">
 								<li>
-									<Link to={`/assets/123`} className="item">
+									<Link to={`/package/123`} className="item">
 										<img src="assets/img/brand/icon-72.png" alt="asset" className="image" />
 										<div className="in">
 											<div>Rice</div>
@@ -51,7 +51,7 @@ export default function Asset() {
 								</li>
 
 								<li>
-									<Link to={`/assets/123`} className="item">
+									<Link to={`/package/123`} className="item">
 										<img src="assets/img/brand/icon-72.png" alt="asset" className="image" />
 										<div className="in">
 											<div>Soyabean oil</div>
