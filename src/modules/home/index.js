@@ -59,7 +59,7 @@ function App() {
 					wallet={wallet}
 				/>
 				<PrivateRoute exact path="/assets" component={Assets} wallet={wallet} />
-				<PrivateRoute exact path="/assets/:packageId" component={Package} wallet={wallet} />
+				{/* <PrivateRoute exact path="/assets/:packageId" component={Package} wallet={wallet} /> */}
 				<Route path="*" component={Main} />
 			</Switch>
 			<Footer />
