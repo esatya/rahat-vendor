@@ -1,55 +1,47 @@
 import React, { useState, useEffect } from 'react';
 
+import { Link } from 'react-router-dom';
 
 import DataService from '../../services/db';
 
-const PackageList = ({ limit, transactions = [] }) => {
-	const [tx, setTx] = useState([]);
+const PackageList = ({ limit, packages = [],beneficiary }) => {
+	const [pkg, setPkg] = useState([]);
 
 	useEffect(() => {
 		(async () => {
-			let txs = transactions.length ? transactions : await DataService.listTx();
-			if (limit) txs = txs.slice(0, limit);
+			let pkgs = packages
+		//	let pkgs = packages.length ? packages : await DataService.listNft();
+			if (limit) pkgs = pkgs.slice(0, limit);
 	
-			setTx(txs);
+			setPkg(pkgs);
 		})();
-	}, [transactions, limit]);
+	}, [packages, limit]);
 
 	return (
 		<>
 
   <ul class="listview flush transparent image-listview">
-                    <li>
-                        <a href="#" class="item">
-                            <div class="icon-box bg-primary">
-                                <ion-icon name="card-outline" role="img" class="md hydrated" aria-label="card outline"></ion-icon>
-                            </div>
-                            <div class="in">
-                                Package 1
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="item">
-                            <div class="icon-box bg-danger">
-                                <ion-icon name="cash-outline" role="img" class="md hydrated" aria-label="cash outline"></ion-icon>
-                            </div>
-                            <div class="in">
-                                <div>Package 2</div>
-                                <span class="text-muted">Text</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="item">
-                            <div class="icon-box bg-success">
-                                <ion-icon name="wallet-outline" role="img" class="md hydrated" aria-label="wallet outline"></ion-icon>
-                            </div>
-                            <div class="in">
-                                <div>Package 3</div>
-                            </div>
-                        </a>
-                    </li>
+
+			{
+				pkg.length > 0 && 
+				pkg.map((p) => {
+
+					return(
+						<li>
+						<Link to={beneficiary? `/charge/${beneficiary}/package/${p.tokenId}`:`/package/${p.tokenId}`} className="item">
+								<div class="icon-box bg-primary">
+										<ion-icon name="card-outline" role="img" class="md hydrated" aria-label="card outline"></ion-icon>
+								</div>
+								<div class="in">
+										{p.name}
+								</div>
+								</Link>
+				</li>
+					)
+
+				})
+			}
+                   
                 </ul>
 
 

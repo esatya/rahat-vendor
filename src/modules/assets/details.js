@@ -18,7 +18,7 @@ export default function PackageDetail(props) {
 					<ul className="listview flush transparent simple-listview no-space mt-3">
 						<li>
 							<strong>Name:</strong>
-							<span>Rice</span>
+							<span>sadasdasd</span>
 						</li>
 						<li>
 							<strong>Symbol:</strong>
@@ -35,11 +35,21 @@ export default function PackageDetail(props) {
 							</span>
 						</li>
 						<li>
-							<strong>Amount:</strong>
-							<h3 className="m-0">1000</h3>
+							<strong>Amoaunt:</strong>
+							<h3 className="m-0">11000</h3>
 						</li>
 					</ul>
+
+					<button
+									type="button"
+									id="btncharge"
+									className="btn btn-success"
+									onClick={handleOTPSubmit}
+								>
+									<IoSendOutline className="ion-icon" /> charge
+								</button>
 				</div>
+				
 			</div>
 		</>
 	);

@@ -29,14 +29,13 @@ export default function Otp(props) {
       showLoading("verifying OTP...")
       const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
-			console.log({beneficiaryPhone,otp}, typeof otp)
-			let receipt = await rahat.verifyChargeForERC20(beneficiaryPhone, otp);
+	
+			let receipt = await rahat.verifyChargeForERC20(Number(beneficiaryPhone), otp);
 			//setData({ chargeTxHash: receipt.transactionHash });
       console.log(receipt)
      // history.push(`/charge/${beneficiaryPhone}/otp`)
 
       showLoading(null)
-    console.log('charging')
     }
     catch(e){
       showLoading(null)
