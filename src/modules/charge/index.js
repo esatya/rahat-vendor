@@ -66,7 +66,8 @@ export default function Index(props) {
 					name:data.name,
 					symbol:data.symbol,
 					description:data.metadata.description,
-					value:data.metadata.fiatValue
+					value:data.metadata.fiatValue,
+					imageUri:data.metadata.packageImgURI
 				}
 				setPackages(packages => [...packages,pkg]);
 			});
