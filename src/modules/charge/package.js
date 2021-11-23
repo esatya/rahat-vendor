@@ -8,54 +8,79 @@ import Loading from '../global/Loading';
 import AppHeader from '../layouts/AppHeader';
 import DataService from '../../services/db';
 import { RahatService } from '../../services/chain';
-import {getPackageDetails} from '../../services'
-import {IPFSLIST} from '../../constants/ipfs'
+import { getPackageDetails } from '../../services';
+import { IPFSLIST } from '../../constants/ipfs';
+import { APP_CONSTANTS } from '../../constants';
 
+const DEFAULT_NFT_CHARGE = 1;
 
 export default function ChargePackage(props) {
 	const { wallet } = useContext(AppContext);
 	let history = useHistory();
-	let beneficiary= props.match.params.beneficiary;
-  let tokenId = props.match.params.tokenId;
-	const rumsanIpfs = IPFSLIST.find(el => el.name = 'rumsan')
-	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
+	let beneficiary = props.match.params.beneficiary;
+	let tokenId = props.match.params.tokenId;
+	const rumsanIpfs = IPFSLIST.find(el => (el.name = 'rumsan'));
+
 	const [loading, showLoading] = useState(null);
-	const [pkg,setPkg] = useState({});
+	const [pkg, setPkg] = useState({});
 
+	const handleChargeClick = async () => {
+		try {
+			showLoading('charging beneficiary...');
+			const agency = await DataService.getDefaultAgency();
+			const rahat = RahatService(agency.address, wallet);
+			await rahat.chargeCustomerForERC1155(beneficiary, APP_CONSTANTS.DEFAULT_NFT_CHARGE.toString(), tokenId);
+			// console.log({ receipt });
+			//setData({ chargeTxHash: receipt.transactionHash });
+			// const tx = {
+			// 	hash: receipt.transactionHash,
+			// 	type: 'nft',
+			// 	timestamp: Date.now(),
+			// 	amount: pkg && pkg.value ? pkg.value : 0,
+			// 	to: beneficiary,
+			// 	from: receipt.from,
+			// 	status: 'success'
+			// };
+			// await DataService.addTx(tx);
+			history.push(`/charge/${beneficiary}/otp/${APP_CONSTANTS.CHARGE_TYPES.NFT}`);
+			showLoading(null);
+		} catch (e) {
+			showLoading(null);
+			console.log(e);
+			Swal.fire({
+				icon: 'error',
+				title: 'Operation Failed'
+			});
+		}
+	};
 
-const handlePackageCharge = () => {
-  console.log("charasdasdge")
-}
+	useEffect(() => {
+		(async () => {
+			const agency = await DataService.getDefaultAgency();
+			const rahat = RahatService(agency.address, wallet);
+			const data = await getPackageDetails(tokenId);
 
-
-useEffect(() => {
-  (async () => {
-
-    const agency = await DataService.getDefaultAgency();
-    const rahat = RahatService(agency.address, wallet);
-    
-      const data = await getPackageDetails(tokenId);
-      console.log(data);
-			setPkg({tokenId:data.tokenId,
-				name:data.name,
-				symbol:data.symbol,
-				description:data.metadata.description,
-				value:data.metadata.fiatValue,
-				imageUri:`${rumsanIpfs.view}/ipfs/${data.metadata.packageImgURI}`})   
-  })();
-}, []);
+			setPkg({
+				tokenId: data.tokenId,
+				name: data.name,
+				symbol: data.symbol,
+				description: data.metadata.description,
+				value: data.metadata.fiatValue,
+				imageUri: `${rumsanIpfs.view}/ipfs/${data.metadata.packageImgURI}`
+			});
+		})();
+	}, []);
 
 	return (
 		<>
-		
 			<Loading showModal={loading !== null} message={loading} />
 			<AppHeader currentMenu="Charge Package" />
 
-      <div id="appCapsule" className="full-height">
+			<div id="appCapsule" className="full-height">
 				<div className="section mt-2 mb-2">
 					<div className="listed-detail mt-3">
 						<div className="text-center">
-							<img src={pkg.imageUri} width='100' height='100' alt="asset" className="image" />
+							<img src={pkg.imageUri} width="100" height="100" alt="asset" className="image" />
 						</div>
 
 						<h3 className="text-center mt-2">wwww</h3>
@@ -80,23 +105,15 @@ useEffect(() => {
 								<span>{pkg.value}</span>
 							</span>
 						</li>
-					
 					</ul>
 
-<div className='text-right mt-3'>
-<button
-									type="button"
-									id="btncharge"
-									className="btn btn-success"
-									onClick={handlePackageCharge}
-								>
-									<IoSendOutline className="ion-icon" /> charge
-								</button>
-</div>
-				
+					<div className="text-right mt-3">
+						<button type="button" id="btncharge" className="btn btn-success" onClick={handleChargeClick}>
+							<IoSendOutline className="ion-icon" /> charge
+						</button>
+					</div>
 				</div>
-				
 			</div>
-		
-		</>  );
-    }
+		</>
+	);
+}

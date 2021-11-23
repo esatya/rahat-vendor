@@ -12,69 +12,57 @@ import { isOffline } from '../../utils';
 import DataService from '../../services/db';
 import { RahatService } from '../../services/chain';
 
-const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
+const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Otp(props) {
-	const { agency, wallet, setTokenBalance } = useContext(AppContext);
+	const { wallet, setTokenBalance } = useContext(AppContext);
 	let history = useHistory();
-	let beneficiary= props.match.params.beneficiary;
-	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
+	let beneficiary = props.match.params.beneficiary;
+	let chargeType = props.match.params.chargeType;
 	const [loading, showLoading] = useState(null);
-  const [otp,setOtp] = useState(null);
-  //const [tokenChargeData,setTokenChargeData] = useState()
+	const [otp, setOtp] = useState(null);
+	//const [tokenChargeData,setTokenChargeData] = useState()
 
-
-  const handleOTPSubmit = async () => {
-    try{
-      showLoading("verifying OTP...")
-      const agency = await DataService.getDefaultAgency();
+	const handleOTPSubmit = async () => {
+		try {
+			showLoading('verifying OTP...');
+			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
-	
-			let receipt = await rahat.verifyChargeForERC20(Number(beneficiaryPhone), otp);
+
+			let receipt =
+				chargeType === CHARGE_TYPES.TOKEN
+					? await rahat.verifyChargeForERC20(Number(beneficiary), otp)
+					: await rahat.verifyChargeForERC1155(Number(beneficiary), otp);
 			//setData({ chargeTxHash: receipt.transactionHash });
-      console.log(receipt)
-     // history.push(`/charge/${beneficiaryPhone}/otp`)
+			console.log(receipt);
+			// history.push(`/charge/${beneficiaryPhone}/otp`)
 
-      showLoading(null)
-    }
-    catch(e){
-      showLoading(null)
-      console.log(e);
-    }
-  }
+			showLoading(null);
+		} catch (e) {
+			showLoading(null);
+			console.log(e);
+		}
+	};
 
-  const handleOtpChange = e => {
+	const handleOtpChange = e => {
 		setOtp(e.target.value);
 	};
 
-	useEffect(() => {
-		(async () => {
-			if (beneficiary) setBeneficiaryPhone(beneficiary);
-		})();
-	}, [beneficiary]);
-
-
 	return (
 		<>
-		
 			<Loading showModal={loading !== null} message={loading} />
 			<AppHeader currentMenu="Charge" />
 			<div id="appCapsule">
 				<div id="cmpMain">
-
 					<div className="section mt-2 mb-5">
-            <div className="text-center">
-            <h2 class="text-primary ">{beneficiaryPhone}</h2>
-            </div>
+						<div className="text-center">
+							<h2 class="text-primary ">{beneficiary}</h2>
+						</div>
 
 						<div className="card mt-2">
-              <div className='card-header'>
-                OTP Verification
-
-              </div>
+							<div className="card-header">OTP Verification</div>
 							<div className="card-body">
 								<form>
-				
 									<div className="form-group boxed" style={{ padding: 0 }}>
 										<div className="input-wrapper">
 											<label className="label" htmlFor="otp">
@@ -95,9 +83,7 @@ export default function Otp(props) {
 										</div>
 									</div>
 									<div className="mt-3">
-										<small>
-											Please request the customer to provide OTP for verification.
-										</small>
+										<small>Please request the customer to provide OTP for verification.</small>
 									</div>
 								</form>
 							</div>
@@ -112,8 +98,6 @@ export default function Otp(props) {
 								</button>
 							</div>
 						</div>
-
-
 					</div>
 				</div>
 			</div>

@@ -51,6 +51,14 @@ export default function AllTransactions() {
 						</div>
 					);
 				}
+				if (t.type === 'nft') {
+					t.name = 'NFT charged';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
 				// if (t.type === 'redeem') {
 				// 	t.name = 'Redeem Tokens';
 				// 	t.icon = (

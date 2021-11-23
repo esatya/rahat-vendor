@@ -3,6 +3,11 @@ module.exports = {
 		VERSION: 1,
 		PASSCODE_LENGTH: 6,
 		SCAN_DELAY: 600,
+		CHARGE_TYPES: {
+			TOKEN: 'token',
+			NFT: 'nft'
+		},
+		DEFAULT_NFT_CHARGE: 1,
 		SCANNER_PREVIEW_STYLE: {
 			height: 300,
 			width: 400,

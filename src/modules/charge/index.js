@@ -10,45 +10,40 @@ import { APP_CONSTANTS } from '../../constants';
 import DataService from '../../services/db';
 import PackageList from '../package/packageList';
 import { RahatService } from '../../services/chain';
-import {getPackageDetails} from '../../services'
+import { getPackageDetails } from '../../services';
 
-const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
+const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Index(props) {
-	const {  wallet, setTokenBalance } = useContext(AppContext);
+	const { wallet, setTokenBalance } = useContext(AppContext);
 	let history = useHistory();
-	let beneficiary= props.match.params.beneficiary;
+	let beneficiary = props.match.params.beneficiary;
 	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
 	const [loading, showLoading] = useState(null);
-  const [chargeAmount,setChargeAmount] = useState(null);
-	const [tokenIds,setTokenIds] = useState([]);
-	const [packages,setPackages] = useState([]);
-  //const [tokenChargeData,setTokenChargeData] = useState()
+	const [chargeAmount, setChargeAmount] = useState(null);
+	const [tokenIds, setTokenIds] = useState([]);
+	const [packages, setPackages] = useState([]);
+	//const [tokenChargeData,setTokenChargeData] = useState()
 
-
-  const handleChargeClick = async () => {
-
-    try{
-      showLoading("charging beneficiary...")
-    	const agency = await DataService.getDefaultAgency();
+	const handleChargeClick = async () => {
+		try {
+			showLoading('charging beneficiary...');
+			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
 			let receipt = await rahat.chargeCustomerForERC20(beneficiaryPhone, chargeAmount);
 			//setData({ chargeTxHash: receipt.transactionHash });
-      console.log(receipt)
-      history.push(`/charge/${beneficiaryPhone}/otp`)
-      showLoading(null)
-    }
-    catch(e){
-      showLoading(null)
-      console.log(e);
-    }
-  }
-
-  const handleChargeAmtChange = e => {
-		setChargeAmount(e.target.value);
+			console.log(receipt);
+			history.push(`/charge/${beneficiaryPhone}/otp/${CHARGE_TYPES.TOKEN}`);
+			showLoading(null);
+		} catch (e) {
+			showLoading(null);
+			console.log(e);
+		}
 	};
 
-
+	const handleChargeAmtChange = e => {
+		setChargeAmount(e.target.value);
+	};
 
 	useEffect(() => {
 		(async () => {
@@ -56,47 +51,39 @@ export default function Index(props) {
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
 			let tokenIds = await rahat.getBeneficiaryTokenIds(Number(beneficiary));
-			tokenIds = tokenIds.map((t)=>t.toNumber()) 
-			
+			tokenIds = tokenIds.map(t => t.toNumber());
+
 			tokenIds.forEach(async el => {
 				const data = await getPackageDetails(el);
 				//tokenId,name,symbol,description,value,amount
 				const pkg = {
-					tokenId:data.tokenId,
-					name:data.name,
-					symbol:data.symbol,
-					description:data.metadata.description,
-					value:data.metadata.fiatValue,
-					imageUri:data.metadata.packageImgURI
-				}
-				setPackages(packages => [...packages,pkg]);
+					tokenId: data.tokenId,
+					name: data.name,
+					symbol: data.symbol,
+					description: data.metadata && data.metadata.description ? data.metadata.description : '',
+					value: data.metadata && data.metadata.fiatValue ? data.metadata.fiatValue : '',
+					imageUri: data.metadata && data.metadata.packageImgURI ? data.metadata.packageImgURI : ''
+				};
+				setPackages(packages => [...packages, pkg]);
 			});
-		
 		})();
 	}, []);
 
-
 	return (
 		<>
-		
 			<Loading showModal={loading !== null} message={loading} />
 			<AppHeader currentMenu="Charge" />
 			<div id="appCapsule">
 				<div id="cmpMain">
-
 					<div className="section mt-2 mb-5">
-            <div className="text-center">
-            <h2 class="text-primary ">{beneficiaryPhone}</h2>
-            </div>
+						<div className="text-center">
+							<h2 class="text-primary ">{beneficiaryPhone}</h2>
+						</div>
 
 						<div className="card mt-2">
-              <div className='card-header'>
-                Tokens
-
-              </div>
+							<div className="card-header">Tokens</div>
 							<div className="card-body">
 								<form>
-				
 									<div className="form-group boxed" style={{ padding: 0 }}>
 										<div className="input-wrapper">
 											<label className="label" htmlFor="chargeAmount">
@@ -117,9 +104,7 @@ export default function Index(props) {
 										</div>
 									</div>
 									<div className="mt-3">
-										<small>
-											Important: Please double check the amount before charging
-										</small>
+										<small>Important: Please double check the amount before charging</small>
 									</div>
 								</form>
 							</div>
@@ -135,23 +120,13 @@ export default function Index(props) {
 							</div>
 						</div>
 
+						<div className="card mt-3">
+							<div className="card-header">Packages</div>
 
-            <div className="card mt-3">
-            <div className='card-header'>
-                Packages
-
-              </div>
-
-              <div class="card-body">
-
-                <PackageList packages = {packages} beneficiary = {beneficiaryPhone}/>
-             
-            </div>
-
-
-
-</div>
-
+							<div class="card-body">
+								<PackageList packages={packages} beneficiary={beneficiaryPhone} />
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
