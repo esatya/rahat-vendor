@@ -10,20 +10,24 @@ import { APP_CONSTANTS } from '../../constants';
 import DataService from '../../services/db';
 import PackageList from '../package/packageList';
 import { RahatService } from '../../services/chain';
+import {getPackageDetails} from '../../services'
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
 
 export default function Index(props) {
-	const { agency, wallet, setTokenBalance } = useContext(AppContext);
+	const {  wallet, setTokenBalance } = useContext(AppContext);
 	let history = useHistory();
 	let beneficiary= props.match.params.beneficiary;
 	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
 	const [loading, showLoading] = useState(null);
   const [chargeAmount,setChargeAmount] = useState(null);
+	const [tokenIds,setTokenIds] = useState([]);
+	const [packages,setPackages] = useState([]);
   //const [tokenChargeData,setTokenChargeData] = useState()
 
 
   const handleChargeClick = async () => {
+
     try{
       showLoading("charging beneficiary...")
     	const agency = await DataService.getDefaultAgency();
@@ -33,7 +37,6 @@ export default function Index(props) {
       console.log(receipt)
       history.push(`/charge/${beneficiaryPhone}/otp`)
       showLoading(null)
-    console.log('charging')
     }
     catch(e){
       showLoading(null)
@@ -45,11 +48,32 @@ export default function Index(props) {
 		setChargeAmount(e.target.value);
 	};
 
+
+
 	useEffect(() => {
 		(async () => {
 			if (beneficiary) setBeneficiaryPhone(beneficiary);
+			const agency = await DataService.getDefaultAgency();
+			const rahat = RahatService(agency.address, wallet);
+			let tokenIds = await rahat.getBeneficiaryTokenIds(Number(beneficiary));
+			tokenIds = tokenIds.map((t)=>t.toNumber()) 
+			
+			tokenIds.forEach(async el => {
+				const data = await getPackageDetails(el);
+				//tokenId,name,symbol,description,value,amount
+				const pkg = {
+					tokenId:data.tokenId,
+					name:data.name,
+					symbol:data.symbol,
+					description:data.metadata.description,
+					value:data.metadata.fiatValue,
+					imageUri:data.metadata.packageImgURI
+				}
+				setPackages(packages => [...packages,pkg]);
+			});
+		
 		})();
-	}, [beneficiary]);
+	}, []);
 
 
 	return (
@@ -120,40 +144,8 @@ export default function Index(props) {
 
               <div class="card-body">
 
-                <PackageList/>
-                {/* <ul class="listview flush transparent image-listview">
-                    <li>
-                        <a href="#" class="item">
-                            <div class="icon-box bg-primary">
-                                <ion-icon name="card-outline" role="img" class="md hydrated" aria-label="card outline"></ion-icon>
-                            </div>
-                            <div class="in">
-                                Package 1
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="item">
-                            <div class="icon-box bg-danger">
-                                <ion-icon name="cash-outline" role="img" class="md hydrated" aria-label="cash outline"></ion-icon>
-                            </div>
-                            <div class="in">
-                                <div>Package 2</div>
-                                <span class="text-muted">Text</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="item">
-                            <div class="icon-box bg-success">
-                                <ion-icon name="wallet-outline" role="img" class="md hydrated" aria-label="wallet outline"></ion-icon>
-                            </div>
-                            <div class="in">
-                                <div>Package 3</div>
-                            </div>
-                        </a>
-                    </li>
-                </ul> */}
+                <PackageList packages = {packages} beneficiary = {beneficiaryPhone}/>
+             
             </div>
 
 

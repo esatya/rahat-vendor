@@ -57,6 +57,12 @@ const RahatService = (agencyAddress, wallet) => {
 			const contract = await this.getContract();
 			const tx = await contract.getERC1155FromClaim(Number(phone), otp,Number(tokenId));
 			return tx.wait();
+		},
+
+		async getBeneficiaryTokenIds(phone) {
+			const contract = await this.getContract();
+			const tokenIds = await contract.getTokenIdsOfBeneficiary(Number(phone));
+			return tokenIds;
 		}
 
 		
