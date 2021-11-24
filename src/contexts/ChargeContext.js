@@ -1,28 +1,50 @@
-import React, { createContext, useState, useReducer, useCallback } from 'react';
-import appReduce from '../reducers/appReducer';
-import APP_ACTIONS from '../actions/appActions';
-import DataService from '../services/db';
-import { TokenService } from '../services/chain';
-import { APP_CONSTANTS, DEFAULT_TOKEN } from '../constants';
+import React, { createContext } from 'react';
+// import chargeReducer from '../reducers/chargeReducer';
+// import CHARGE_ACTIONS from '../actions/chargeActions';
 
 const initialState = {
 	tokenAmount: null,
 	nftAmount: null
 };
 
-export const AppContext = createContext(initialState);
-export const AppContextProvider = ({ children }) => {
-	const [state, dispatch] = useReducer(appReduce, initialState);
+export const ChargeContext = createContext(initialState);
+export const ChargeContextProvider = ({ children }) => {
+	// const [state, dispatch] = useReducer(chargeReducer, initialState);
 
+	const getTokenAmount = () => localStorage.getItem('tokenAmount');
+
+	const getNFTAmount = () => localStorage.getItem('nftAmount');
+
+	const setTokenAmount = amount => {
+		localStorage.setItem('tokenAmount', amount);
+		// dispatch({ type: CHARGE_ACTIONS.SET_TOKEN_AMOUNT, data: amount });
+	};
+	const removeTokenAmount = () => {
+		localStorage.removeItem('tokenAmount');
+		// dispatch({ type: CHARGE_ACTIONS.SET_TOKEN_AMOUNT, data: null });
+	};
+	const setNFTAmount = amount => {
+		localStorage.setItem('nftAmount', amount);
+		// dispatch({ type: CHARGE_ACTIONS.SET_NFT_AMOUNT, data: amount });
+	};
+	const removeNFTAmount = () => {
+		localStorage.removeItem('nftAmount');
+		// dispatch({ type: CHARGE_ACTIONS.SET_NFT_AMOUNT, data: null });
+	};
 	return (
-		<AppContext.Provider
+		<ChargeContext.Provider
 			value={{
-				tokenAmount: state.tokenAmount,
-				nftAmount: state.nftAmount,
-				dispatch
+				// tokenAmount: state.tokenAmount,
+				// nftAmount: state.nftAmount,
+				getTokenAmount,
+				getNFTAmount,
+				setTokenAmount,
+				setNFTAmount,
+				removeTokenAmount,
+				removeNFTAmount
 			}}
 		>
 			{children}
-		</AppContext.Provider>
+		</ChargeContext.Provider>
 	);
 };

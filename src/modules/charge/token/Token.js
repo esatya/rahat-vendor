@@ -2,20 +2,23 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IoCloseCircle, IoSendOutline, IoQrCodeOutline } from 'react-icons/io5';
 
-import { AppContext } from '../../contexts/AppContext';
-import Loading from '../global/Loading';
-import AppHeader from '../layouts/AppHeader';
-import { APP_CONSTANTS } from '../../constants';
+import { AppContext } from '../../../contexts/AppContext';
+import { ChargeContext } from '../../../contexts/ChargeContext';
 
-import DataService from '../../services/db';
-import PackageList from '../package/packageList';
-import { RahatService } from '../../services/chain';
-import { getPackageDetails } from '../../services';
+import Loading from '../../global/Loading';
+import AppHeader from '../../layouts/AppHeader';
+import { APP_CONSTANTS } from '../../../constants';
+
+import DataService from '../../../services/db';
+import PackageList from '../../package/packageList';
+import { RahatService } from '../../../services/chain';
+import { getPackageDetails } from '../../../services';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
 
-export default function Index(props) {
+export default function Token(props) {
 	const { wallet, setTokenBalance } = useContext(AppContext);
+	const { setTokenAmount } = useContext(ChargeContext);
 	let history = useHistory();
 	let beneficiary = props.match.params.beneficiary;
 	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
@@ -30,14 +33,15 @@ export default function Index(props) {
 			showLoading('charging beneficiary...');
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
-			let receipt = await rahat.chargeCustomerForERC20(beneficiaryPhone, chargeAmount);
+			await rahat.chargeCustomerForERC20(beneficiaryPhone, chargeAmount);
 			//setData({ chargeTxHash: receipt.transactionHash });
-			console.log(receipt);
+			// console.log(receipt);
+			setTokenAmount(chargeAmount);
 			history.push(`/charge/${beneficiaryPhone}/otp/${CHARGE_TYPES.TOKEN}`);
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);
-			console.log(e);
+			// console.log(e);
 		}
 	};
 
@@ -114,6 +118,7 @@ export default function Index(props) {
 									id="btncharge"
 									className="btn btn-success"
 									onClick={handleChargeClick}
+									disabled={!chargeAmount}
 								>
 									<IoSendOutline className="ion-icon" /> Charge
 								</button>

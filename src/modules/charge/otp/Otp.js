@@ -3,20 +3,23 @@ import Swal from 'sweetalert2';
 import { useHistory } from 'react-router-dom';
 import { IoCloseCircle, IoSendOutline, IoQrCodeOutline } from 'react-icons/io5';
 
-import { AppContext } from '../../contexts/AppContext';
-import Loading from '../global/Loading';
-import AppHeader from '../layouts/AppHeader';
-import { APP_CONSTANTS } from '../../constants';
-import { TokenService } from '../../services/chain';
-import { isOffline } from '../../utils';
-import DataService from '../../services/db';
-import { RahatService } from '../../services/chain';
-import { ethers } from 'ethers';
+import { AppContext } from '../../../contexts/AppContext';
+
+import Loading from '../../global/Loading';
+import AppHeader from '../../layouts/AppHeader';
+import { APP_CONSTANTS } from '../../../constants';
+
+import DataService from '../../../services/db';
+import { RahatService } from '../../../services/chain';
+
+import { ChargeContext } from '../../../contexts/ChargeContext';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Otp(props) {
-	const { wallet, setTokenBalance } = useContext(AppContext);
+	const { wallet } = useContext(AppContext);
+	const { getTokenAmount, getNFTAmount, removeTokenAmount, removeNFTAmount } = useContext(ChargeContext);
+
 	let history = useHistory();
 
 	let { beneficiary, chargeType, tokenId } = props.match.params;
@@ -34,36 +37,44 @@ export default function Otp(props) {
 				chargeType === CHARGE_TYPES.TOKEN
 					? await rahat.verifyChargeForERC20(Number(beneficiary), otp)
 					: await rahat.verifyChargeForERC1155(Number(beneficiary), otp, tokenId);
-			//setData({ chargeTxHash: receipt.transactionHash });
-			console.log({ receipt });
-			// history.push(`/charge/${beneficiaryPhone}/otp`)
 
 			let tx = {
 				hash: receipt.transactionHash,
 				type: chargeType,
 				timestamp: Date.now(),
-				// amount: pkg && pkg.value ? pkg.value : 0,
+				amount: chargeType === CHARGE_TYPES.TOKEN ? getTokenAmount() : getNFTAmount(),
 				to: beneficiary,
 				from: receipt.from,
 				status: 'success'
 			};
 			await DataService.addTx(tx);
-
+			chargeType === CHARGE_TYPES.TOKEN ? removeTokenAmount() : removeNFTAmount();
 			showLoading(null);
+			await Swal.fire({
+				icon: 'success',
+				title: 'Successfully transfered',
+				timer: 2000
+			});
+			history.push('/');
 		} catch (e) {
 			showLoading(null);
 
-			console.log({ e });
 			if (e.error && e.error.transaction) {
 				let tx = {
-					to: e.error.transaction.to ? e.error.transaction.to : '',
+					to: beneficiary,
 					from: e.error.transaction.from ? e.error.transaction.from : '',
 					status: 'failed',
 					hash: chargeType + Date.now(),
 					type: chargeType,
-					timestamp: Date.now()
+					timestamp: Date.now(),
+					amount: chargeType === CHARGE_TYPES.TOKEN ? getTokenAmount() : getNFTAmount()
 				};
 				await DataService.addTx(tx);
+
+				Swal.fire({
+					icon: 'error',
+					title: 'Operation Failed'
+				});
 			}
 		}
 	};

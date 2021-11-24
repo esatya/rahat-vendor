@@ -1,21 +1,23 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useHistory } from 'react-router-dom';
-import { IoCloseCircle, IoSendOutline, IoQrCodeOutline } from 'react-icons/io5';
+import { IoSendOutline } from 'react-icons/io5';
 
-import { AppContext } from '../../contexts/AppContext';
-import Loading from '../global/Loading';
-import AppHeader from '../layouts/AppHeader';
-import DataService from '../../services/db';
-import { RahatService } from '../../services/chain';
-import { getPackageDetails } from '../../services';
-import { IPFSLIST } from '../../constants/ipfs';
-import { APP_CONSTANTS } from '../../constants';
+import { AppContext } from '../../../contexts/AppContext';
+import { ChargeContext } from '../../../contexts/ChargeContext';
 
-const DEFAULT_NFT_CHARGE = 1;
+import Loading from '../../global/Loading';
+import AppHeader from '../../layouts/AppHeader';
+import DataService from '../../../services/db';
+import { RahatService } from '../../../services/chain';
+import { getPackageDetails } from '../../../services';
+import { IPFSLIST } from '../../../constants/ipfs';
+import { APP_CONSTANTS } from '../../../constants';
 
 export default function ChargePackage(props) {
 	const { wallet } = useContext(AppContext);
+	const { setNFTAmount } = useContext(ChargeContext);
+
 	let history = useHistory();
 	let beneficiary = props.match.params.beneficiary;
 	let tokenId = props.match.params.tokenId;
@@ -30,6 +32,7 @@ export default function ChargePackage(props) {
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
 			await rahat.chargeCustomerForERC1155(beneficiary, APP_CONSTANTS.DEFAULT_NFT_CHARGE.toString(), tokenId);
+			setNFTAmount(APP_CONSTANTS.DEFAULT_NFT_CHARGE.toString());
 			// console.log({ receipt });
 			//setData({ chargeTxHash: receipt.transactionHash });
 			// const tx = {
@@ -46,7 +49,7 @@ export default function ChargePackage(props) {
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);
-			console.log(e);
+			// console.log(e);
 			Swal.fire({
 				icon: 'error',
 				title: 'Operation Failed'

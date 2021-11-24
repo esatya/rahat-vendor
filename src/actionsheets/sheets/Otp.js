@@ -34,7 +34,7 @@ export default function ChargeDetails(props) {
 			await DataService.addTx(tx);
 			history.push(`/tx/${receipt.transactionHash}`);
 		} catch (e) {
-			console.log(e);
+			// console.log(e);
 			const tx = {
 				hash: data.chargeTxHash,
 				type: 'charge',

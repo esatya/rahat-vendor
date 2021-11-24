@@ -37,7 +37,7 @@ const RahatService = (agencyAddress, wallet) => {
 			// 	// waring token amount is greater than remaining blance
 			// }
 			const tx = await contract.createERC20Claim(Number(phone), Number(amount));
-			console.log('charge erc20', { tx });
+			// console.log('charge erc20', { tx });
 
 			return tx.wait();
 		},
