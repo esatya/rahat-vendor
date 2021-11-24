@@ -11,17 +11,18 @@ import { TokenService } from '../../services/chain';
 import { isOffline } from '../../utils';
 import DataService from '../../services/db';
 import { RahatService } from '../../services/chain';
+import { ethers } from 'ethers';
 
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Otp(props) {
 	const { wallet, setTokenBalance } = useContext(AppContext);
 	let history = useHistory();
-	let beneficiary = props.match.params.beneficiary;
-	let chargeType = props.match.params.chargeType;
+
+	let { beneficiary, chargeType, tokenId } = props.match.params;
+
 	const [loading, showLoading] = useState(null);
 	const [otp, setOtp] = useState(null);
-	//const [tokenChargeData,setTokenChargeData] = useState()
 
 	const handleOTPSubmit = async () => {
 		try {
@@ -32,15 +33,38 @@ export default function Otp(props) {
 			let receipt =
 				chargeType === CHARGE_TYPES.TOKEN
 					? await rahat.verifyChargeForERC20(Number(beneficiary), otp)
-					: await rahat.verifyChargeForERC1155(Number(beneficiary), otp);
+					: await rahat.verifyChargeForERC1155(Number(beneficiary), otp, tokenId);
 			//setData({ chargeTxHash: receipt.transactionHash });
-			console.log(receipt);
+			console.log({ receipt });
 			// history.push(`/charge/${beneficiaryPhone}/otp`)
+
+			let tx = {
+				hash: receipt.transactionHash,
+				type: chargeType,
+				timestamp: Date.now(),
+				// amount: pkg && pkg.value ? pkg.value : 0,
+				to: beneficiary,
+				from: receipt.from,
+				status: 'success'
+			};
+			await DataService.addTx(tx);
 
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);
-			console.log(e);
+
+			console.log({ e });
+			if (e.error && e.error.transaction) {
+				let tx = {
+					to: e.error.transaction.to ? e.error.transaction.to : '',
+					from: e.error.transaction.from ? e.error.transaction.from : '',
+					status: 'failed',
+					hash: chargeType + Date.now(),
+					type: chargeType,
+					timestamp: Date.now()
+				};
+				await DataService.addTx(tx);
+			}
 		}
 	};
 
@@ -70,7 +94,7 @@ export default function Otp(props) {
 											</label>
 											<input
 												onChange={handleOtpChange}
-												value={otp}
+												value={otp ? otp : ''}
 												type="number"
 												className="form-control"
 												id="otp"
@@ -93,6 +117,7 @@ export default function Otp(props) {
 									id="btncharge"
 									className="btn btn-success"
 									onClick={handleOTPSubmit}
+									disabled={!otp}
 								>
 									<IoSendOutline className="ion-icon" /> Continue
 								</button>

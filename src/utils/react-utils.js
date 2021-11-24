@@ -6,6 +6,7 @@ const useResize = myRef => {
 	const [height, setHeight] = useState(0);
 
 	useEffect(() => {
+		if (!myRef) return;
 		const handleResize = () => {
 			setWidth(myRef.current.offsetWidth);
 			setHeight(myRef.current.offsetHeight);

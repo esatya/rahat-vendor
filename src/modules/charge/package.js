@@ -42,7 +42,7 @@ export default function ChargePackage(props) {
 			// 	status: 'success'
 			// };
 			// await DataService.addTx(tx);
-			history.push(`/charge/${beneficiary}/otp/${APP_CONSTANTS.CHARGE_TYPES.NFT}`);
+			history.push(`/charge/${beneficiary}/otp/${APP_CONSTANTS.CHARGE_TYPES.NFT}/${tokenId}`);
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);

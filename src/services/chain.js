@@ -37,11 +37,14 @@ const RahatService = (agencyAddress, wallet) => {
 			// 	// waring token amount is greater than remaining blance
 			// }
 			const tx = await contract.createERC20Claim(Number(phone), Number(amount));
+			console.log('charge erc20', { tx });
+
 			return tx.wait();
 		},
 		async verifyChargeForERC20(phone, otp) {
 			const contract = await this.getContract();
 			const tx = await contract.getERC20FromClaim(Number(phone), otp);
+			console.log('verify erc20 token', { tx });
 			return tx.wait();
 		},
 		async chargeCustomerForERC1155(phone, amount, tokenId) {
@@ -51,12 +54,17 @@ const RahatService = (agencyAddress, wallet) => {
 			// 	// waring token amount is greater than remaining blance
 			// }
 			const tx = await contract.createERC1155Claim(Number(phone), Number(amount), Number(tokenId));
+			console.log('charge erc1155 token', { tx });
+
+			console.log({ tx });
 
 			return tx.wait();
 		},
 		async verifyChargeForERC1155(phone, otp, tokenId) {
 			const contract = await this.getContract();
 			const tx = await contract.getERC1155FromClaim(Number(phone), otp, Number(tokenId));
+			console.log('verify erc1155 token', { tx });
+
 			return tx.wait();
 		},
 
