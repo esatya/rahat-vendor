@@ -144,8 +144,12 @@ const DataService = {
 		return db.transactions.get({ type }).orderBy('timestamp').reverse();
 	},
 
-	addNft(nft) {
-		return db.nfts.put(nft);
+	async addNft(nft) {
+		const { tokenId } = nft;
+		const storedNft = await this.getNft(tokenId);
+		if (!storedNft) return db.nfts.put({ ...nft, amount: 1 });
+		storedNft.amount++;
+		return db.nfts.put(storedNft);
 	},
 
 	getNft(id) {

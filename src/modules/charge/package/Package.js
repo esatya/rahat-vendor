@@ -16,7 +16,7 @@ import { APP_CONSTANTS } from '../../../constants';
 
 export default function ChargePackage(props) {
 	const { wallet } = useContext(AppContext);
-	const { setNFTAmount } = useContext(ChargeContext);
+	const { setNFTAmount, setNFTDetails } = useContext(ChargeContext);
 
 	let history = useHistory();
 	let beneficiary = props.match.params.beneficiary;
@@ -33,18 +33,7 @@ export default function ChargePackage(props) {
 			const rahat = RahatService(agency.address, wallet);
 			await rahat.chargeCustomerForERC1155(beneficiary, APP_CONSTANTS.DEFAULT_NFT_CHARGE.toString(), tokenId);
 			setNFTAmount(APP_CONSTANTS.DEFAULT_NFT_CHARGE.toString());
-			// console.log({ receipt });
-			//setData({ chargeTxHash: receipt.transactionHash });
-			// const tx = {
-			// 	hash: receipt.transactionHash,
-			// 	type: 'nft',
-			// 	timestamp: Date.now(),
-			// 	amount: pkg && pkg.value ? pkg.value : 0,
-			// 	to: beneficiary,
-			// 	from: receipt.from,
-			// 	status: 'success'
-			// };
-			// await DataService.addTx(tx);
+			setNFTDetails(pkg);
 			history.push(`/charge/${beneficiary}/otp/${APP_CONSTANTS.CHARGE_TYPES.NFT}/${tokenId}`);
 			showLoading(null);
 		} catch (e) {

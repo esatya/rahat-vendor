@@ -1,7 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import Swal from 'sweetalert2';
 import { useHistory } from 'react-router-dom';
-import { IoCloseCircle, IoSendOutline, IoQrCodeOutline } from 'react-icons/io5';
+import { IoCloseCircle, IoSendOutline } from 'react-icons/io5';
 
 import { AppContext } from '../../../contexts/AppContext';
 
@@ -14,11 +14,12 @@ import { RahatService } from '../../../services/chain';
 
 import { ChargeContext } from '../../../contexts/ChargeContext';
 
-const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
+const { CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Otp(props) {
 	const { wallet } = useContext(AppContext);
-	const { getTokenAmount, getNFTAmount, removeTokenAmount, removeNFTAmount } = useContext(ChargeContext);
+	const { getTokenAmount, getNFTAmount, getNFTDetails, removeTokenAmount, removeNFTAmount, removeNFTDetails } =
+		useContext(ChargeContext);
 
 	let history = useHistory();
 
@@ -26,6 +27,12 @@ export default function Otp(props) {
 
 	const [loading, showLoading] = useState(null);
 	const [otp, setOtp] = useState(null);
+
+	const handleStoreAssets = async () => {
+		let nftDetails = getNFTDetails();
+		await DataService.addNft(nftDetails);
+		removeNFTDetails();
+	};
 
 	const handleOTPSubmit = async () => {
 		try {
@@ -47,7 +54,9 @@ export default function Otp(props) {
 				from: receipt.from,
 				status: 'success'
 			};
+
 			await DataService.addTx(tx);
+			chargeType === CHARGE_TYPES.NFT && (await handleStoreAssets());
 			chargeType === CHARGE_TYPES.TOKEN ? removeTokenAmount() : removeNFTAmount();
 			showLoading(null);
 			await Swal.fire({
@@ -55,7 +64,7 @@ export default function Otp(props) {
 				title: 'Successfully transfered',
 				timer: 2000
 			});
-			history.push('/');
+			history.push(`/charge/${beneficiary}`);
 		} catch (e) {
 			showLoading(null);
 
