@@ -24,11 +24,9 @@ export default function ChargeDetails(props) {
 			// let receipt = await rahat.chargeCustomer(data.phone, data.amount);
 			// setData({ chargeTxHash: receipt.transactionHash });
 			setActiveSheet('null');
-			history.push(`/charge/${data.phone}`)
-
-
+			history.push(`/charge/${data.phone}`);
 		} catch (e) {
-			console.log(e);
+			// console.log(e);
 			Swal.fire('Error', 'Transaction cancelled. Please try again.', 'error');
 		} finally {
 			showLoading(null);

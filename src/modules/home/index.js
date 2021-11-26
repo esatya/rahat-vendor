@@ -16,8 +16,8 @@ import Transactions from '../transactions';
 import TxDetails from '../transactions/details';
 import AllTransactions from '../transactions/allTransactions';
 import GoogleBackup from '../misc/googleBackup';
-import Charge from '../charge';
-import OTP from '../charge/otp';
+import Charge from '../charge/token/index';
+import OTP from '../charge/otp/index';
 import Assets from '../assets';
 import Package from '../assets/details';
 import PackageDetails from '../package/packageDetails';
@@ -49,9 +49,21 @@ function App() {
 				<PrivateRoute exact path="/transfer/:address" component={Transfer} wallet={wallet} />
 				<PrivateRoute exact path="/google/backup" component={GoogleBackup} wallet={wallet} />
 				<PrivateRoute exact path="/charge/:beneficiary" component={Charge} wallet={wallet} />
-				<PrivateRoute exact path="/charge/:beneficiary/otp" component={OTP} wallet={wallet} />
+				<PrivateRoute exact path="/charge/:beneficiary/otp/:chargeType" component={OTP} wallet={wallet} />
+				<PrivateRoute
+					exact
+					path="/charge/:beneficiary/otp/:chargeType/:tokenId"
+					component={OTP}
+					wallet={wallet}
+				/>
+
 				<PrivateRoute exact path="/package/:tokenId" component={PackageDetails} wallet={wallet} />
-				<PrivateRoute exact path="/charge/:beneficiary/package/:tokenId" component={ChargePackage} wallet={wallet} />
+				<PrivateRoute
+					exact
+					path="/charge/:beneficiary/package/:tokenId"
+					component={ChargePackage}
+					wallet={wallet}
+				/>
 				<PrivateRoute
 					exact
 					path="/charge/:beneficiary/package/:tokenId/otp"
