@@ -47,7 +47,7 @@ export default function Otp(props) {
 
 			let tx = {
 				hash: receipt.transactionHash,
-				type: chargeType,
+				type: chargeType === CHARGE_TYPES.TOKEN ? CHARGE_TYPES.TOKEN_RECIEVED : CHARGE_TYPES.NFT_RECIEVED,
 				timestamp: Date.now(),
 				amount: chargeType === CHARGE_TYPES.TOKEN ? getTokenAmount() : getNFTAmount(),
 				to: beneficiary,
@@ -74,7 +74,7 @@ export default function Otp(props) {
 					from: e.error.transaction.from ? e.error.transaction.from : '',
 					status: 'failed',
 					hash: chargeType + Date.now(),
-					type: chargeType,
+					type: chargeType === CHARGE_TYPES.TOKEN ? CHARGE_TYPES.TOKEN_RECIEVED : CHARGE_TYPES.NFT_RECIEVED,
 					timestamp: Date.now(),
 					amount: chargeType === CHARGE_TYPES.TOKEN ? getTokenAmount() : getNFTAmount()
 				};
