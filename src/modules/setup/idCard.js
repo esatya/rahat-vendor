@@ -40,7 +40,8 @@ export default function Main() {
 			address: appData.agency.contracts.rahat,
 			adminAddress: appData.agency.contracts.rahat_admin,
 			network: appData.networkUrl,
-			tokenAddress: appData.agency.contracts.token,
+			tokenAddress: appData.agency.contracts.rahat_erc20,
+			nftAddress: appData.agency.contracts.rahat_erc1155,
 			name: appData.agency.name,
 			email: appData.agency.email,
 			isApproved: false

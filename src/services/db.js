@@ -8,7 +8,8 @@ db.version(DB.VERSION).stores({
 	data: 'name,data',
 	documents: 'hash,type,name,file,encryptedFile,createdAt,inIpfs',
 	assets: 'address,type,name,symbol,decimal,balance,network',
-	agencies: 'address,name,api,network,rahatAddress,tokenAddress,adminAddress,phone,email,logo,isApproved',
+	agencies: 'address,name,api,network,rahatAddress,tokenAddress,nftAddress,adminAddress,phone,email,logo,isApproved',
+	nfts: 'tokenId,name,symbol,description,imageUri,metadataUri,value,amount',
 	transactions: 'hash,type,timestamp,amount,to,from,status,image'
 });
 
@@ -141,6 +142,22 @@ const DataService = {
 	listTx(type) {
 		if (!type) return db.transactions.orderBy('timestamp').reverse().toArray();
 		return db.transactions.get({ type }).orderBy('timestamp').reverse();
+	},
+
+	async addNft(nft) {
+		const { tokenId } = nft;
+		const storedNft = await this.getNft(tokenId);
+		if (!storedNft) return db.nfts.put({ ...nft, amount: 1 });
+		storedNft.amount++;
+		return db.nfts.put(storedNft);
+	},
+
+	getNft(id) {
+		return db.nfts.get(parseInt(id));
+	},
+
+	listNft() {
+		return db.nfts.toArray();
 	},
 
 	async saveDocuments(docs) {

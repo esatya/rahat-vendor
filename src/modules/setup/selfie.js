@@ -34,6 +34,7 @@ export default function Main() {
 		// 		resolve(result);
 		// 	})
 		// 	.catch(err => reject(err));
+		console.log(imageSrc);
 		setPreviewImage(imageSrc);
 	};
 
@@ -82,7 +83,7 @@ export default function Main() {
 									audio={false}
 									ref={webcamRef}
 									className="circleSelfie"
-									minScreenshotWidth="100%"
+									minScreenshotWidth={1024}
 									minScreenshotHeight={720}
 									screenshotFormat="image/png"
 									videoConstraints={videoConstraints}

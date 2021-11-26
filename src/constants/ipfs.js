@@ -1,7 +1,7 @@
 const ipfsList = [
 	{
 		name: 'rumsan',
-		view: 'https://ipfs.esatya.io/ipfs',
+		view: 'https://ipfs.rumsan.com',
 		upload: 'http://172.110.7.136:5001',
 		display: 'Rumsan',
 		default: true

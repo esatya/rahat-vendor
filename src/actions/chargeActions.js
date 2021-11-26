@@ -1,0 +1,4 @@
+module.exports = {
+	SET_TOKEN_AMOUNT: 'SET_TOKEN_AMOUNT',
+	SET_NFT_AMOUNT: 'SET_NFT_AMOUNT'
+};
