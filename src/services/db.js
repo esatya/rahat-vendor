@@ -153,7 +153,7 @@ const DataService = {
 	},
 
 	getNft(id) {
-		return db.nfts.get(id);
+		return db.nfts.get(parseInt(id));
 	},
 
 	listNft() {
