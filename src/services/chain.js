@@ -72,6 +72,10 @@ const RahatService = (agencyAddress, wallet) => {
 			const contract = await this.getContract();
 			const tokenIds = await contract.getTokenIdsOfBeneficiary(Number(phone));
 			return tokenIds;
+		},
+		async getTotalERC1155Balance(phone) {
+			const contract = await this.getContract();
+			return contract.getTotalERC1155Balance(Number(phone));
 		}
 	};
 };
