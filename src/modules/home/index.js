@@ -19,7 +19,7 @@ import GoogleBackup from '../misc/googleBackup';
 import Charge from '../charge/token/index';
 import OTP from '../charge/otp/index';
 import Assets from '../assets';
-import Package from '../assets/details';
+
 import PackageDetails from '../package/packageDetails';
 import ChargePackage from '../charge/package';
 
