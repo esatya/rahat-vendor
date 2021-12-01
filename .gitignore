@@ -65,3 +65,5 @@ typings/
 .env
 play/
 build/
+
+coverage/
