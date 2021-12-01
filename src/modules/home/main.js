@@ -118,7 +118,6 @@ export default function Main() {
 				clearTimeout(timer);
 				clearTimeout(timer1);
 			};
-
 		})();
 		return function cleanup() {
 			if (timer1) clearTimeout(timer1);

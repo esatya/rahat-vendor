@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useEffect, useContext, useCallback } from 'react';
 import { ChargeDetails, OTP, QrcodeReader } from './sheets';
 import { ActionSheetContext } from '../contexts/ActionSheetContext';
 
@@ -14,7 +14,7 @@ export default function ChargeAction(props) {
 		setActiveSheet(null);
 		showLoading(null);
 	};
-
+	//eslint-disable-next-line
 	useEffect(init, []);
 
 	return (

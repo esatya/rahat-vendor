@@ -3,9 +3,9 @@ import { useHistory } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 
-import DataService from '../../services/db';
-import { RahatService } from '../../services/chain';
-import { AppContext } from '../../contexts/AppContext';
+// import DataService from '../../services/db';
+// import { RahatService } from '../../services/chain';
+// import { AppContext } from '../../contexts/AppContext';
 import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 import ActionSheet from './ActionSheet';
 
@@ -14,7 +14,7 @@ export default function ChargeDetails(props) {
 	const { onHide, showModal } = props;
 
 	const { showLoading, data, setData, setActiveSheet } = useContext(ActionSheetContext);
-	const { wallet } = useContext(AppContext);
+	// const { wallet } = useContext(AppContext);
 
 	const chargeCustomer = async () => {
 		showLoading('Charging customer account...');
