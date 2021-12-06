@@ -1,7 +1,7 @@
 import axios from 'axios';
-import * as API_CALLS from '../../../src/services';
+import * as API_CALLS from '../../src/services';
 import 'regenerator-runtime/runtime';
-import api from '../../../src/constants/api';
+import api from '../../src/constants/api';
 
 jest.mock('axios');
 
@@ -64,7 +64,6 @@ describe('API calls', () => {
 		};
 		axios.post.mockImplementationOnce(() => Promise.resolve(data));
 
-		console.log('api variable', api.REGISTER);
 		await API_CALLS.registerToAgency(payload);
 		expect(axios.post).toHaveBeenCalled();
 		expect(axios.post).toHaveBeenCalledWith(`${api.REGISTER}`, JSON.stringify(payload), {
@@ -73,5 +72,19 @@ describe('API calls', () => {
 				'Content-Type': 'application/json'
 			}
 		});
+	});
+	it('Checks for Approval Correctly', async () => {
+		const walletAddress = '981c21250604365793d43080fa303De29D1bcF42';
+
+		axios.get.mockResolvedValue({
+			address: 'Address 1',
+			agencies: [{ status: 'new' }],
+			email: 'joeBiden@gmail.com'
+		});
+
+		await API_CALLS.checkApproval(walletAddress);
+
+		expect(axios.get).toHaveBeenCalled();
+		expect(axios.get).toHaveBeenCalledWith(`${api.SERVER_URL}/vendors/0x${walletAddress}`);
 	});
 });

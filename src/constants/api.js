@@ -3,5 +3,6 @@ const base_url = server_url + '/api/v1';
 
 module.exports = {
 	REGISTER: base_url + '/vendors/register',
-	NFT: server_url + '/nft'
+	NFT: server_url + '/nft',
+	SERVER_URL: server_url
 };
