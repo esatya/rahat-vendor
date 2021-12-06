@@ -2,12 +2,6 @@ import axios from 'axios';
 import * as API_CALLS from '../../../src/services';
 import 'regenerator-runtime/runtime';
 import api from '../../../src/constants/api';
-// import { globals } from '../../../jest.config';
-
-// const api = {
-// 	REGISTER: globals.REACT_APP_DEFAULT_AGENCY_API + '/vendors/register',
-// 	NFT: globals.REACT_APP_DEFAULT_AGENCY_API + '/nft'
-// };
 
 jest.mock('axios');
 
@@ -69,6 +63,8 @@ describe('API calls', () => {
 			gender: 'M'
 		};
 		axios.post.mockImplementationOnce(() => Promise.resolve(data));
+
+		console.log('api variable', api.REGISTER);
 		await API_CALLS.registerToAgency(payload);
 		expect(axios.post).toHaveBeenCalled();
 		expect(axios.post).toHaveBeenCalledWith(`${api.REGISTER}`, JSON.stringify(payload), {
