@@ -1,0 +1,42 @@
+name: Coveralls CI/CD
+on:
+    push:
+        branches:
+            - stage
+    pull_request:
+        branches:
+            - stage
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x]
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: yarn install
+
+    coverage:
+        name: Coveralls
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x]
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: yarn setup
+            - run: yarn run test
+            - uses: coverallsapp/github-action@stage
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
