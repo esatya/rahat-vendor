@@ -117,8 +117,8 @@ const DataService = {
 		return db.agencies.get(address);
 	},
 
-	async updateAgency(key, data) {
-		return db.agencies.update(key, data);
+	async updateAgency(agencyAddress, data) {
+		return db.agencies.update(agencyAddress, data);
 	},
 
 	listAgencies() {
