@@ -32,3 +32,4 @@ export async function checkApproval(walletAddress) {
 		throw Error(e);
 	}
 }
+
