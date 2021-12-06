@@ -23,3 +23,12 @@ export async function getPackageDetails(id) {
 		throw Error(e);
 	}
 }
+
+export async function checkApproval(walletAddress) {
+	try {
+		const res = await axios.get(`${API.SERVER_URL}/vendors/0x${walletAddress}`);
+		return res.data;
+	} catch (e) {
+		throw Error(e);
+	}
+}
