@@ -141,7 +141,9 @@ const DataService = {
 
 	listTx(type) {
 		if (!type) return db.transactions.orderBy('timestamp').reverse().toArray();
-		return db.transactions.get({ type }).orderBy('timestamp').reverse();
+		return db.transactions.where({ type: type }).reverse().sortBy('timestamp');
+
+		// return db.transactions.get({ type }).orderBy('timestamp').reverse();
 	},
 
 	async addNft(nft) {

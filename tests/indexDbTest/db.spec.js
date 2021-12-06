@@ -100,4 +100,28 @@ describe('Testing Index DB', () => {
 			});
 		});
 	});
+
+	//Trasnaction
+
+	describe('Tests major functions of index db in transaction table', () => {
+		const mockTrxn = {
+			hash: '0x4b69fb35f7f337eaef7a98cc4ad265b5f110220e82058b4a7d13c367ce07e0cf',
+			type: 'tokenRecieved',
+			timestamp: Date.now(),
+			amount: 10,
+			to: 2222,
+			from: '0xa1c9753e7181313585b07bcd88a64a8ebd808ed7',
+			status: 'success'
+		};
+		it('adds and gets trasnaction properly', async () => {
+			await DataService.addTx(mockTrxn);
+			const savedTxn = await DataService.getTx(mockTrxn.hash);
+			expect(savedTxn).toMatchObject(mockTrxn);
+		});
+
+		it('lists trasnaction properly', async () => {
+			const txnList = await DataService.listTx(mockTrxn.type);
+			expect(txnList[0]).toMatchObject(mockTrxn);
+		});
+	});
 });
