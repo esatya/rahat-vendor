@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { IoCloseCircle, IoSendOutline, IoQrCodeOutline } from 'react-icons/io5';
+import { IoCloseCircle, IoSendOutline } from 'react-icons/io5';
+
 
 import { AppContext } from '../../../contexts/AppContext';
 import { ChargeContext } from '../../../contexts/ChargeContext';
@@ -14,19 +15,19 @@ import PackageList from '../../package/packageList';
 import { RahatService } from '../../../services/chain';
 import { getPackageDetails } from '../../../services';
 
-const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
+const { CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Token(props) {
-	const { wallet, setTokenBalance } = useContext(AppContext);
+	const { wallet } = useContext(AppContext);
+
 	const { setTokenAmount } = useContext(ChargeContext);
 	let history = useHistory();
 	let beneficiary = props.match.params.beneficiary;
 	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
 	const [loading, showLoading] = useState(null);
 	const [chargeAmount, setChargeAmount] = useState(null);
-	const [tokenIds, setTokenIds] = useState([]);
 	const [packages, setPackages] = useState([]);
-	//const [tokenChargeData,setTokenChargeData] = useState()
+
 
 	const handleChargeClick = async () => {
 		try {
@@ -34,14 +35,13 @@ export default function Token(props) {
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
 			await rahat.chargeCustomerForERC20(beneficiaryPhone, chargeAmount);
-			//setData({ chargeTxHash: receipt.transactionHash });
-			// console.log(receipt);
+
 			setTokenAmount(chargeAmount);
 			history.push(`/charge/${beneficiaryPhone}/otp/${CHARGE_TYPES.TOKEN}`);
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);
-			// console.log(e);
+
 		}
 	};
 
@@ -51,22 +51,29 @@ export default function Token(props) {
 
 	useEffect(() => {
 		(async () => {
+			setPackages([]);
 			if (beneficiary) setBeneficiaryPhone(beneficiary);
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
-			let tokenIds = await rahat.getBeneficiaryTokenIds(Number(beneficiary));
-			tokenIds = tokenIds.map(t => t.toNumber());
+			let totalERC1155Balance = await rahat.getTotalERC1155Balance(Number(beneficiary));
 
-			tokenIds.forEach(async el => {
+			let tokenIds = totalERC1155Balance.tokenIds.map(t => t.toNumber());
+
+			tokenIds.forEach(async (el, index) => {
 				const data = await getPackageDetails(el);
-				//tokenId,name,symbol,description,value,amount
+
+				const balance = totalERC1155Balance.balances[index].toNumber();
+
+
 				const pkg = {
 					tokenId: data.tokenId,
 					name: data.name,
 					symbol: data.symbol,
 					description: data.metadata && data.metadata.description ? data.metadata.description : '',
 					value: data.metadata && data.metadata.fiatValue ? data.metadata.fiatValue : '',
-					imageUri: data.metadata && data.metadata.packageImgURI ? data.metadata.packageImgURI : ''
+					imageUri: data.metadata && data.metadata.packageImgURI ? data.metadata.packageImgURI : '',
+					balance
+
 				};
 				setPackages(packages => [...packages, pkg]);
 			});

@@ -29,6 +29,7 @@ export default function Main() {
 		}
 	};
 
+	//eslint-disable-next-line
 	useEffect(() => {
 		(async () => {
 			await checkForApproval();

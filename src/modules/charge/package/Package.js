@@ -48,8 +48,9 @@ export default function ChargePackage(props) {
 
 	useEffect(() => {
 		(async () => {
-			const agency = await DataService.getDefaultAgency();
-			const rahat = RahatService(agency.address, wallet);
+			// const agency = await DataService.getDefaultAgency();
+			// const rahat = RahatService(agency.address, wallet);
+
 			const data = await getPackageDetails(tokenId);
 
 			setPkg({
