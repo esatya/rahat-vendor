@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IoCloseCircle, IoSendOutline } from 'react-icons/io5';
 
+
 import { AppContext } from '../../../contexts/AppContext';
 import { ChargeContext } from '../../../contexts/ChargeContext';
 
@@ -18,6 +19,7 @@ const { CHARGE_TYPES } = APP_CONSTANTS;
 
 export default function Token(props) {
 	const { wallet } = useContext(AppContext);
+
 	const { setTokenAmount } = useContext(ChargeContext);
 	let history = useHistory();
 	let beneficiary = props.match.params.beneficiary;
@@ -25,6 +27,7 @@ export default function Token(props) {
 	const [loading, showLoading] = useState(null);
 	const [chargeAmount, setChargeAmount] = useState(null);
 	const [packages, setPackages] = useState([]);
+
 
 	const handleChargeClick = async () => {
 		try {
@@ -38,6 +41,7 @@ export default function Token(props) {
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);
+
 		}
 	};
 
@@ -60,6 +64,7 @@ export default function Token(props) {
 
 				const balance = totalERC1155Balance.balances[index].toNumber();
 
+
 				const pkg = {
 					tokenId: data.tokenId,
 					name: data.name,
@@ -68,6 +73,7 @@ export default function Token(props) {
 					value: data.metadata && data.metadata.fiatValue ? data.metadata.fiatValue : '',
 					imageUri: data.metadata && data.metadata.packageImgURI ? data.metadata.packageImgURI : '',
 					balance
+
 				};
 				setPackages(packages => [...packages, pkg]);
 			});
