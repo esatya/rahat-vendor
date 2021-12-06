@@ -87,7 +87,6 @@ describe('App Reducer Test', () => {
 	it('Sets Wallet', () => {
 		const state = initialState;
 		const wallet = ethers.Wallet.createRandom();
-		console.log({ wallet });
 		const action = {
 			type: APP_ACTIONS.SET_WALLET,
 			data: wallet
