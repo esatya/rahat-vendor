@@ -37,6 +37,6 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - run: yarn setup
             - run: yarn run test
-            - uses: coverallsapp/github-action@stage
+            - uses: coverallsapp/github-action@master
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
