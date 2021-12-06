@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { GiReceiveMoney } from 'react-icons/gi';
-import { GrTransaction } from 'react-icons/gr';
 import { MdWebAsset } from 'react-icons/md';
 import { useIcon } from '../../utils/react-utils';
 import { isOffline } from '../../utils';
@@ -9,7 +8,7 @@ import ChargeActionSheet from '../../actionsheets/Charge';
 import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 
 export default function UnlockedFooter() {
-	const { setActiveSheet, showLoading } = useContext(ActionSheetContext);
+	const { setActiveSheet } = useContext(ActionSheetContext);
 	//const [showChargeAction, setShowChargeAction] = useState(false);
 
 	//const handleChargeActionToggle = () => setShowChargeAction(!showChargeAction);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
-import { GiReceiveMoney, GiMoneyStack } from 'react-icons/gi';
+import { GiTwoCoins } from 'react-icons/gi';
 import { BiError } from 'react-icons/bi';
 import Moment from 'react-moment';
 
