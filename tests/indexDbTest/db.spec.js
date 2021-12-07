@@ -210,4 +210,68 @@ describe('Testing Index DB', () => {
 			expect(updatedAsset).toMatchObject({ ...secondaryAsset, name: update.name });
 		});
 	});
+
+	//Document
+
+	describe('Tests major functions of index db in document table', () => {
+		const mockDocument = {
+			hash: 'hash1',
+			type: 'type',
+			name: 'name',
+			file: 'file',
+			encryptedFile: 'encryptedFile',
+			createdAt: 'createdAt',
+			inIpfs: 'inIpfs'
+		};
+		const secondMockDocument = {
+			hash: 'hash2',
+			type: 'type',
+			name: 'name',
+			file: 'file',
+			encryptedFile: 'encryptedFile',
+			createdAt: 'createdAt',
+			inIpfs: 'inIpfs'
+		};
+
+		it('saves and gets document properly', async () => {
+			await DataService.saveDocuments(mockDocument);
+
+			let document = await DataService.getDocument(mockDocument.hash);
+
+			expect(document).toMatchObject(mockDocument);
+			let documentList;
+
+			documentList = await DataService.listDocuments();
+			expect(documentList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						hash: mockDocument.hash
+					})
+				])
+			);
+
+			await DataService.clearAll();
+
+			await DataService.saveDocuments([mockDocument, secondMockDocument]);
+			documentList = await DataService.listDocuments();
+			expect(documentList.length).toBeGreaterThan(1);
+			expect(documentList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						hash: secondMockDocument.hash
+					})
+				])
+			);
+		});
+
+		it('updates document properly', async () => {
+			const update = {
+				name: 'Edited name'
+			};
+			await DataService.updateDocument(secondMockDocument.hash, { ...secondMockDocument, ...update });
+
+			const updatedDoc = await DataService.getDocument(secondMockDocument.hash);
+			expect(updatedDoc.name).not.toEqual(secondMockDocument.name);
+		});
+	});
 });
