@@ -141,7 +141,6 @@ describe('Testing Index DB', () => {
 		it('adds and gets nft properly', async () => {
 			await DataService.addNft(mockNft);
 			const savedNft = await DataService.getNft(mockNft.tokenId);
-			console.log({ savedNft });
 			expect(savedNft).toMatchObject(mockNft);
 		});
 
@@ -149,6 +148,66 @@ describe('Testing Index DB', () => {
 			const nftList = await DataService.listNft();
 
 			expect(nftList[0]).toMatchObject(mockNft);
+		});
+	});
+
+	//Assets
+
+	describe('Tests major functions of index db in assests table', () => {
+		const mockAsset = {
+			address: 'default',
+			balance: 0,
+			decimal: 18,
+			name: 'Ether',
+			symbol: 'ETH'
+		};
+		const secondaryAsset = {
+			address: 'secondary',
+			balance: 0,
+			decimal: 18,
+			name: 'Rasil',
+			symbol: 'RAS'
+		};
+		it('adds and gets default assets properly', async () => {
+			await DataService.addDefaultAsset(mockAsset.symbol, mockAsset.name);
+			const savedAsset = await DataService.getAsset(mockAsset.address);
+
+			expect(savedAsset).toMatchObject(mockAsset);
+		});
+		it(' gets assets by symbol properly', async () => {
+			const savedAsset = await DataService.getAssetBySymbol(mockAsset.symbol);
+
+			expect(savedAsset).toMatchObject(mockAsset);
+		});
+		it(' saves multiple assets  properly and lists all of them properly', async () => {
+			await DataService.clearAll();
+			await DataService.addMultiAssets([mockAsset, secondaryAsset]);
+			const assetsList = await DataService.listAssets();
+			expect(assetsList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: mockAsset.name
+					})
+				])
+			);
+			expect(assetsList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: secondaryAsset.name
+					})
+				])
+			);
+		});
+
+		it('updates assets properly', async () => {
+			const update = { name: 'updatedAsset' };
+			await DataService.updateAsset(secondaryAsset.address, {
+				...secondaryAsset,
+				name: update.name
+			});
+
+			const updatedAsset = await DataService.getAsset(secondaryAsset.address);
+			expect(updatedAsset).toMatchObject({ ...secondaryAsset, name: update.name });
 		});
 	});
 });
