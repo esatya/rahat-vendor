@@ -60,6 +60,9 @@ const DataService = {
 		await db.data.clear();
 		await db.assets.clear();
 		await db.documents.clear();
+		await db.nfts.clear();
+		await db.transactions.clear();
+		await db.agencies.clear();
 	},
 
 	saveNetwork(network) {
@@ -149,7 +152,7 @@ const DataService = {
 	async addNft(nft) {
 		const { tokenId } = nft;
 		const storedNft = await this.getNft(tokenId);
-		if (!storedNft) return db.nfts.put({ ...nft, amount: 1 });
+		if (!storedNft) return db.nfts.put({ ...nft, amount: nft.amount ? nft.amount : 1 });
 		storedNft.amount++;
 		return db.nfts.put(storedNft);
 	},

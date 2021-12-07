@@ -124,4 +124,31 @@ describe('Testing Index DB', () => {
 			expect(txnList[0]).toMatchObject(mockTrxn);
 		});
 	});
+
+	//NFT
+
+	describe('Tests major functions of index db in nft table', () => {
+		const mockNft = {
+			name: 'RICE',
+			symbol: 'RIC',
+			amount: 3,
+			imageUri: 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA',
+			tokenId: 1,
+			value: 370,
+			description: 'Mock description',
+			metadataURI: 'QmPhqCqwJbDSp8GkPmmhUPA6NCzsYZ4sh2qFEnojd9SFRe'
+		};
+		it('adds and gets nft properly', async () => {
+			await DataService.addNft(mockNft);
+			const savedNft = await DataService.getNft(mockNft.tokenId);
+			console.log({ savedNft });
+			expect(savedNft).toMatchObject(mockNft);
+		});
+
+		it('lists nfts properly', async () => {
+			const nftList = await DataService.listNft();
+
+			expect(nftList[0]).toMatchObject(mockNft);
+		});
+	});
 });
