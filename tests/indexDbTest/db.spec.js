@@ -124,4 +124,154 @@ describe('Testing Index DB', () => {
 			expect(txnList[0]).toMatchObject(mockTrxn);
 		});
 	});
+
+	//NFT
+
+	describe('Tests major functions of index db in nft table', () => {
+		const mockNft = {
+			name: 'RICE',
+			symbol: 'RIC',
+			amount: 3,
+			imageUri: 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA',
+			tokenId: 1,
+			value: 370,
+			description: 'Mock description',
+			metadataURI: 'QmPhqCqwJbDSp8GkPmmhUPA6NCzsYZ4sh2qFEnojd9SFRe'
+		};
+		it('adds and gets nft properly', async () => {
+			await DataService.addNft(mockNft);
+			const savedNft = await DataService.getNft(mockNft.tokenId);
+			expect(savedNft).toMatchObject(mockNft);
+		});
+
+		it('lists nfts properly', async () => {
+			const nftList = await DataService.listNft();
+
+			expect(nftList[0]).toMatchObject(mockNft);
+		});
+	});
+
+	//Assets
+
+	describe('Tests major functions of index db in assests table', () => {
+		const mockAsset = {
+			address: 'default',
+			balance: 0,
+			decimal: 18,
+			name: 'Ether',
+			symbol: 'ETH'
+		};
+		const secondaryAsset = {
+			address: 'secondary',
+			balance: 0,
+			decimal: 18,
+			name: 'Rasil',
+			symbol: 'RAS'
+		};
+		it('adds and gets default assets properly', async () => {
+			await DataService.addDefaultAsset(mockAsset.symbol, mockAsset.name);
+			const savedAsset = await DataService.getAsset(mockAsset.address);
+
+			expect(savedAsset).toMatchObject(mockAsset);
+		});
+		it(' gets assets by symbol properly', async () => {
+			const savedAsset = await DataService.getAssetBySymbol(mockAsset.symbol);
+
+			expect(savedAsset).toMatchObject(mockAsset);
+		});
+		it(' saves multiple assets  properly and lists all of them properly', async () => {
+			await DataService.clearAll();
+			await DataService.addMultiAssets([mockAsset, secondaryAsset]);
+			const assetsList = await DataService.listAssets();
+			expect(assetsList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: mockAsset.name
+					})
+				])
+			);
+			expect(assetsList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: secondaryAsset.name
+					})
+				])
+			);
+		});
+
+		it('updates assets properly', async () => {
+			const update = { name: 'updatedAsset' };
+			await DataService.updateAsset(secondaryAsset.address, {
+				...secondaryAsset,
+				name: update.name
+			});
+
+			const updatedAsset = await DataService.getAsset(secondaryAsset.address);
+			expect(updatedAsset).toMatchObject({ ...secondaryAsset, name: update.name });
+		});
+	});
+
+	//Document
+
+	describe('Tests major functions of index db in document table', () => {
+		const mockDocument = {
+			hash: 'hash1',
+			type: 'type',
+			name: 'name',
+			file: 'file',
+			encryptedFile: 'encryptedFile',
+			createdAt: 'createdAt',
+			inIpfs: 'inIpfs'
+		};
+		const secondMockDocument = {
+			hash: 'hash2',
+			type: 'type',
+			name: 'name',
+			file: 'file',
+			encryptedFile: 'encryptedFile',
+			createdAt: 'createdAt',
+			inIpfs: 'inIpfs'
+		};
+
+		it('saves and gets document properly', async () => {
+			await DataService.saveDocuments(mockDocument);
+
+			let document = await DataService.getDocument(mockDocument.hash);
+
+			expect(document).toMatchObject(mockDocument);
+			let documentList;
+
+			documentList = await DataService.listDocuments();
+			expect(documentList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						hash: mockDocument.hash
+					})
+				])
+			);
+
+			await DataService.clearAll();
+
+			await DataService.saveDocuments([mockDocument, secondMockDocument]);
+			documentList = await DataService.listDocuments();
+			expect(documentList.length).toBeGreaterThan(1);
+			expect(documentList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						hash: secondMockDocument.hash
+					})
+				])
+			);
+		});
+
+		it('updates document properly', async () => {
+			const update = {
+				name: 'Edited name'
+			};
+			await DataService.updateDocument(secondMockDocument.hash, { ...secondMockDocument, ...update });
+
+			const updatedDoc = await DataService.getDocument(secondMockDocument.hash);
+			expect(updatedDoc.name).not.toEqual(secondMockDocument.name);
+		});
+	});
 });
