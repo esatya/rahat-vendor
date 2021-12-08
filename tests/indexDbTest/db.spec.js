@@ -1,7 +1,7 @@
 import DataService from '../../src/services/db';
 import 'fake-indexeddb/auto';
 import 'regenerator-runtime/runtime';
-
+import { NETWORKS } from '../../src/constants/networks';
 describe('Testing Index DB', () => {
 	//Data Table
 	describe('Tests major function in indx db data table', () => {
@@ -30,6 +30,116 @@ describe('Testing Index DB', () => {
 			const initApp = await DataService.initAppData();
 			expect(initApp).toMatchObject({ ...data });
 		});
+		it('gets removes data properly', async () => {
+			const mockData = {
+				name: 'testData',
+				data: 'Hello world'
+			};
+			await DataService.save(mockData.name, mockData.data);
+
+			const saveData = await DataService.get(mockData.name);
+			expect(saveData).toBe(mockData.data);
+
+			await DataService.remove(mockData.name);
+
+			const removedData = await DataService.get(mockData.name);
+
+			expect(removedData).toBeNull();
+		});
+
+		it('lists data table properly', async () => {
+			const mockData = {
+				name: 'Test Data',
+				data: {
+					0: 'abx',
+					1: 'qwery'
+				}
+			};
+			const list = await DataService.list();
+			expect(list).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: mockData.name
+					})
+				])
+			);
+		});
+		it('saves profile and gets properly', async () => {
+			const mockProfileData = {
+				name: 'Test Data',
+				email: 'test@gmail.com',
+				imageUri: 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA'
+			};
+			await DataService.saveProfile(mockProfileData);
+
+			const profile = await DataService.getProfile();
+			expect(profile).toMatchObject(mockProfileData);
+		});
+
+		it('saves profile image properly', async () => {
+			const mockProfileImg = 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA';
+
+			await DataService.saveProfileImage(mockProfileImg);
+
+			const profileImg = await DataService.get('profileImage');
+			expect(profileImg).toEqual(mockProfileImg);
+		});
+
+		it('saves profile id card properly', async () => {
+			const mockProfileIdCard = 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA';
+
+			await DataService.saveProfileIdCard(mockProfileIdCard);
+
+			const profileIdCard = await DataService.get('profileIdCard');
+			expect(profileIdCard).toEqual(mockProfileIdCard);
+		});
+
+		it('saves and gets network properly', async () => {
+			// await DataService.clearAll();
+			const network = NETWORKS.filter(netwrk => netwrk.name === 'rumsan');
+			await DataService.saveNetwork(network);
+
+			const savedNetwork = await DataService.getNetwork();
+			expect(savedNetwork).toMatchObject(network);
+		});
+		it('saves and gets ipfsUrl properly', async () => {
+			const mockUrl = process.env.REACT_APP_DEFAULT_IPFS;
+			const mockDownloadUrl = process.env.REACT_APP_DEFAULT_IPFS_DOWNLOAD;
+			await DataService.saveIpfsUrl(mockUrl);
+
+			const saveUrl = await DataService.getIpfs();
+			expect(saveUrl).toMatchObject({ ipfsUrl: mockUrl, ipfsDownloadUrl: mockDownloadUrl });
+		});
+
+		it('saves and gets ipfsDownloadUrl properly', async () => {
+			const mockDownloadUrl = process.env.REACT_APP_DEFAULT_IPFS_DOWNLOAD;
+			await DataService.saveIpfsDownloadUrl(mockDownloadUrl);
+
+			const savedUrl = await DataService.get('ipfsUrlDownload');
+			expect(savedUrl).toEqual(mockDownloadUrl);
+		});
+		it('saves and gets address properly', async () => {
+			const mockAddress = 'banepa123';
+			await DataService.saveAddress(mockAddress);
+
+			const savedAddress = await DataService.getAddress();
+			expect(savedAddress).toEqual(mockAddress);
+
+			const locallySavedAddress = DataService.getAddressFromLocal();
+			expect(locallySavedAddress).toEqual(mockAddress);
+		});
+
+		it('saves wallet properly', async () => {
+			const mockWallet = {
+				address: '0xeddA7538FB64f60589605AFeFC90c510d2cAfA18',
+				network: 'https://testnetwork.esatya.io'
+			};
+
+			await DataService.saveWallet(mockWallet);
+
+			const savedWallet = await DataService.getWallet();
+			expect(savedWallet).toMatchObject(mockWallet);
+		});
 	});
 
 	//Agency Table
@@ -52,6 +162,9 @@ describe('Testing Index DB', () => {
 			const savedAgency = await DataService.getAgency(mockAgency.address);
 
 			expect(savedAgency).toMatchObject(mockAgency);
+
+			const defaultAgency = await DataService.getDefaultAgency();
+			expect(defaultAgency).toMatchObject(mockAgency);
 		});
 		it('Updates agency properly', async () => {
 			const mockAgency = {
@@ -138,13 +251,29 @@ describe('Testing Index DB', () => {
 			description: 'Mock description',
 			metadataURI: 'QmPhqCqwJbDSp8GkPmmhUPA6NCzsYZ4sh2qFEnojd9SFRe'
 		};
+		const secondNft = {
+			name: 'RICE',
+			symbol: 'RIC',
+			imageUri: 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA',
+			tokenId: 1,
+			value: 370,
+			description: 'Mock description',
+			metadataURI: 'QmPhqCqwJbDSp8GkPmmhUPA6NCzsYZ4sh2qFEnojd9SFRe'
+		};
 		it('adds and gets nft properly', async () => {
 			await DataService.addNft(mockNft);
 			const savedNft = await DataService.getNft(mockNft.tokenId);
 			expect(savedNft).toMatchObject(mockNft);
+			await DataService.addNft(secondNft);
+			const savedSecondNft = await DataService.getNft(mockNft.tokenId);
+
+			expect(savedSecondNft).toMatchObject({ ...savedNft, amount: savedNft.amount + 1 });
 		});
 
 		it('lists nfts properly', async () => {
+			await DataService.clearAll();
+
+			await DataService.addNft(mockNft);
 			const nftList = await DataService.listNft();
 
 			expect(nftList[0]).toMatchObject(mockNft);
@@ -168,6 +297,14 @@ describe('Testing Index DB', () => {
 			name: 'Rasil',
 			symbol: 'RAS'
 		};
+		const assetWithNetwork = {
+			address: 'third',
+			balance: 0,
+			decimal: 18,
+			name: 'Rasilo',
+			symbol: 'RASO',
+			network: NETWORKS[0]
+		};
 		it('adds and gets default assets properly', async () => {
 			await DataService.addDefaultAsset(mockAsset.symbol, mockAsset.name);
 			const savedAsset = await DataService.getAsset(mockAsset.address);
@@ -178,10 +315,15 @@ describe('Testing Index DB', () => {
 			const savedAsset = await DataService.getAssetBySymbol(mockAsset.symbol);
 
 			expect(savedAsset).toMatchObject(mockAsset);
+
+			await DataService.saveAsset(assetWithNetwork);
+			const savedAssetWithNetwork = await DataService.getAssetBySymbol(assetWithNetwork.symbol, NETWORKS[0].name);
+
+			expect(savedAssetWithNetwork).toMatchObject(assetWithNetwork);
 		});
 		it(' saves multiple assets  properly and lists all of them properly', async () => {
 			await DataService.clearAll();
-			await DataService.addMultiAssets([mockAsset, secondaryAsset]);
+			await DataService.addMultiAssets([mockAsset, secondaryAsset, assetWithNetwork]);
 			const assetsList = await DataService.listAssets();
 			expect(assetsList).toEqual(
 				expect.arrayContaining([
@@ -194,6 +336,14 @@ describe('Testing Index DB', () => {
 				expect.arrayContaining([
 					expect.objectContaining({
 						name: secondaryAsset.name
+					})
+				])
+			);
+			const assetsListWIthNetwork = await DataService.listAssets(NETWORKS[0].name);
+			expect(assetsListWIthNetwork).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: assetWithNetwork.name
 					})
 				])
 			);
