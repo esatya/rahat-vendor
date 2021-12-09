@@ -1,3 +1,15 @@
+<p align="center">
+   <a href="https://coveralls.io/github/esatya/rahat-vendor?branch=master">
+    <img src="https://coveralls.io/repos/github/esatya/rahat-vendor/badge.svg?branch=master" alt="Coverage" />
+  </a>
+  <a href="https://github.com/esatya/rahat-vendor/blob/master/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
+  </a>
+  <a href="https://github.com/esatya/rahat-vendor/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg" alt="License" />
+  </a>
+</p>
+
 # Introduction
 Vendor app is a web-based Blockchain-based Wallet for Rahat vendors to signup and recieve tokens for beneficiaries.
 
