@@ -5,7 +5,7 @@ config/
 public/js/app
 yarn.lock
 coverage/
-jest/
+# jest/
 
 # Logs
 logs
