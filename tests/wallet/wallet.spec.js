@@ -67,6 +67,11 @@ describe('Test all methods in utils/wallet.js file', () => {
 	});
 
 	it('loads wallet from encryptedJson', async () => {
+		try {
+			await Wallet.loadFromJson('', globalWallet.encryptedWallet);
+		} catch (e) {
+			expect(e.message).toMatch('Passcode must be set first');
+		}
 		const unlockedWallet = await Wallet.loadFromJson(passcode, globalWallet.encryptedWallet);
 
 		const savedMockWallet = await Wallet.connectProvider(mockWallet.getWallet());
