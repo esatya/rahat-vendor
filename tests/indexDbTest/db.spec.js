@@ -1,10 +1,15 @@
 import DataService from '../../src/services/db';
 import 'fake-indexeddb/auto';
 import 'regenerator-runtime/runtime';
-import { NETWORKS } from '../../src/constants/networks';
+import { NETWORKS, getNetworkByName } from '../../src/constants/networks';
 describe('Testing Index DB', () => {
 	//Data Table
 	describe('Tests major function in indx db data table', () => {
+		it('gets network by name', async () => {
+			const fetchNetwork = getNetworkByName('mainnet');
+
+			expect(fetchNetwork).toMatchObject(NETWORKS.find(network => network.name === 'mainnet'));
+		});
 		it('Saves and gets data correctly', async () => {
 			const name = 'Test Data';
 			const data = {
