@@ -51,6 +51,14 @@ describe('API calls', () => {
 		expect(axios.get).toHaveBeenCalled();
 		expect(axios.get).toHaveBeenCalledWith(`${api.NFT}/token/${tokenId}`);
 	});
+	it('Handles error on Getting Package Details', async () => {
+		axios.get.mockRejectedValue({});
+		try {
+			await API_CALLS.getPackageDetails();
+		} catch (e) {
+			expect(e).toBeDefined();
+		}
+	});
 
 	it('Registers to Agency', async () => {
 		const payload = {
@@ -72,6 +80,16 @@ describe('API calls', () => {
 				'Content-Type': 'application/json'
 			}
 		});
+
+		axios.post.mockRejectedValue({});
+		try {
+			await API_CALLS.registerToAgency(payload);
+		} catch (e) {
+			console.log({ e });
+			expect(e).toBeDefined();
+		}
+
+		// expect(axios.post).toThrow();
 	});
 	it('Checks for Approval Correctly', async () => {
 		const walletAddress = '981c21250604365793d43080fa303De29D1bcF42';
@@ -86,5 +104,13 @@ describe('API calls', () => {
 
 		expect(axios.get).toHaveBeenCalled();
 		expect(axios.get).toHaveBeenCalledWith(`${api.SERVER_URL}/vendors/0x${walletAddress}`);
+	});
+	it('Handls error on Checks for Approval', async () => {
+		axios.get.mockRejectedValue({});
+		try {
+			await API_CALLS.checkApproval();
+		} catch (e) {
+			expect(e).toBeDefined();
+		}
 	});
 });

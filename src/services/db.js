@@ -188,13 +188,18 @@ const DataService = {
 
 	async getAssetBySymbol(symbol, network) {
 		if (!network) return db.assets.get({ symbol });
-		if (symbol.toUpperCase() === 'ETH') return db.assets.get({ symbol });
 		return db.assets.filter(a => a.symbol === symbol && a.network && a.network.name === network).first();
 	},
 
 	async addDefaultAsset(symbol, name) {
 		let asset = await this.getAsset('default');
 		if (!asset) return db.assets.add({ address: 'default', symbol, name, decimal: 18, balance: 0 });
+		asset = {
+			...asset,
+			symbol,
+			name
+		};
+		return this.updateAsset(asset.address, asset);
 	},
 
 	async addMultiAssets(assets) {
