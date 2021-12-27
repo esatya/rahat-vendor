@@ -324,12 +324,9 @@ describe('Testing Index DB', () => {
 
 		it('adds and gets default assets properly', async () => {
 			await DataService.clearAll();
-
-			const defaultAsset = await DataService.getAsset('default');
-			console.log({ defaultAsset });
-			await DataService.addDefaultAsset(mockAsset.symbol, mockAsset.name);
-			const savedAsset = await DataService.getAsset(mockAsset.address);
-			expect(savedAsset).toMatchObject(mockAsset);
+			await DataService.saveAsset(mockAsset);
+			const defaultSavedAsset = await DataService.getAsset('default');
+			expect(defaultSavedAsset).toMatchObject(mockAsset);
 		});
 
 		it('gets assests by symbol and network', async () => {
@@ -402,6 +399,21 @@ describe('Testing Index DB', () => {
 
 			const updatedAsset = await DataService.getAsset(mockAsset.address);
 			expect(updatedAsset).toMatchObject({ ...mockAsset, name: update.name });
+		});
+
+		it(' adds default asset (when no default asset present)', async () => {
+			await DataService.clearAll();
+			await DataService.addDefaultAsset(mockAsset.symbol, mockAsset.name);
+			const defAsset = await DataService.getAsset('default');
+			expect(defAsset).toMatchObject(mockAsset);
+		});
+		it(' adds default asset (when default asset is present)', async () => {
+			await DataService.clearAll();
+			await DataService.saveAsset(mockAsset);
+
+			await DataService.addDefaultAsset(secondaryAsset.symbol, secondaryAsset.name);
+			const defAsset = await DataService.getAsset('default');
+			expect(defAsset).toMatchObject({ ...secondaryAsset, address: 'default' });
 		});
 	});
 
