@@ -115,21 +115,28 @@ describe('App Reducer Test', () => {
 	it('Sets Balance', () => {
 		const state = initialState;
 
-		const action = {
+		let action = {
 			type: APP_ACTIONS.SET_BALANCE,
 			data: 12
 		};
 
-		const newState = AppReducer(state, action);
+		let newState = AppReducer(state, action);
 		expect(newState).toMatchObject({
 			...state,
 			tokenBalance: action.data
+		});
+
+		action.data = null;
+		newState = AppReducer(state, action);
+		expect(newState).toMatchObject({
+			...state,
+			tokenBalance: 0
 		});
 	});
 	it('Sets Recent transaction', () => {
 		const state = initialState;
 
-		const action = {
+		let action = {
 			type: APP_ACTIONS.ADD_RECENT_TX,
 			data: [
 				{
@@ -153,16 +160,23 @@ describe('App Reducer Test', () => {
 			]
 		};
 
-		const newState = AppReducer(state, action);
+		let newState = AppReducer(state, action);
 		expect(newState).toMatchObject({
 			...state,
 			recentTx: action.data
+		});
+
+		action.data = null;
+		newState = AppReducer(state, action);
+		expect(newState).toMatchObject({
+			...state,
+			recentTx: []
 		});
 	});
 	it('Sets Scanned Data', () => {
 		const state = initialState;
 
-		const action = {
+		let action = {
 			type: APP_ACTIONS.SET_SCANNED_DATA,
 			data: {
 				address: 'adress123',
@@ -170,7 +184,15 @@ describe('App Reducer Test', () => {
 			}
 		};
 
-		const newState = AppReducer(state, action);
+		let newState = AppReducer(state, action);
+		expect(newState).toMatchObject({
+			...state,
+			scannedEthAddress: action.data.address,
+			scannedAmount: action.data.amount
+		});
+
+		action.data.amount = null;
+		newState = AppReducer(state, action);
 		expect(newState).toMatchObject({
 			...state,
 			scannedEthAddress: action.data.address,
