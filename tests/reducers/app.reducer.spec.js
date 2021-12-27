@@ -191,4 +191,14 @@ describe('App Reducer Test', () => {
 			sendingTokenName: action.data
 		});
 	});
+	it('Handles default ', () => {
+		const state = initialState;
+
+		const action = {
+			type: ''
+		};
+
+		const newState = AppReducer(state, action);
+		expect(newState).toMatchObject(state);
+	});
 });
