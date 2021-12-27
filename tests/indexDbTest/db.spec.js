@@ -73,12 +73,15 @@ describe('Testing Index DB', () => {
 			const mockProfileData = {
 				name: 'Test Data',
 				email: 'test@gmail.com',
-				imageUri: 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA'
+				img: 'QmRBf9ZJgynFakt19JS5Y2i4qSXjoCCpUtshFqqL9ZoDWA'
 			};
 			await DataService.saveProfile(mockProfileData);
+			await DataService.saveProfileImage(mockProfileData.img);
 
 			const profile = await DataService.getProfile();
 			expect(profile).toMatchObject(mockProfileData);
+
+			expect(profile.img).toBe(mockProfileData.img);
 		});
 
 		it('saves profile image properly', async () => {
@@ -107,6 +110,14 @@ describe('Testing Index DB', () => {
 			const savedNetwork = await DataService.getNetwork();
 			expect(savedNetwork).toMatchObject(network);
 		});
+
+		it('gets ipfsUrl and ipfsDownloadUrl properyl', async () => {
+			const mockUrl = process.env.REACT_APP_DEFAULT_IPFS;
+			const mockDownloadUrl = process.env.REACT_APP_DEFAULT_IPFS_DOWNLOAD;
+			const savedIpfsUrl = await DataService.getIpfs();
+			expect(savedIpfsUrl).toMatchObject({ ipfsUrl: mockUrl, ipfsDownloadUrl: mockDownloadUrl });
+		});
+
 		it('saves and gets ipfsUrl properly', async () => {
 			const mockUrl = process.env.REACT_APP_DEFAULT_IPFS;
 			const mockDownloadUrl = process.env.REACT_APP_DEFAULT_IPFS_DOWNLOAD;
@@ -119,10 +130,10 @@ describe('Testing Index DB', () => {
 		it('saves and gets ipfsDownloadUrl properly', async () => {
 			const mockDownloadUrl = process.env.REACT_APP_DEFAULT_IPFS_DOWNLOAD;
 			await DataService.saveIpfsDownloadUrl(mockDownloadUrl);
-
 			const savedUrl = await DataService.get('ipfsUrlDownload');
 			expect(savedUrl).toEqual(mockDownloadUrl);
 		});
+
 		it('saves and gets address properly', async () => {
 			const mockAddress = 'banepa123';
 			await DataService.saveAddress(mockAddress);
@@ -310,12 +321,26 @@ describe('Testing Index DB', () => {
 			symbol: 'RASO',
 			network: NETWORKS[0]
 		};
+
 		it('adds and gets default assets properly', async () => {
+			await DataService.clearAll();
+
+			const defaultAsset = await DataService.getAsset('default');
+			console.log({ defaultAsset });
 			await DataService.addDefaultAsset(mockAsset.symbol, mockAsset.name);
 			const savedAsset = await DataService.getAsset(mockAsset.address);
-
 			expect(savedAsset).toMatchObject(mockAsset);
 		});
+
+		it('gets assests by symbol and network', async () => {
+			await DataService.saveAsset(assetWithNetwork);
+			const savedAsset = await DataService.getAssetBySymbol(
+				assetWithNetwork.symbol,
+				assetWithNetwork.network.name
+			);
+			expect(savedAsset).toMatchObject(assetWithNetwork);
+		});
+
 		it(' gets assets by symbol properly', async () => {
 			const savedAsset = await DataService.getAssetBySymbol(mockAsset.symbol);
 
@@ -326,6 +351,7 @@ describe('Testing Index DB', () => {
 
 			expect(savedAssetWithNetwork).toMatchObject(assetWithNetwork);
 		});
+
 		it(' saves multiple assets  properly and lists all of them properly', async () => {
 			await DataService.clearAll();
 			await DataService.addMultiAssets([mockAsset, secondaryAsset, assetWithNetwork]);
@@ -354,15 +380,28 @@ describe('Testing Index DB', () => {
 			);
 		});
 
+		it(' saves multiple assets  properly and lists all of them properly (passing single object)', async () => {
+			await DataService.clearAll();
+			await DataService.addMultiAssets(mockAsset);
+			const assetsList = await DataService.listAssets();
+			expect(assetsList).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: mockAsset.name
+					})
+				])
+			);
+		});
+
 		it('updates assets properly', async () => {
 			const update = { name: 'updatedAsset' };
-			await DataService.updateAsset(secondaryAsset.address, {
-				...secondaryAsset,
+			await DataService.updateAsset(mockAsset.address, {
+				...mockAsset,
 				name: update.name
 			});
 
-			const updatedAsset = await DataService.getAsset(secondaryAsset.address);
-			expect(updatedAsset).toMatchObject({ ...secondaryAsset, name: update.name });
+			const updatedAsset = await DataService.getAsset(mockAsset.address);
+			expect(updatedAsset).toMatchObject({ ...mockAsset, name: update.name });
 		});
 	});
 

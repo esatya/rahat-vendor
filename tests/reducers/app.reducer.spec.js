@@ -193,11 +193,9 @@ describe('App Reducer Test', () => {
 	});
 	it('Handles default ', () => {
 		const state = initialState;
-
 		const action = {
 			type: ''
 		};
-
 		const newState = AppReducer(state, action);
 		expect(newState).toMatchObject(state);
 	});
