@@ -47,9 +47,12 @@ const Wallet = {
 
 	async loadFromPrivateKey(privateKey) {
 		if (!privateKey) return null;
-		let wallet = new ethers.Wallet(privateKey);
-		if (!wallet) throw Error('Wallet not found');
-		return this.connectProvider(wallet);
+		try {
+			let wallet = new ethers.Wallet(privateKey);
+			return this.connectProvider(wallet);
+		} catch (e) {
+			throw e;
+		}
 	}
 };
 
