@@ -17,7 +17,6 @@ export async function registerToAgency(payload) {
 
 export async function getPackageDetails(id) {
 	try {
-		if (!id) throw new Error('Must send id');
 		const res = await axios.get(`${API.NFT}/token/${id}`);
 		return res.data;
 	} catch (e) {

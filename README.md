@@ -90,6 +90,6 @@ To deploy this software on production
 This repository uses eslint to enforce air-bnb coding styles.
 
 # Contributing
-Everyone is very welcome to contribute on the codebase of Rahat. Please reach us in Gitter in case of any query/feedback/suggestion.
+Everyone is very welcome to contribute on the codebase of Rahat. Please reach us in [Gitter](https://gitter.im/bockies/community?utm_source=badge&utm_medium=badge&utm_content=badge) in case of any query/feedback/suggestion.
 
-For more information on the contributing procedure, see [Contribution](https://github.com/esatya/rahat-documentation/blob/main/CONTRIBUTING.md).
+For more information on the contributing procedure, see [Contribution](https://github.com/esatya/rahat-vendor/blob/master/CONTRIBUTING.md).

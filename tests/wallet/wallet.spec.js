@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 
 import 'regenerator-runtime/runtime';
 import Wallet from '../../src/utils/blockchain/wallet';
-import { NETWORKS } from '../../src/constants/networks';
+import { NETWORKS, getNetworkByName } from '../../src/constants/networks';
 import 'fake-indexeddb/auto';
 import DataService from '../../src/services/db';
 
@@ -60,6 +60,29 @@ describe('Test all methods in utils/wallet.js file', () => {
 		await DataService.saveWallet(encryptedWallet);
 	});
 
+	it('connects with provider correctly', async () => {
+		const connectedWallet = await Wallet.connectProvider(globalWallet.wallet);
+		const { provider } = connectedWallet;
+		const walletNetwork = await provider.getNetwork();
+		const fetchProvider = await Wallet.getProvider();
+		const providerNetwork = await fetchProvider.getNetwork();
+
+		expect(walletNetwork).toMatchObject(providerNetwork);
+	});
+	it('connects with provider correctly when network is passed', async () => {
+		const network = getNetworkByName('mainnet');
+		const connectedWallet = await Wallet.connectProvider(globalWallet.wallet, network);
+		const { provider } = connectedWallet;
+		const walletNetwork = await provider.getNetwork();
+		const fetchProvider = await Wallet.getProvider(network);
+		const providerNetwork = await fetchProvider.getNetwork();
+		console.group({
+			walletNetwork,
+			providerNetwork
+		});
+		expect(walletNetwork).toMatchObject(providerNetwork);
+	});
+
 	it('creates wallet from mnemonic properly', async () => {
 		const { wallet } = await Wallet.create(passcode, mnemonic);
 		const savedMockWallet = await Wallet.connectProvider(mockWallet.getWallet());
@@ -67,6 +90,11 @@ describe('Test all methods in utils/wallet.js file', () => {
 	});
 
 	it('loads wallet from encryptedJson', async () => {
+		try {
+			await Wallet.loadFromJson('', globalWallet.encryptedWallet);
+		} catch (e) {
+			expect(e.message).toMatch('Passcode must be set first');
+		}
 		const unlockedWallet = await Wallet.loadFromJson(passcode, globalWallet.encryptedWallet);
 
 		const savedMockWallet = await Wallet.connectProvider(mockWallet.getWallet());
@@ -75,6 +103,18 @@ describe('Test all methods in utils/wallet.js file', () => {
 	});
 
 	it('loads wallet from private key', async () => {
+		const checkWallet = await Wallet.loadFromPrivateKey();
+		expect(checkWallet).toBeNull();
+
+		const mockPrivateKey = '0xola12983aklsdlah9zxckhasdas';
+
+		try {
+			await Wallet.loadFromPrivateKey(mockPrivateKey);
+		} catch (e) {
+			expect(e.message).toMatch(
+				'invalid hexlify value (argument="value", value="0xola12983aklsdlah9zxckhasdas", code=INVALID_ARGUMENT, version=bytes/5.5.0)'
+			);
+		}
 		const walletFromPrivateKey = await Wallet.loadFromPrivateKey(mockWallet.getPrivateKey());
 
 		const savedMockWallet = await Wallet.connectProvider(mockWallet.getWallet());
