@@ -32,3 +32,12 @@ export async function checkApproval(walletAddress) {
 		throw Error(e);
 	}
 }
+
+export async function checkBeneficiary(phone) {
+	try {
+		const res = await axios.get(`${API.SERVER_URL}/beneficiaries/check/${phone}`);
+		return res.data;
+	} catch (e) {
+		throw Error(e);
+	}
+}
