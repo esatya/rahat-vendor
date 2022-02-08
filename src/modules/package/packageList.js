@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const PackageList = ({ limit, packages = [], beneficiary }) => {
-
 	const [pkg, setPkg] = useState([]);
 
 	useEffect(() => {
@@ -11,7 +10,6 @@ const PackageList = ({ limit, packages = [], beneficiary }) => {
 			let pkgs = packages;
 			//	let pkgs = packages.length ? packages : await DataService.listNft();
 			if (limit) pkgs = pkgs.slice(0, limit);
-
 
 			setPkg(pkgs);
 		})();
@@ -44,14 +42,12 @@ const PackageList = ({ limit, packages = [], beneficiary }) => {
 										{p.name}
 
 										<span className="text-success">{p.balance}</span>
-
 									</div>
 								</Link>
 							</li>
 						);
 					})}
 			</ul>
-
 		</>
 	);
 };
