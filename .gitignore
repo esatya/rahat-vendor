@@ -4,6 +4,8 @@ sandbox/
 config/
 public/js/app
 yarn.lock
+coverage/
+# jest/
 
 # Logs
 logs

@@ -129,6 +129,7 @@ export default function Main() {
 				clearTimeout(timer);
 				clearTimeout(timer1);
 			};
+
 		})();
 		return function cleanup() {
 			if (timer1) clearTimeout(timer1);
@@ -202,7 +203,7 @@ export default function Main() {
 					<div className="wallet-card">
 						<div className="balance">
 							<div className="left">
-								<span className="title">Your Token Balance</span>
+								<span className="title">Balance</span>
 								<h1 className="total">{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>

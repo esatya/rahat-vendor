@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import DataService from '../../services/db';
-
+import { checkApproval } from '../../services';
 export default function Main() {
 	const history = useHistory();
 	const [agencyName, setAgencyName] = useState('the agency');
@@ -16,19 +16,26 @@ export default function Main() {
 		setAgencyName(dagency.name);
 
 		//update API to only query relevant agency.
-		let data = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/0x${wallet.address}`).then(r => {
-			if (!r.ok) throw Error(r.message);
-			return r.json();
-		});
-		if (!data.agencies.length) return history.push('/setup/idcard');
-		let status = data.agencies[0].status;
-		if (status === 'active') {
-			dagency.isApproved = true;
-			await DataService.updateAgency(dagency.address, dagency);
-			return history.push('/');
+		// let data = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/0x${wallet.address}`).then(r => {
+		// 	if (!r.ok) throw Error(r.message);
+		// 	return r.json();
+		// });
+
+		try {
+			let data = await checkApproval(wallet.address);
+			if (!data.agencies.length) return history.push('/setup/idcard');
+			let status = data.agencies[0].status;
+			if (status === 'active') {
+				dagency.isApproved = true;
+				await DataService.updateAgency(dagency.address, dagency);
+				return history.push('/');
+			}
+		} catch (e) {
+			throw Error(r.message);
 		}
 	};
 
+	//eslint-disable-next-line
 	useEffect(() => {
 		(async () => {
 			await checkForApproval();

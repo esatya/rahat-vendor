@@ -12,7 +12,7 @@ const Wallet = {
 		return wallet.connect(provider);
 	},
 
-	async getProvider() {
+	async getProvider(network = '') {
 		if (!network) network = await DataService.getNetwork();
 		const { url } = network;
 		const provider = new ethers.providers.JsonRpcProvider(url);
@@ -47,9 +47,12 @@ const Wallet = {
 
 	async loadFromPrivateKey(privateKey) {
 		if (!privateKey) return null;
-		let wallet = await new ethers.Wallet(privateKey);
-		if (!wallet) throw Error('Wallet not found');
-		return this.connectProvider(wallet);
+		try {
+			let wallet = new ethers.Wallet(privateKey);
+			return this.connectProvider(wallet);
+		} catch (e) {
+			throw e;
+		}
 	}
 };
 

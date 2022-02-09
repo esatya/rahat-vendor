@@ -7,7 +7,8 @@ import Moment from 'react-moment';
 import { AppContext } from '../../contexts/AppContext';
 import * as io5 from 'react-icons/io5';
 import DataService from '../../services/db';
-
+import { APP_CONSTANTS } from '../../constants';
+const { CHARGE_TYPES } = APP_CONSTANTS;
 export default function AllTransactions() {
 	const { recentTx } = useContext(AppContext);
 	const [tx, setTx] = useState([]);
@@ -48,6 +49,38 @@ export default function AllTransactions() {
 					t.icon = (
 						<div className="icon-box bg-primary">
 							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.TOKEN_RECIEVED) {
+					t.name = 'Token Recieved';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.TOKEN_SENT) {
+					t.name = 'Token Sent';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowForwardOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.NFT_RECIEVED) {
+					t.name = 'NFT Recieved';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.NFT_SENT) {
+					t.name = 'NFT Sent';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowForwardOutline className="ion-icon" />
 						</div>
 					);
 				}
@@ -129,3 +162,4 @@ export default function AllTransactions() {
 		</>
 	);
 }
+

@@ -1,10 +1,22 @@
-# vendor-web
-Web-based Blockchain-based Wallet for Rahat vendors to signup and recieve tokens for beneficiaries.
+<p align="center">
+   <a href="https://coveralls.io/github/esatya/rahat-vendor?branch=master">
+    <img src="https://coveralls.io/repos/github/esatya/rahat-vendor/badge.svg?branch=master" alt="Coverage" />
+  </a>
+  <a href="https://github.com/esatya/rahat-vendor/blob/master/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
+  </a>
+  <a href="https://github.com/esatya/rahat-vendor/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg" alt="License" />
+  </a>
+</p>
+
+# Introduction
+Vendor app is a web-based Blockchain-based Wallet for Rahat vendors to signup and recieve tokens for beneficiaries.
 
 _Important: This project is part of [Rahat Project](https://github.com/esatya/rahat). Please make sure you have setup Rahat service first._
 
-# About Rahat
-Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahat.esatya.io.
+# Rahat
+Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahat.io.
 
 Rahat’s main features are:
 - Dashboard for aid agencies to issue relief tokens to recipients & to onboard local community vendors. Agencies can audit all transactional information real-time. 
@@ -74,3 +86,10 @@ To deploy this software on production
 
 * you need a fully deployed [Rahat Server](https://github.com/esatya/rahat)
 * update the rahat server api on ```client.json````
+# Coding Styles
+This repository uses eslint to enforce air-bnb coding styles.
+
+# Contributing
+Everyone is very welcome to contribute on the codebase of Rahat. Please reach us in [Gitter](https://gitter.im/bockies/community?utm_source=badge&utm_medium=badge&utm_content=badge) in case of any query/feedback/suggestion.
+
+For more information on the contributing procedure, see [Contribution](https://github.com/esatya/rahat-vendor/blob/master/CONTRIBUTING.md).
