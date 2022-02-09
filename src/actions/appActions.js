@@ -7,5 +7,6 @@ module.exports = {
 	SET_SCANNED_DATA: 'set_scanned_eth_address',
 	SET_APP_PASSCODE: 'set_app_passcode',
 	SET_BALANCE: 'set_balance',
-	ADD_RECENT_TX: 'add_recent_tx'
+	ADD_RECENT_TX: 'add_recent_tx',
+	SET_LOADING: 'set_loading'
 };
