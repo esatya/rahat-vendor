@@ -16,7 +16,18 @@ var QRCode = require('qrcode.react');
 
 export default function Main() {
 	const history = useHistory();
-	const { hasWallet, wallet, tokenBalance, recentTx, setTokenBalance, addRecentTx, agency } = useContext(AppContext);
+	const {
+		hasWallet,
+		wallet,
+		tokenBalance,
+		recentTx,
+		setTokenBalance,
+		addRecentTx,
+		agency,
+		hasBackedUp,
+		contextLoading,
+		isSynchronizing
+	} = useContext(AppContext);
 	const [showPageLoader, setShowPageLoader] = useState(true);
 	const [redeemModal, setRedeemModal] = useState(false);
 	const [redeemAmount, setRedeemAmount] = useState('');
@@ -125,8 +136,20 @@ export default function Main() {
 		};
 	}, []);
 
+	if (contextLoading) {
+		return (
+			<div id="loader">
+				<img src="/assets/img/brand/icon-white-128.png" alt="icon" className="loading-icon" />
+			</div>
+		);
+	}
+
 	if (!hasWallet) {
 		return <Redirect to="/setup" />;
+	}
+
+	if (!hasBackedUp) {
+		return <Redirect to="/wallet/backup" />;
 	}
 
 	if (agency && !agency.isApproved) {

@@ -1,38 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
-
 import AppHeader from '../../layouts/AppHeader';
 import ModalWrapper from '../../global/ModalWrapper';
-import { APP_CONSTANTS } from '../../../constants';
 import Wallet from '../../../utils/blockchain/wallet';
 import Loading from '../../global/Loading';
 import BackupInfo from './info';
-
-const { PASSCODE_LENGTH } = APP_CONSTANTS;
+import DataService from '../../../services/db';
 
 export default function Index() {
 	const [passcode, setPasscode] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [phrases, setPhrases] = useState([]);
-
-	const [passcodeModal, setPasscodeModal] = useState(false);
+	const [isQueryingDb, setQuerying] = useState(true);
 	const [phraseModal, setPhraseModal] = useState(false);
 
 	const togglePasscodeModal = () => {
-		setPasscodeModal(!passcodeModal);
+		fetchPhrasesAndLoad(passcode);
 	};
 
 	const togglePhraseModal = () => {
 		setPhraseModal(!phraseModal);
-	};
-
-	const handlePasscodeChange = e => {
-		const { value } = e.target;
-		setPasscode(e.target.value);
-		if (value.length === PASSCODE_LENGTH) {
-			togglePasscodeModal();
-			return fetchPhrasesAndLoad(value);
-		}
 	};
 
 	const fetchPhrasesAndLoad = async passcode => {
@@ -50,38 +37,67 @@ export default function Index() {
 		}
 	};
 
-	const resetStates = () => {
+	const resetStates = async () => {
 		setLoading(false);
-		setPasscode('');
-		togglePhraseModal();
+
+		const { isConfirmed, isDismissed, isDenied } = await Swal.fire({
+			title: 'Warning!',
+			text: 'Have you really backed up your passphrase ?',
+			icon: 'warning',
+			showDenyButton: true,
+			confirmButtonText: 'Yes',
+			denyButtonText: 'Cancel'
+		});
+
+		try {
+			if (isConfirmed) {
+				togglePhraseModal();
+				await DataService.saveHasBackedUp(true);
+				window.location.replace('/');
+			}
+			if (isDenied || isDismissed) {
+				togglePhraseModal();
+				throw Error('You should backup this passphrase');
+			}
+		} catch (err) {
+			await DataService.saveHasBackedUp(false);
+			Swal.fire({
+				title: 'Warning!',
+				text: err?.message,
+				icon: 'warning',
+				confirmButtonText: 'Ok'
+			});
+		}
 	};
 
 	const handlePhraseSaveClick = () => {
 		resetStates();
 	};
 
+	const getPhone = useCallback(async () => {
+		try {
+			const { phone } = await DataService.getProfile();
+			if (!phone) throw Error('Unable to get passcode');
+			setPasscode(phone);
+		} catch (err) {
+			console.log({ err });
+			throw err;
+		}
+	}, []);
+
+	useEffect(() => {
+		getPhone()
+			.then(() => setQuerying(false))
+			.catch(() => {
+				setQuerying(true);
+				Swal.fire('ERROR', 'Couldnot get necessary data', 'error').then(() => window.location.replace('/'));
+			});
+		return () => setQuerying(true);
+	}, [getPhone]);
+
 	return (
 		<>
 			<Loading showModal={loading} message="Fetching your 12 words secret. It may take few seconds to load..." />
-			<ModalWrapper title="Please enter your passcode" showModal={passcodeModal} onHide={togglePasscodeModal}>
-				<div className="row mb-5">
-					<div className="col">
-						<p>Choose a {PASSCODE_LENGTH}-digit passcode.</p>
-
-						<input
-							onChange={handlePasscodeChange}
-							type="password"
-							pattern="[0-9]*"
-							inputMode="numeric"
-							className="form-control verify-input passcode"
-							placeholder="------"
-							maxLength={PASSCODE_LENGTH}
-							autoComplete="false"
-							value={passcode}
-						/>
-					</div>
-				</div>
-			</ModalWrapper>
 
 			{/* 12 words phrase modal */}
 			<ModalWrapper
@@ -97,7 +113,7 @@ export default function Index() {
 					{phrases.length > 0
 						? phrases.map((word, ind) => {
 								return (
-									<div key={ind} className="col-3">
+									<div key={ind} className="col-lg-3 col-md-6 col-sm-12">
 										<div className="form-group boxed">
 											<div className="input-wrapper">
 												<label className="label">&nbsp;word: {ind + 1}</label>
@@ -118,7 +134,7 @@ export default function Index() {
 			</ModalWrapper>
 			<AppHeader currentMenu="Backup" />
 
-			<BackupInfo togglePasscodeModal={togglePasscodeModal} />
+			<BackupInfo togglePasscodeModal={togglePasscodeModal} disabled={isQueryingDb} />
 		</>
 	);
 }
