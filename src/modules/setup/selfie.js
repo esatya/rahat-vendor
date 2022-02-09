@@ -34,6 +34,7 @@ export default function Main() {
 		// 		resolve(result);
 		// 	})
 		// 	.catch(err => reject(err));
+		console.log(imageSrc);
 		setPreviewImage(imageSrc);
 	};
 
