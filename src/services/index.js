@@ -42,8 +42,8 @@ export const getDefautAgency = async () => {
 		address: appData.agency.contracts.rahat,
 		adminAddress: appData.agency.contracts.rahat_admin,
 		network: appData.networkUrl,
-		erc20Address: appData.agency.contracts.rahat_erc20,
-		erc1155Address: appData.agency.contracts.rahat_erc1155,
+		tokenAddress: appData.agency.contracts.rahat_erc20,
+		nftAddress: appData.agency.contracts.rahat_erc1155,
 		name: appData.agency.name,
 		email: appData.agency.email,
 		isApproved: false
