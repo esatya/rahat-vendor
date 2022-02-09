@@ -1,4 +1,3 @@
-
 import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
@@ -9,6 +8,7 @@ import Swal from 'sweetalert2';
 // import { AppContext } from '../../contexts/AppContext';
 import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 import ActionSheet from './ActionSheet';
+import { checkBeneficiary } from '../../services';
 
 export default function ChargeDetails(props) {
 	const history = useHistory();
@@ -19,6 +19,12 @@ export default function ChargeDetails(props) {
 
 	const chargeCustomer = async () => {
 		showLoading('Charging customer account...');
+		const isBeneficiary = await checkBeneficiary(data.phone);
+		if (!isBeneficiary.data) {
+			setActiveSheet('null');
+			showLoading(null);
+			return Swal.fire('Error', `${isBeneficiary.message || 'Invalid Beneficiary'}`, 'error');
+		}
 		try {
 			// const agency = await DataService.getDefaultAgency();
 			// const rahat = RahatService(agency.address, wallet);
