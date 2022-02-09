@@ -1,40 +1,46 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { gapi } from 'gapi-script';
-import { IoChevronBackOutline, IoHomeOutline, IoCloseCircle } from 'react-icons/io5';
-import EthCrypto from 'eth-crypto';
-
+import { IoChevronBackOutline, IoHomeOutline } from 'react-icons/io5';
 import { BACKUP } from '../../constants';
 import { AppContext } from '../../contexts/AppContext';
 import DataService from '../../services/db';
 import UserImg from '../../assets/images/user.svg';
-
 import { GFile, GFolder } from '../../utils/google';
 import Swal from 'sweetalert2';
+import Wallet from '../../utils/blockchain/wallet';
 
 const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
 const GOOGLE_REDIRECT_URL = process.env.REACT_APP_GOOGLE_REDIRECT_URL;
+
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 export default function GoogleBackup() {
 	const history = useHistory();
 
-	const Actions = [
-		{
-			hash: '#choose-account',
-			label: 'Please choose Google account. Please click the switch account button to change account.'
-		},
-		{
-			hash: '#process',
-			label: 'Your is being backed up in Google Drive.'
-		},
-		{
-			hash: '#enter-passphrase',
-			label: 'Please enter backup passphrase. It must be at least 10 characters long with one number and alphabet. Button will appear after you type 12 characters. <br />PLEASE NOTE: THIS IS DIFFERENT THAN YOUR 6-DIGIT PASSCODE.'
-		}
-	];
+	const Actions = useCallback(
+		() => [
+			{
+				hash: '#choose-account',
+				label: 'Please choose Google account. Please click the switch account button to change account.'
+			},
+			{
+				hash: '#process',
+				label: 'Your is being backed up in Google Drive.'
+			},
+			{
+				hash: '#enter-passphrase',
+				label: 'Please enter backup passphrase. It must be at least 10 characters long with one number and alphabet. Button will appear after you type 12 characters. <br />PLEASE NOTE: THIS IS DIFFERENT THAN YOUR 6-DIGIT PASSCODE.'
+			}
+		],
+		[]
+	);
 
-	const { wallet } = useContext(AppContext);
+	// const { toggleFooter } = useContext(AppContext);
+	const [wallet, setWallet] = useState(null);
+	const [encWallet, setEncWallet] = useState(null);
+
+	const [isFetchingWallet, setFetchingWallet] = useState(true);
 	const passphraseRef = useRef(null);
 	const [errorMsg, setErrorMsg] = useState(null);
 	const [gUser, setGUser] = useState({
@@ -43,18 +49,20 @@ export default function GoogleBackup() {
 		email: null,
 		image: UserImg
 	});
-	const [passphrase, setPassphrase] = useState('');
-	const [passphraseStrength, setPassphraseStrength] = useState('None');
+
 	const [progress, setProgress] = useState({ message: 'Processing...', percent: 0, showHome: false });
 
 	const [currentAction, setCurrentAction] = useState({});
 
-	const changeAction = hash => {
-		setErrorMsg(null);
-		let selectedAction = Actions.find(a => a.hash === hash);
-		if (!selectedAction) setCurrentAction(Actions.find(a => a.hash === '#choose-account'));
-		else setCurrentAction(selectedAction);
-	};
+	const changeAction = useCallback(
+		hash => {
+			setErrorMsg(null);
+			let selectedAction = Actions().find(a => a.hash === hash);
+			if (!selectedAction) setCurrentAction(Actions().find(a => a.hash === '#choose-account'));
+			else setCurrentAction(selectedAction);
+		},
+		[Actions]
+	);
 
 	const loadGapiClient = () => {
 		history.listen(location => {
@@ -63,23 +71,7 @@ export default function GoogleBackup() {
 		changeAction(history.location.hash);
 		gapi.load('client:auth2', initClient);
 	};
-
-	const initClient = () => {
-		gapi.client
-			.init({
-				clientId: CLIENT_ID,
-				discoveryDocs: DISCOVERY_DOCS,
-				ux_mode: 'redirect',
-				scope: 'profile email https://www.googleapis.com/auth/drive',
-				redirect_uri: `${GOOGLE_REDIRECT_URL}/backup`
-			})
-			.then(function () {
-				gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-				updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-			});
-	};
-
-	const updateSigninStatus = isSignedIn => {
+	const updateSigninStatus = useCallback(isSignedIn => {
 		let user = null;
 		if (isSignedIn) {
 			user = gapi.auth2.getAuthInstance().currentUser.get();
@@ -91,36 +83,61 @@ export default function GoogleBackup() {
 				image: profile.getImageUrl()
 			});
 		} else user = handleUserSignIn();
-	};
+	}, []);
+
+	const initClient = useCallback(() => {
+		gapi.client
+			.init({
+				clientId: CLIENT_ID,
+				discoveryDocs: DISCOVERY_DOCS,
+				ux_mode: 'redirect',
+				scope: 'profile email https://www.googleapis.com/auth/drive',
+				redirect_uri: `${GOOGLE_REDIRECT_URL}/backup`
+			})
+			.then(function () {
+				gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+				updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+			})
+			.catch(err => console.log('Error===>', err));
+	}, [updateSigninStatus]);
 
 	const handleUserSignIn = () => {
 		return gapi.auth2.getAuthInstance().signIn();
 	};
 
-	const checkAndSetPassphrase = value => {
-		setErrorMsg(null);
-		var strongRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{10,})');
-		var mediumRegex = new RegExp(
-			'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})'
-		);
+	// const checkAndSetPassphrase = value => {
+	// 	setErrorMsg(null);
+	// 	var strongRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{10,})');
+	// 	var mediumRegex = new RegExp(
+	// 		'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})'
+	// 	);
 
-		if (strongRegex.test(value)) {
-			setPassphraseStrength('Strong');
-		} else if (mediumRegex.test(value)) {
-			setPassphraseStrength('Medium');
-		} else {
-			setPassphraseStrength('Weak');
-		}
-		setPassphrase(value);
-	};
+	// 	if (strongRegex.test(value)) {
+	// 		setPassphraseStrength('Strong');
+	// 	} else if (mediumRegex.test(value)) {
+	// 		setPassphraseStrength('Medium');
+	// 	} else {
+	// 		setPassphraseStrength('Weak');
+	// 	}
+	// 	setPassphrase(value);
+	// };
 
-	const prepareBackupData = async password => {
+	const getWallet = useCallback(async () => {
+		const profile = await DataService.get('profile');
+		const encryptedWallet = await DataService.getWallet();
+		setEncWallet(encryptedWallet);
+		const wlt = await Wallet.loadFromJson(profile.phone, encryptedWallet);
+		setWallet(wlt);
+		setFetchingWallet(false);
+	}, []);
+
+	const prepareBackupData = async () => {
 		let backupData = { name: 'rumsan-wallet', type: 'ethersjs' };
 		let data = await DataService.list();
 		data.forEach(d => {
 			backupData[d.name] = d.data;
 		});
-		backupData.wallet = await wallet.encrypt(password.toString());
+		backupData.wallet = encWallet;
 		delete backupData.backup_googleFile;
 		delete backupData.backup_wallet;
 		backupData.documents = await DataService.listDocuments();
@@ -136,20 +153,10 @@ export default function GoogleBackup() {
 		setErrorMsg(null);
 		try {
 			history.push('#process');
-
 			const gFolder = new GFolder(gapi);
 			const gFile = new GFile(gapi);
-
 			setProgress({ ...progress, percent: 5, message: 'Preparing data to backup...' });
-			let backupData = await prepareBackupData(passphrase);
-			//encrypt and store backup passphrase
-			const encrypted = await EthCrypto.encryptWithPublicKey(
-				EthCrypto.publicKeyByPrivateKey(wallet.privateKey),
-				passphrase
-			);
-			const encryptedPassphrase = EthCrypto.cipher.stringify(encrypted);
-			await DataService.save('backup_passphrase', encryptedPassphrase);
-
+			let backupData = await prepareBackupData();
 			setProgress({ ...progress, percent: 30, message: 'Checking if previous backup exists...' });
 			const folder = await gFolder.ensureExists(BACKUP.GDRIVE_FOLDERNAME);
 			setProgress({ ...progress, percent: 50, message: 'Backing up encrypted wallet to Google Drive...' });
@@ -162,6 +169,8 @@ export default function GoogleBackup() {
 			});
 			await DataService.save('backup_googleFile', newFile.id);
 			await DataService.save('backup_wallet', backupData.wallet);
+			await DataService.saveHasBackedUp(true);
+
 			setProgress({ ...progress, percent: 80, message: 'Cleaning up and finalizing...' });
 			if (file.exists) await gFile.deleteFile(file.firstFile.id);
 			setProgress({
@@ -170,38 +179,23 @@ export default function GoogleBackup() {
 				showHome: true,
 				message: 'Wallet backed up successfully. Backup file named ' + wallet.address + ' has been created.'
 			});
+
+			Swal.fire({
+				icon: 'success',
+				title: 'Successful',
+				text: 'Successfully backed up wallet in your google drive .'
+			}).then(() => window.location.replace('/'));
 		} catch (e) {
-			console.log(e.message);
 			setPassphrase('');
-			passphraseRef.current.focus();
+			passphraseRef.current?.focus();
+			await DataService.saveHasBackedUp(false);
+
 			setErrorMsg('Backup passphrase is incorrect. Please try again.');
 		}
 	};
 
 	const confirmBackup = async () => {
-		var passPhraseRegex = new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9])(?=.{10,})');
-		if (!passPhraseRegex.test(passphrase)) {
-			Swal.fire(
-				'Passphrase incorrect',
-				'Passphrase must be 10 characters and have at least one number.',
-				'error'
-			);
-			return;
-		}
-
-		const isConfirm = await Swal.fire({
-			title: 'Important',
-			icon: 'warning',
-			html: `You MUST write this passphrase and store it safely. It is used to encrypt your wallet. If you forget it there is no way to retrieve your wallet. It will be gone forever. <br /> Your passphrase is: ${passphrase}`,
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Yes, I have written it down',
-			cancelButtonText: 'No, I want choose another'
-		});
-		if (isConfirm.value) {
-			backupWallet();
-		}
+		backupWallet();
 	};
 
 	const handleBackButton = e => {
@@ -209,7 +203,15 @@ export default function GoogleBackup() {
 		history.goBack();
 	};
 
-	useEffect(loadGapiClient, []);
+	useEffect(loadGapiClient, [changeAction, history, initClient]);
+	useEffect(getWallet, [getWallet]);
+	// useEffect(() => {
+	// 	toggleFooter(true);
+
+	// 	return () => {
+	// 		toggleFooter(false);
+	// 	};
+	// }, [toggleFooter]);
 
 	return (
 		<div id="appCapsule">
@@ -259,7 +261,11 @@ export default function GoogleBackup() {
 						</div>
 						{gUser.id && (
 							<div className="text-center mt-3">
-								<button className="btn btn-primary" onClick={e => history.push('#enter-passphrase')}>
+								<button
+									className="btn btn-primary"
+									onClick={e => confirmBackup()}
+									disabled={isFetchingWallet}
+								>
 									Continue with this Google account
 								</button>
 							</div>
@@ -267,9 +273,8 @@ export default function GoogleBackup() {
 					</div>
 				)}
 
-				{currentAction.hash === '#enter-passphrase' && (
+				{/* {currentAction.hash === '#enter-passphrase' && (
 					<div className="section full mt-2 mb-3">
-						{/* {!selectedWallet.id && <Redirect to="/google/restore#choose-account" />} */}
 						<div className="wide-block p-2">
 							<div className="section full">
 								<div className="form-group boxed">
@@ -307,7 +312,7 @@ export default function GoogleBackup() {
 							)}
 						</div>
 					</div>
-				)}
+				)} */}
 
 				{currentAction.hash === '#process' && (
 					<div className="section full mt-2">

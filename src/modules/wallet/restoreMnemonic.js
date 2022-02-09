@@ -1,8 +1,8 @@
 import React, { useContext, useState, createRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
 import { AppContext } from '../../contexts/AppContext';
+import { getVendorByWallet } from '../../services';
 import DataService from '../../services/db';
 import Wallet from '../../utils/blockchain/wallet';
 import Loading from '../global/Loading';
@@ -12,7 +12,7 @@ export default function RestoreMnemonic() {
 	let history = useHistory();
 	const { setWallet } = useContext(AppContext);
 	const [loading, setLoading] = useState(false);
-
+	const [errorMsg, setErrorMsg] = useState(null);
 	const wordRefs = React.useRef([]);
 	if (wordRefs.current.length !== wordCount) {
 		wordRefs.current = Array(wordCount)
@@ -25,23 +25,23 @@ export default function RestoreMnemonic() {
 		window.location.replace('/');
 	};
 
-	const confirmBackup = async () => {
-		const isConfirm = await Swal.fire({
-			title: 'Success',
-			icon: 'success',
-			html: `Would you like to backup your wallet in Google Drive`,
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Yes, Backup',
-			cancelButtonText: 'No, Take to homepage'
-		});
-		if (isConfirm.value) {
-			history.push('/google/backup');
-		} else {
-			history.push('/');
-		}
-	};
+	// const confirmBackup = async () => {
+	// 	const isConfirm = await Swal.fire({
+	// 		title: 'Success',
+	// 		icon: 'success',
+	// 		html: `Would you like to backup your wallet in Google Drive`,
+	// 		showCancelButton: true,
+	// 		confirmButtonColor: '#3085d6',
+	// 		cancelButtonColor: '#d33',
+	// 		confirmButtonText: 'Yes, Backup',
+	// 		cancelButtonText: 'No, Take to homepage'
+	// 	});
+	// 	if (isConfirm.value) {
+	// 		history.push('/google/backup');
+	// 	} else {
+	// 		history.push('/');
+	// 	}
+	// };
 
 	const handlePaste = e => {
 		e.preventDefault();
@@ -77,18 +77,45 @@ export default function RestoreMnemonic() {
 		rows.push(column);
 	}
 
+	const checkWalletRegistered = async (walletAddress, passcode) => {
+		try {
+			setLoading('Checking if wallet is registered');
+			const walletReg = await getVendorByWallet(walletAddress);
+			const { phone } = walletReg;
+			if (passcode !== phone) {
+				setErrorMsg('Incorrect phone number. Redirecting to home screen.');
+				setTimeout(() => {
+					history.push('/');
+				}, [1500]);
+			}
+
+			setLoading(false);
+			return walletReg;
+		} catch (err) {
+			setErrorMsg('Wallet not registered, Redirecting to home screen.');
+			await DataService.clearAll();
+			setTimeout(() => {
+				history.push('/');
+			}, [1500]);
+		}
+	};
+
 	const restoreWallet = async mnemonic => {
 		try {
 			setLoading(true);
 			let passcode = await DataService.get('temp_passcode');
 			const res = await Wallet.create(passcode, mnemonic);
 			const { wallet, encryptedWallet } = res;
-			setWallet(wallet);
-			DataService.saveAddress(wallet.address);
-			await DataService.saveWallet(encryptedWallet);
-			DataService.remove('temp_passcode');
-			setLoading(false);
-			return confirmBackup();
+			const walletReged = await checkWalletRegistered(wallet?.address, passcode);
+
+			if (walletReged) {
+				setWallet(wallet);
+				await DataService.saveAddress(wallet.address);
+				await DataService.saveWallet(encryptedWallet);
+				await DataService.saveHasBackedUp(true);
+				setLoading(false);
+				history.push('/sync');
+			}
 		} catch (err) {
 			Swal.fire('ERROR', err.message, 'error');
 			setLoading(false);
@@ -129,6 +156,15 @@ export default function RestoreMnemonic() {
 									})}
 							</div>
 						</div>
+						{errorMsg && (
+							<>
+								<div className="text-center">
+									<span className="text-danger">
+										<b>Error</b>: {errorMsg}
+									</span>
+								</div>
+							</>
+						)}
 
 						<div className="text-center mt-3">
 							<button

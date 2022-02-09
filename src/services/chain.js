@@ -4,7 +4,7 @@ import DataService from './db';
 
 const ABI = {
 	TOKEN: require(`../assets/contracts/RahatERC20.json`),
-	RAHAT: require(`../assets/contracts/Rahat.json`),
+	RAHAT: require(`../assets/contracts/rahat.json`),
 	ERC20: require(`../assets/contracts/RahatERC20.json`),
 	ERC721: require(`../assets/contracts/erc721.json`)
 };
