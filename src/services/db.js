@@ -52,6 +52,7 @@ const DataService = {
 	saveHasBackedUp(hasBackedUp) {
 		return this.save('hasBackedUp', hasBackedUp);
 	},
+
 	async initAppData() {
 		let network = await this.getNetwork();
 		let address = await this.getAddress();
@@ -70,10 +71,14 @@ const DataService = {
 	setSynchronizing(val) {
 		return this.save('synchronizing', val);
 	},
+
 	async clearAll() {
 		await db.data.clear();
 		await db.assets.clear();
 		await db.documents.clear();
+		await db.nfts.clear();
+		await db.transactions.clear();
+		await db.agencies.clear();
 	},
 
 	saveNetwork(network) {
@@ -131,8 +136,8 @@ const DataService = {
 		return db.agencies.get(address);
 	},
 
-	async updateAgency(key, data) {
-		return db.agencies.update(key, data);
+	async updateAgency(agencyAddress, data) {
+		return db.agencies.update(agencyAddress, data);
 	},
 
 	listAgencies() {
@@ -155,7 +160,25 @@ const DataService = {
 
 	listTx(type) {
 		if (!type) return db.transactions.orderBy('timestamp').reverse().toArray();
-		return db.transactions.get({ type }).orderBy('timestamp').reverse();
+		return db.transactions.where({ type: type }).reverse().sortBy('timestamp');
+
+		// return db.transactions.get({ type }).orderBy('timestamp').reverse();
+	},
+
+	async addNft(nft) {
+		const { tokenId } = nft;
+		const storedNft = await this.getNft(tokenId);
+		if (!storedNft) return db.nfts.put({ ...nft, amount: nft.amount ? nft.amount : 1 });
+		storedNft.amount++;
+		return db.nfts.put(storedNft);
+	},
+
+	getNft(id) {
+		return db.nfts.get(parseInt(id));
+	},
+
+	listNft() {
+		return db.nfts?.toArray();
 	},
 
 	async saveDocuments(docs) {
@@ -181,13 +204,18 @@ const DataService = {
 
 	async getAssetBySymbol(symbol, network) {
 		if (!network) return db.assets.get({ symbol });
-		if (symbol.toUpperCase() === 'ETH') return db.assets.get({ symbol });
 		return db.assets.filter(a => a.symbol === symbol && a.network && a.network.name === network).first();
 	},
 
 	async addDefaultAsset(symbol, name) {
 		let asset = await this.getAsset('default');
 		if (!asset) return db.assets.add({ address: 'default', symbol, name, decimal: 18, balance: 0 });
+		asset = {
+			...asset,
+			symbol,
+			name
+		};
+		return this.updateAsset(asset.address, asset);
 	},
 
 	async addMultiAssets(assets) {
