@@ -38,8 +38,9 @@ function SyncDb() {
 			setLoadingMsg({ percent: 80, message: 'Syncing Profile details...' });
 			if (!wallet) return;
 			const vendorProfile = await getVendorByWallet(wallet?.address);
-			const { name, phone, organization, address, email, photo, govt_id_image } = vendorProfile;
-			await DataService.saveProfile({ name, phone, organization, address, email });
+			const { name, phone, address, email, photo, govt_id_image } = vendorProfile;
+
+			await DataService.saveProfile({ name, phone, address, email });
 			photo && photo.length && (await DataService.saveProfileImage(photo[0]));
 			govt_id_image && (await DataService.saveProfileIdCard(govt_id_image));
 			setLoadingMsg({ percent: 100, message: 'Succesfully synced...', showHome: true });

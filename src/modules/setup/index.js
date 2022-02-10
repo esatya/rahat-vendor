@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { IoWalletOutline } from 'react-icons/io5';
 import { FaGoogleDrive, FaKey } from 'react-icons/fa';
-
+import PackageJson from '../../../package.json';
 import PasscodeModal from '../global/SetPasscodeModal';
 import DataService from '../../services/db';
 
@@ -124,6 +124,10 @@ export default function Main() {
 						</div>
 					</div>
 				)}
+
+<div className="text-center mt-4">
+					<small>Version: {PackageJson.version}</small>
+				</div>
 			</div>
 		</>
 	);
