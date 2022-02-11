@@ -16,7 +16,7 @@ const AppReducer = (state, action) => {
 				tokenBalance: action.data.balance,
 				agency: action.data.agency,
 				hasBackedUp: action.data.hasBackedUp,
-				isSynchronizing: action.data.isSynchronizing
+				hasSynchronized: action.data.hasSynchronized
 			};
 
 		case APP_ACTIONS.SET_AGENCY:
@@ -50,9 +50,13 @@ const AppReducer = (state, action) => {
 			};
 
 		case APP_ACTIONS.ADD_RECENT_TX:
+			let tx = action.data;
+			if (!Array.isArray(tx)) tx = [tx];
+			const arr = [...tx, ...state.recentTx];
+
 			return {
 				...state,
-				recentTx: action.data ? action.data : []
+				recentTx: arr ? arr.slice(0, 3) : []
 			};
 
 		case APP_ACTIONS.SET_SCANNED_DATA:
