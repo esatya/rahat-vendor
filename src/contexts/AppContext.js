@@ -1,4 +1,4 @@
-import React, { createContext, useState, useReducer, useCallback } from 'react';
+import React, { createContext, useReducer, useCallback } from 'react';
 import appReduce from '../reducers/appReducer';
 import APP_ACTIONS from '../actions/appActions';
 import DataService from '../services/db';
@@ -7,24 +7,24 @@ import { APP_CONSTANTS, DEFAULT_TOKEN } from '../constants';
 import { ethers } from 'ethers';
 
 const initialState = {
-	contextLoading: true,
+	contextLoading: false,
 	address: null,
 	agency: null,
 	network: null,
 	wallet: null,
 	profile: null,
-	hasWallet: true,
-	hasBackedUp: true,
+	hasWallet: false,
+	hasBackedUp: false,
 	tokenBalance: 0,
 	scannedEthAddress: '',
 	scannedAmount: null,
-	isSynchronizing: false
+	hasSynchronized: false,
+	recentTx: []
 };
 
 export const AppContext = createContext(initialState);
 export const AppContextProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(appReduce, initialState);
-	const [recentTx, setRecentTx] = useState([]);
 	const toggleLoading = useCallback((loading = false) => {
 		dispatch({ type: APP_ACTIONS.SET_LOADING, data: loading });
 	}, []);
@@ -42,6 +42,7 @@ export const AppContextProvider = ({ children }) => {
 	}, []);
 
 	const initApp = useCallback(async () => {
+		toggleLoading(true);
 		//TODO: in future check version and add action if the version is different.
 		await initialize_index_db();
 		let data = await DataService.initAppData();
@@ -64,16 +65,16 @@ export const AppContextProvider = ({ children }) => {
 		}
 		dispatch({ type: APP_ACTIONS.INIT_APP, data });
 		toggleLoading(false);
-	}, [dispatch, toggleLoading, initialize_index_db]);
+	}, [toggleLoading, initialize_index_db]);
 
 	async function setAgency(agency) {
 		if (!agency) agency = await DataService.getDefaultAgency();
 		dispatch({ type: APP_ACTIONS.SET_AGENCY, data: agency });
 	}
 
-	async function setTokenBalance(tokenBalance) {
+	const setTokenBalance = useCallback(tokenBalance => {
 		dispatch({ type: APP_ACTIONS.SET_BALANCE, data: tokenBalance });
-	}
+	}, []);
 
 	function setHasWallet(hasWallet) {
 		dispatch({ type: APP_ACTIONS.SET_HASWALLET, data: hasWallet });
@@ -91,12 +92,9 @@ export const AppContextProvider = ({ children }) => {
 		dispatch({ type: APP_ACTIONS.SET_SCANNED_DATA, data });
 	}
 
-	function addRecentTx(tx) {
-		setRecentTx([]);
-		if (!Array.isArray(tx)) tx = [tx];
-		const arr = [...tx, ...recentTx];
-		setRecentTx(arr.slice(0, 3));
-	}
+	const addRecentTx = useCallback(tx => {
+		dispatch({ type: APP_ACTIONS.ADD_RECENT_TX, data: tx });
+	}, []);
 
 	return (
 		<AppContext.Provider
@@ -109,10 +107,10 @@ export const AppContextProvider = ({ children }) => {
 				hasWallet: state.hasWallet,
 				hasBackedUp: state.hasBackedUp,
 				contextLoading: state.contextLoading,
-				isSynchronizing: state.isSynchronizing,
+				hasSynchronized: state.hasSynchronized,
 				network: state.network,
 				wallet: state.wallet,
-				recentTx,
+				recentTx: state.recentTx,
 				initApp,
 				setAgency,
 				setTokenBalance,
@@ -121,7 +119,8 @@ export const AppContextProvider = ({ children }) => {
 				setNetwork,
 				setWallet,
 				dispatch,
-				addRecentTx
+				addRecentTx,
+				toggleLoading
 			}}
 		>
 			{children}

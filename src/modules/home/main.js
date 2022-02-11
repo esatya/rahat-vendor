@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, useCallback } from 'react';
 import { useHistory, Redirect, Link } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
@@ -16,22 +16,15 @@ var QRCode = require('qrcode.react');
 
 export default function Main() {
 	const history = useHistory();
-	const {
-		hasWallet,
-		wallet,
-		tokenBalance,
-		recentTx,
-		setTokenBalance,
-		addRecentTx,
-		agency,
-		hasBackedUp,
-		contextLoading,
-		isSynchronizing
-	} = useContext(AppContext);
-	const [showPageLoader, setShowPageLoader] = useState(true);
+	const { hasWallet, wallet, tokenBalance, setTokenBalance, agency, hasBackedUp, contextLoading, hasSynchronized } =
+		useContext(AppContext);
+
+	const [tokenBalanceLoading, setTokenBalanceLoading] = useState(false);
 	const [redeemModal, setRedeemModal] = useState(false);
 	const [redeemAmount, setRedeemAmount] = useState('');
 	const [loading, showLoading] = useState(null);
+
+	const [recentTx, setRecentTx] = useState(null);
 
 	const cardBody = useRef();
 	const { width } = useResize(cardBody);
@@ -41,23 +34,44 @@ export default function Main() {
 		else return 280;
 	};
 
-	const checkVendorStatus = async () => {
-		//update API to only query relevant agency.
-		if (!wallet) return;
-		let data = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/${wallet.address}`).then(r => {
-			if (!r.ok) throw Error(r.message);
-			return r.json();
-		});
-
-		if (!data.agencies.length) return history.push('/setup/idcard');
-		let status = data.agencies[0].status;
-
-		if (status !== 'active') {
-			let dagency = Object.assign(agency, { isApproved: false });
-			await DataService.updateAgency(dagency.address, dagency);
-			history.push('/setup/pending');
+	const checkRecentTnx = useCallback(async () => {
+		let txs = await DataService.listTx();
+		if (txs && Array.isArray(txs)) {
+			const arr = txs.slice(0, 3);
+			setRecentTx(arr);
 		}
-	};
+	}, []);
+
+	const getTokenBalance = useCallback(async () => {
+		if (!agency) return;
+		try {
+			setTokenBalanceLoading(true);
+			const balance = await TokenService(agency.address).getBalance();
+			setTokenBalance(balance.toNumber());
+			setTokenBalanceLoading(false);
+		} catch (err) {
+			console.log('Unable to get token Balance');
+			console.log(err);
+			setTokenBalanceLoading(false);
+		}
+	}, [agency, setTokenBalance]);
+
+	// const checkVendorStatus = async () => {
+	// 	if (!wallet) return;
+	// 	let data = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/${wallet.address}`).then(r => {
+	// 		if (!r.ok) throw Error(r.message);
+	// 		return r.json();
+	// 	});
+
+	// 	if (!data.agencies.length) return history.push('/setup/idcard');
+	// 	let status = data.agencies[0].status;
+
+	// 	if (status !== 'active') {
+	// 		let dagency = Object.assign(agency, { isApproved: false });
+	// 		await DataService.updateAgency(dagency.address, dagency);
+	// 		history.push('/setup/pending');
+	// 	}
+	// };
 
 	const confirmAndRedeemToken = async data => {
 		setRedeemModal(false);
@@ -93,10 +107,10 @@ export default function Main() {
 			status: 'success'
 		};
 		await DataService.addTx(tx);
+		await getTokenBalance();
 		history.push(`/tx/${receipt.transactionHash}`);
-		let tokenBalance = await TokenService(agency.address).getBalance();
-		setTokenBalance(tokenBalance.toNumber());
 	};
+
 	const updateRedeemAmount = e => {
 		let formData = new FormData(e.target.form);
 		let data = {};
@@ -110,55 +124,21 @@ export default function Main() {
 		setRedeemModal(false);
 	};
 
-	useEffect(() => {
-		if (agency)
-			TokenService(agency.address)
-				.getBalance()
-				.then(bal => setTokenBalance(bal.toNumber()));
-		let timer1 = null;
-		(async () => {
-			let txs = await DataService.listTx();
-			addRecentTx(txs.slice(0, 3));
-			const timer = setTimeout(() => {
-				setShowPageLoader(false);
-			}, 300);
-			timer1 = setTimeout(async () => {
-				await checkVendorStatus();
-			}, 3000);
-			return () => {
-				clearTimeout(timer);
-				clearTimeout(timer1);
-			};
+	const getInfoState = useCallback(async () => {
+		if (contextLoading) return;
+		if (!hasWallet) return history.push('/setup');
+		if (!hasBackedUp) return history.push('/wallet/backup');
+		if (!hasSynchronized) return history.push('/sync');
+		if (agency && !agency.isApproved) return history.push('/setup/pending');
+		await getTokenBalance();
+		await checkRecentTnx();
+	}, [contextLoading, agency, hasSynchronized, hasWallet, hasBackedUp, history, getTokenBalance, checkRecentTnx]);
 
-		})();
-		return function cleanup() {
-			if (timer1) clearTimeout(timer1);
-		};
-	}, []);
-
-	if (contextLoading) {
-		return (
-			<div id="loader">
-				<img src="/assets/img/brand/icon-white-128.png" alt="icon" className="loading-icon" />
-			</div>
-		);
-	}
-
-	if (!hasWallet) {
-		return <Redirect to="/setup" />;
-	}
-
-	if (!hasBackedUp) {
-		return <Redirect to="/wallet/backup" />;
-	}
-
-	if (agency && !agency.isApproved) {
-		return <Redirect to="/setup/pending" />;
-	}
+	useEffect(getInfoState, [getInfoState]);
 
 	return (
 		<>
-			{showPageLoader && (
+			{contextLoading && (
 				<div id="loader">
 					<img src="/assets/img/brand/icon-white-128.png" alt="icon" className="loading-icon" />
 				</div>
@@ -204,7 +184,7 @@ export default function Main() {
 						<div className="balance">
 							<div className="left">
 								<span className="title">Balance</span>
-								<h1 className="total">{tokenBalance}</h1>
+								<h1 className={`total ${tokenBalanceLoading && 'loading'}`}>{tokenBalance}</h1>
 							</div>
 							<div className="right"></div>
 							{wallet && (
@@ -257,7 +237,7 @@ export default function Main() {
 								paddingTop: '0px'
 							}}
 						>
-							<TransactionList limit="3" transactions={recentTx} />
+							<TransactionList limit="3" transactions={recentTx || []} />
 						</div>
 					</div>
 				</div>

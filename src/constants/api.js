@@ -5,5 +5,6 @@ module.exports = {
 	REGISTER: base_url + '/vendors/register',
 	NFT: server_url + '/nft',
 	VENDORS: base_url + '/vendors',
-	SERVER_URL: server_url
+	SERVER_URL: server_url,
+	APP: base_url + '/app'
 };

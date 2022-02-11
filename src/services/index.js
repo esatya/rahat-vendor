@@ -33,10 +33,9 @@ export async function getPackageDetails(id) {
 }
 
 export const getDefautAgency = async () => {
-	let appData = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/app/settings`).then(async r => {
-		if (!r.ok) throw Error(r.message);
-		return r.json();
-	});
+	const { data } = await axios.get(`${API.APP}/settings`);
+	let appData = data;
+	console.log({ appData });
 	const agencyData = {
 		api: process.env.REACT_APP_DEFAULT_AGENCY_API,
 		address: appData.agency.contracts.rahat,
@@ -46,13 +45,13 @@ export const getDefautAgency = async () => {
 		nftAddress: appData.agency.contracts.rahat_erc1155,
 		name: appData.agency.name,
 		email: appData.agency.email,
-		isApproved: false
+		isApproved: appData.is_approved
 	};
 	return agencyData;
 };
 export async function checkApproval(walletAddress) {
 	try {
-		const res = await axios.get(`${API.SERVER_URL}/vendors/0x${walletAddress}`);
+		const res = await axios.get(`${API.SERVER_URL}/api/v1/vendors/0x${walletAddress}`);
 		return res.data;
 	} catch (e) {
 		throw Error(e);

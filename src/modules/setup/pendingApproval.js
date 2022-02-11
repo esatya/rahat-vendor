@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import DataService from '../../services/db';
@@ -7,7 +7,7 @@ export default function Main() {
 	const history = useHistory();
 	const [agencyName, setAgencyName] = useState('the agency');
 
-	const checkForApproval = async () => {
+	const checkForApproval = useCallback(async () => {
 		let wallet = await DataService.getWallet();
 		if (!wallet) history.push('/setup');
 		wallet = JSON.parse(wallet);
@@ -23,7 +23,7 @@ export default function Main() {
 
 		try {
 			let data = await checkApproval(wallet.address);
-			if (!data.agencies.length) return history.push('/setup/idcard');
+			if (!data?.agencies.length) return history.push('/setup/idcard');
 			let status = data.agencies[0].status;
 			if (status === 'active') {
 				dagency.isApproved = true;
@@ -31,23 +31,14 @@ export default function Main() {
 				return history.push('/');
 			}
 		} catch (e) {
-			throw Error(r.message);
+			console.log({ e });
 		}
-	};
+	}, [history]);
 
 	//eslint-disable-next-line
 	useEffect(() => {
-		(async () => {
-			await checkForApproval();
-			// const timer = setInterval(async () => {
-			// 	await checkForApproval();
-			// }, 20000);
-			return () => {
-				//clearInterval(timer);
-			};
-		})();
-		return function cleanup() {};
-	}, []);
+		checkForApproval();
+	}, [checkForApproval]);
 
 	return (
 		<>
