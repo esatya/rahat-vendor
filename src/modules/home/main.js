@@ -8,9 +8,11 @@ import { AppContext } from '../../contexts/AppContext';
 import TransactionList from '../transactions/list';
 import DataService from '../../services/db';
 import ActionSheet from '../../actionsheets/sheets/ActionSheet';
-import { TokenService } from '../../services/chain';
+import { ERC1155_Service, TokenService } from '../../services/chain';
 import Loading from '../global/Loading';
 import { IoArrowDownCircleOutline } from 'react-icons/io5';
+import { calculateTotalPackageBalance } from '../../services';
+import useAuthSignature from '../../hooks/useSignature';
 
 var QRCode = require('qrcode.react');
 
@@ -18,12 +20,12 @@ export default function Main() {
 	const history = useHistory();
 	const { hasWallet, wallet, tokenBalance, setTokenBalance, agency, hasBackedUp, contextLoading, hasSynchronized } =
 		useContext(AppContext);
-
-	const [tokenBalanceLoading, setTokenBalanceLoading] = useState(false);
+	const authSign = useAuthSignature(wallet);
 	const [redeemModal, setRedeemModal] = useState(false);
 	const [redeemAmount, setRedeemAmount] = useState('');
 	const [loading, showLoading] = useState(null);
-
+	const [packageBalanceLoading, setPackageBalanceLoading] = useState(true);
+	const [packageBalance, setPackageBalance] = useState(null);
 	const [recentTx, setRecentTx] = useState(null);
 
 	const cardBody = useRef();
@@ -45,16 +47,46 @@ export default function Main() {
 	const getTokenBalance = useCallback(async () => {
 		if (!agency) return;
 		try {
-			setTokenBalanceLoading(true);
 			const balance = await TokenService(agency.address).getBalance();
 			setTokenBalance(balance.toNumber());
-			setTokenBalanceLoading(false);
 		} catch (err) {
 			console.log('Unable to get token Balance');
 			console.log(err);
-			setTokenBalanceLoading(false);
 		}
 	}, [agency, setTokenBalance]);
+
+	const getPackageBalance = useCallback(async () => {
+		if (!agency) return;
+		if (!authSign) return;
+		setPackageBalanceLoading(true);
+		try {
+			const nfts = await DataService.listNft();
+			const walletAddress = await DataService.getAddress();
+			// Get Token Ids from index db
+			const tokenIds = nfts.map(item => item?.tokenId);
+			if (!tokenIds?.length) return;
+
+			const tokenQtys = [];
+
+			// get token balances from contract
+			const address = tokenIds.map(() => walletAddress);
+			const blnc = await ERC1155_Service(agency?.address).getBatchBalance(address, tokenIds);
+
+			if (!blnc) return;
+			if (blnc?.length) {
+				blnc.map(item => tokenQtys.push(item.toNumber()));
+			}
+
+			// get total-package-balance from Backend server
+			const totalNftBalance = await calculateTotalPackageBalance({ tokenIds, tokenQtys }, authSign);
+			setPackageBalance(totalNftBalance);
+			setPackageBalanceLoading(false);
+			// let tokens
+		} catch (err) {
+			setPackageBalanceLoading(false);
+			console.log('Unable to get package balance', err);
+		}
+	}, [agency, authSign]);
 
 	// const checkVendorStatus = async () => {
 	// 	if (!wallet) return;
@@ -130,11 +162,28 @@ export default function Main() {
 		if (!hasBackedUp) return history.push('/wallet/backup');
 		if (!hasSynchronized) return history.push('/sync');
 		if (agency && !agency.isApproved) return history.push('/setup/pending');
-		await getTokenBalance();
 		await checkRecentTnx();
-	}, [contextLoading, agency, hasSynchronized, hasWallet, hasBackedUp, history, getTokenBalance, checkRecentTnx]);
+		await getTokenBalance();
+		await getPackageBalance();
+	}, [
+		contextLoading,
+		agency,
+		hasSynchronized,
+		hasWallet,
+		hasBackedUp,
+		history,
+		getTokenBalance,
+		checkRecentTnx,
+		getPackageBalance
+	]);
 
-	useEffect(getInfoState, [getInfoState]);
+	useEffect(() => {
+		let isMounted = true;
+		if (isMounted) getInfoState();
+		return () => {
+			isMounted = false;
+		};
+	}, [getInfoState]);
 
 	return (
 		<>
@@ -183,30 +232,33 @@ export default function Main() {
 					<div className="wallet-card">
 						<div className="balance">
 							<div className="left">
-								<span className="title">Balance</span>
-								<h1 className={`total ${tokenBalanceLoading && 'loading'}`}>{tokenBalance}</h1>
+								<span className="title">Token Balance</span>
+								<h1 className={`total `}>{tokenBalance || 0}</h1>
 							</div>
-							<div className="right"></div>
-							{wallet && (
-								<button
-									className="item button-link"
-									onClick={() => {
-										if (isOffline()) return;
-										setRedeemModal(true);
-									}}
-								>
-									<div className="col">
-										<div className="action-button">
-											<IoArrowDownCircleOutline
-												className="ion-icon"
-												style={{ fontSize: '40px' }}
-											/>
-										</div>
-									</div>
-									<strong>Redeem</strong>
-								</button>
-							)}
+							<div className="right">
+								<span className="title">Package Balance</span>
+
+								<h1 className={`total ${packageBalanceLoading && 'loading_text'}`}>
+									NRS {packageBalance?.grandTotal || 0}
+								</h1>
+							</div>
 						</div>
+						{wallet && (
+							<button
+								className="item button-link"
+								onClick={() => {
+									if (isOffline()) return;
+									setRedeemModal(true);
+								}}
+							>
+								<div className="col">
+									<div className="action-button">
+										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '40px' }} />
+									</div>
+								</div>
+								<strong>Redeem</strong>
+							</button>
+						)}
 					</div>
 				</div>
 

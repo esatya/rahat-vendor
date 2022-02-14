@@ -6,7 +6,8 @@ const ABI = {
 	TOKEN: require(`../assets/contracts/RahatERC20.json`),
 	RAHAT: require(`../assets/contracts/rahat.json`),
 	ERC20: require(`../assets/contracts/RahatERC20.json`),
-	ERC721: require(`../assets/contracts/erc721.json`)
+	ERC721: require(`../assets/contracts/erc721.json`),
+	ERC1155: require('../assets/contracts/RahatERC1155.json')
 };
 
 const DefaultProvider = new ethers.providers.JsonRpcProvider(getDefaultNetwork());
@@ -16,11 +17,13 @@ const getAgencyDetails = async agencyAddress => {
 	const provider = details.network ? new ethers.providers.JsonRpcProvider(details.network) : DefaultProvider;
 	const rahatContract = new ethers.Contract(agencyAddress, ABI.RAHAT.abi, provider);
 	const tokenContract = new ethers.Contract(details.tokenAddress, ABI.TOKEN.abi, provider);
+	const nftContract = new ethers.Contract(details.nftAddress, ABI.ERC1155.abi, provider);
 	return {
 		details,
 		provider,
 		rahatContract,
-		tokenContract
+		tokenContract,
+		nftContract
 	};
 };
 
@@ -87,4 +90,21 @@ const TokenService = (agencyAddress, wallet) => {
 	};
 };
 
-export { DefaultProvider, RahatService, TokenService };
+const ERC1155_Service = (agencyAddress, wallet) => {
+	return {
+		async getContract() {
+			const agency = await getAgencyDetails(agencyAddress);
+			return wallet ? agency.nftContract.connect(wallet) : agency.nftContract;
+		},
+		async getBatchBalance(walletAddress, tokenIds) {
+			const address = Array.isArray(walletAddress) ? walletAddress : [walletAddress];
+			const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
+			if (address.length !== ids.length) return null;
+			const contract = await this.getContract();
+
+			return contract.balanceOfBatch(address, ids);
+		}
+	};
+};
+
+export { DefaultProvider, RahatService, TokenService, ERC1155_Service };

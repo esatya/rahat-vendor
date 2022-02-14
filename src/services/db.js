@@ -9,7 +9,8 @@ db.version(DB.VERSION).stores({
 	documents: 'hash,type,name,file,encryptedFile,createdAt,inIpfs',
 	assets: 'address,type,name,symbol,decimal,balance,network',
 	agencies: 'address,name,api,network,rahatAddress,tokenAddress,adminAddress,phone,email,logo,isApproved',
-	transactions: 'hash,type,timestamp,amount,to,from,status,image'
+	transactions: 'hash,type,timestamp,amount,to,from,status,image',
+	nfts: 'tokenId,name,symbol,description,imageUri,metadataUri,value,amount'
 });
 
 const DataService = {
@@ -59,7 +60,6 @@ const DataService = {
 		let wallet = await this.getWallet();
 		let hasBackedUp = await this.get('hasBackedUp');
 		let hasSynchronized = await this.get('hasSynchronized');
-		console.log({ hasSynchronized });
 		return {
 			network,
 			address,
