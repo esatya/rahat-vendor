@@ -101,8 +101,17 @@ const ERC1155_Service = (agencyAddress, wallet) => {
 			const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
 			if (address.length !== ids.length) return null;
 			const contract = await this.getContract();
-
 			return contract.balanceOfBatch(address, ids);
+		},
+		async batchRedeem(from, to, tokenIds = [], amounts = [], data = []) {
+			if (!tokenIds?.length) return;
+			if (!amounts?.length) return;
+			if (tokenIds.length !== amounts.length) return;
+			console.log({ from, to, tokenIds, amounts, data });
+			const contract = await this.getContract();
+			console.log({ contract });
+			const tx = await contract.safeBatchTransferFrom(from, to, tokenIds, amounts, data);
+			return tx.wait();
 		}
 	};
 };
