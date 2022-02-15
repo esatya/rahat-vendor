@@ -69,13 +69,15 @@ export default function Main() {
 	const getPackageBalance = useCallback(async () => {
 		if (!agency) return;
 		if (!authSign) return;
-		setPackageBalanceLoading(true);
 		try {
 			const nfts = await DataService.listNft();
 			const walletAddress = await DataService.getAddress();
 			// Get Token Ids from index db
 			const tokenIds = nfts.map(item => item?.tokenId);
-			if (!tokenIds?.length) return;
+			if (!tokenIds?.length) {
+				setPackageBalanceLoading(false);
+				return;
+			}
 
 			const tokenQtys = [];
 
@@ -92,9 +94,9 @@ export default function Main() {
 			}
 
 			setPackages(nfts);
-
 			// get total-package-balance from Backend server
 			const totalNftBalance = await calculateTotalPackageBalance({ tokenIds, tokenQtys }, authSign);
+
 			setPackageBalance(totalNftBalance);
 			setPackageBalanceLoading(false);
 			// let tokens
@@ -172,6 +174,7 @@ export default function Main() {
 				status: 'success'
 			};
 			await DataService.addTx(tx);
+			await DataService.batchDecrementNft(ids, amount);
 			setSelectedRedeemablePackage([]);
 			setRedeemPackageModal(false);
 			await getPackageBalance();
@@ -264,7 +267,6 @@ export default function Main() {
 		if (isMounted) getInfoState();
 		return () => {
 			isMounted = false;
-			setPackageBalanceLoading(true);
 		};
 	}, [getInfoState]);
 
@@ -321,31 +323,34 @@ export default function Main() {
 				onHide={e => togglePackageModal(e)}
 				handleSubmit={redeemPackages}
 			>
-				<div class="wide-block pt-2 pb-2">
-					{packages?.length > 0 &&
+				<div className="wide-block pt-2 pb-2 border-0">
+					{packages?.length > 0 ? (
 						packages.map(p => {
 							return (
-								<div className="custom-control custom-checkbox  d-flex flex-row align-items-center mb-1">
-									<input
-										type="checkbox"
-										className="custom-control-input"
-										id={`${p.tokenId}`}
-										onClick={() => onCheckBoxClick(p.tokenId)}
-									/>
-
-									<label className="custom-control-label" for={`${p.tokenId}`}>
-										{`${p.name} (${p.symbol}) `}
-									</label>
-									<img
-										src={p.imageUri || '/assets/img/brand/icon-72.png'}
-										width="50"
-										height="50"
-										alt="asset"
-										className="image"
-									/>
+								<div className=" d-flex flex-row align-items-center justify-content-between mb-1 w-100 ">
+									<div>
+										<input
+											type="checkbox"
+											className="mr-2"
+											id={`${p.tokenId}`}
+											onClick={() => onCheckBoxClick(p.tokenId)}
+										/>
+										<img
+											src={p.imageUri || '/assets/img/brand/icon-72.png'}
+											width="50"
+											height="50"
+											alt="asset"
+											className="image"
+										/>
+										<label className="m-0" for={`${p.tokenId}`}>{`${p.name} (${p.symbol}) `}</label>
+									</div>
+									<p className="mb-0 ml-3 text-warning font-weight-bold">{p.amount}</p>
 								</div>
 							);
-						})}
+						})
+					) : (
+						<p>You don't own any packages.</p>
+					)}
 				</div>
 			</ActionSheet>
 			{/* Redeem Package Modal Ends */}

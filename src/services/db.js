@@ -91,6 +91,19 @@ const DataService = {
 		return network;
 	},
 
+	async decrementNft(tokenId, decreaseBy) {
+		if (Math.abs(decreaseBy) <= 0) return 1;
+		const nft = await db.nfts.get({ tokenId });
+		let newAmount = nft.amount - Math.abs(decreaseBy);
+		newAmount = newAmount < 0 ? 0 : newAmount;
+		return db.nfts.update(tokenId, { amount: newAmount });
+	},
+
+	async batchDecrementNft(tokenIds = [], decrements = []) {
+		if (tokenIds.length !== decrements.length) return;
+		return tokenIds.forEach(async (ids, index) => await this.decrementNft(ids, decrements[index]));
+	},
+
 	async getIpfs() {
 		let ipfsUrl = await this.get('ipfsUrl');
 		if (!ipfsUrl) ipfsUrl = process.env.REACT_APP_DEFAULT_IPFS;
@@ -178,7 +191,7 @@ const DataService = {
 	},
 
 	listNft() {
-		return db.nfts?.toArray();
+		return db.nfts?.toArray(list => list.filter(item => item.amount > 0)).catch(() => []);
 	},
 
 	async saveDocuments(docs) {

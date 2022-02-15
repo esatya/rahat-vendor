@@ -11,7 +11,9 @@ module.exports = {
 			NFT_RECIEVED: 'nftRecieved',
 			NFT_SENT: 'nftSent',
 			REDEEMED_TOKEN: 'tokenRedeemed',
-			REDEEMED_PACKAGE: 'packageRedeemed'
+			REDEEMED_PACKAGE: 'packageRedeemed',
+			TOKEN_TRANSFER: 'tokenTransfer',
+			PAKCAGE_TRANSFER: 'packageTransfer'
 		},
 		DEFAULT_NFT_CHARGE: 1,
 		SCANNER_PREVIEW_STYLE: {
