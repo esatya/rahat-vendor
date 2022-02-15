@@ -56,3 +56,9 @@ export const blobToBase64 = blob => {
 		};
 	});
 };
+
+export const getAuthSignature = async wallet => {
+	const data = Date.now().toString();
+	const signature = await wallet.signMessage(data);
+	return `${data}.${signature}`;
+};

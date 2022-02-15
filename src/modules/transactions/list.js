@@ -74,6 +74,22 @@ const TxList = ({ limit, transactions = [] }) => {
 						</div>
 					);
 				}
+				if (t.type === CHARGE_TYPES.REDEEMED_PACKAGE) {
+					t.name = 'NFT Redeemed';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.REDEEMED_TOKEN) {
+					t.name = 'Token Redeemed';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
 				if (t.type === CHARGE_TYPES.NFT_SENT) {
 					t.name = 'NFT Sent';
 					t.icon = (

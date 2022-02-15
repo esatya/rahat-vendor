@@ -23,6 +23,19 @@ export async function getVendorByWallet(walletAddress) {
 		throw Error(err);
 	}
 }
+
+export async function calculateTotalPackageBalance(payload, signature) {
+	let res = await axios.post(`${API.NFT}/total-package-balance`, payload, {
+		headers: { auth_signature: signature }
+	});
+	return res.data;
+}
+export async function calculateTotalVendorPackageBalance(payload, signature) {
+	let res = await axios.post(`${API.NFT}/vendor-package-balance`, payload, {
+		headers: { auth_signature: signature }
+	});
+	return res.data;
+}
 export async function getPackageDetails(id) {
 	try {
 		const res = await axios.get(`${API.NFT}/token/${id}`);
@@ -60,7 +73,7 @@ export async function checkApproval(walletAddress) {
 
 export async function checkBeneficiary(phone) {
 	try {
-		const res = await axios.get(`${API.SERVER_URL}/beneficiaries/check/${phone}`);
+		const res = await axios.get(`${API.BASE_URL}/beneficiaries/check/${phone}`);
 		return res.data;
 	} catch (e) {
 		throw Error(e);
