@@ -153,7 +153,8 @@ export default function Index(props) {
 				amount: amount.reduce((prevVal, curVal) => prevVal + curVal, 0),
 				to: sendToAddress,
 				from: wallet.address,
-				status: 'success'
+				status: 'success',
+				tokenId: ids
 			};
 			await DataService.addTx(tx);
 			await DataService.batchDecrementNft(ids, amount);

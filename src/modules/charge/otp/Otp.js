@@ -54,7 +54,7 @@ export default function Otp(props) {
 				from: receipt.from,
 				status: 'success'
 			};
-
+			if (chargeType === CHARGE_TYPES.NFT) tx.tokenId = tokenId;
 			await DataService.addTx(tx);
 			chargeType === CHARGE_TYPES.NFT && (await handleStoreAssets());
 			chargeType === CHARGE_TYPES.TOKEN ? removeTokenAmount() : removeNFTAmount();
@@ -78,6 +78,8 @@ export default function Otp(props) {
 					timestamp: Date.now(),
 					amount: chargeType === CHARGE_TYPES.TOKEN ? getTokenAmount() : getNFTAmount()
 				};
+				if (chargeType === CHARGE_TYPES.NFT) tx.tokenId = [tokenId];
+
 				await DataService.addTx(tx);
 
 				Swal.fire({
