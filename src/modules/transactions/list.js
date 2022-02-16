@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { IoArrowDownOutline, IoArrowForwardOutline } from 'react-icons/io5';
 import { GiTwoCoins } from 'react-icons/gi';
+import { AiOutlineSend } from 'react-icons/ai';
 import { BiError } from 'react-icons/bi';
 import Moment from 'react-moment';
 
@@ -55,6 +56,22 @@ const TxList = ({ limit, transactions = [] }) => {
 					t.icon = (
 						<div className="icon-box bg-primary">
 							<IoArrowDownOutline className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.TOKEN_TRANSFER) {
+					t.name = 'Token Transferred';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<AiOutlineSend className="ion-icon" />
+						</div>
+					);
+				}
+				if (t.type === CHARGE_TYPES.PAKCAGE_TRANSFER) {
+					t.name = 'Package Transferred';
+					t.icon = (
+						<div className="icon-box bg-primary">
+							<AiOutlineSend className="ion-icon" />
 						</div>
 					);
 				}

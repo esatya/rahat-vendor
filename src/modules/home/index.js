@@ -14,7 +14,7 @@ import Profile from '../settings/profile';
 import Transfer from '../transfer';
 import Transactions from '../transactions';
 import TxDetails from '../transactions/details';
-import AllTransactions from '../transactions/allTransactions';
+import AllTransactions from '../transactions';
 import GoogleBackup from '../misc/googleBackup';
 import Charge from '../charge/token/index';
 import OTP from '../charge/otp/index';

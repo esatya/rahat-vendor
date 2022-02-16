@@ -1,4 +1,14 @@
+import { ethers } from 'ethers';
 import Swal from 'sweetalert2';
+
+export const isValidAddress = (address = '') => {
+	try {
+		const isValid = ethers.utils.getAddress(address);
+		return !!isValid;
+	} catch (err) {
+		return false;
+	}
+};
 
 export function isOffline(msg) {
 	if (!navigator.onLine) {
