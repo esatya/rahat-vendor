@@ -7,7 +7,7 @@ import Wallet from '../../utils/blockchain/wallet';
 import { getDefautAgency, getVendorByWallet } from '../../services';
 
 function SyncDb() {
-	const { wallet, setWallet } = useContext(AppContext);
+	const { wallet, setWallet, hasSynchronized } = useContext(AppContext);
 	const [loadingMsg, setLoadingMsg] = useState({ message: 'Processing...', percent: 0 });
 	const [errorMsg, setErrorMsg] = useState(null);
 	const history = useHistory();
@@ -25,7 +25,6 @@ function SyncDb() {
 			const agncy = await DataService.getDefaultAgency();
 			if (!agncy) {
 				const defaultAgency = await getDefautAgency();
-				console.log({ defaultAgency });
 				await DataService.addAgency(defaultAgency);
 			}
 		} catch (err) {
@@ -74,13 +73,20 @@ function SyncDb() {
 	};
 
 	const initializeSync = useCallback(async () => {
+		if (hasSynchronized) return history.push('/');
 		await unlockWallet();
 		await syncAgency();
 		await syncProfile();
-	}, [unlockWallet, syncAgency, syncProfile]);
+		await DataService.remove('temp_passcode');
+	}, [unlockWallet, syncAgency, syncProfile, history, hasSynchronized]);
 
 	useEffect(() => {
-		initializeSync();
+		let hasMounted = true;
+		if (hasMounted) initializeSync();
+
+		return () => {
+			hasMounted = false;
+		};
 	}, [initializeSync]);
 
 	return (

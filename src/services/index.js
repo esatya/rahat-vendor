@@ -48,7 +48,6 @@ export async function getPackageDetails(id) {
 export const getDefautAgency = async () => {
 	const { data } = await axios.get(`${API.APP}/settings`);
 	let appData = data;
-	console.log({ appData });
 	const agencyData = {
 		api: process.env.REACT_APP_DEFAULT_AGENCY_API,
 		address: appData.agency.contracts.rahat,
