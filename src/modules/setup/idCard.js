@@ -8,6 +8,7 @@ import Loading from '../global/Loading';
 import Wallet from '../../utils/blockchain/wallet';
 import { AppContext } from '../../contexts/AppContext';
 import DataService from '../../services/db';
+import api from '../../constants/api';
 
 export default function Main() {
 	const history = useHistory();
@@ -30,7 +31,7 @@ export default function Main() {
 	};
 
 	const registerWithAgency = async data => {
-		let appData = await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/app/settings`).then(r => {
+		let appData = await fetch(`${api.APP}/settings`).then(r => {
 			if (!r.ok) throw Error(r.message);
 			return r.json();
 		});
@@ -50,7 +51,7 @@ export default function Main() {
 		setAgency(agencyData);
 		if (!data.email) delete data.email;
 
-		await fetch(`${process.env.REACT_APP_DEFAULT_AGENCY_API}/vendors/register`, {
+		await fetch(`${api.VENDORS}/register`, {
 			method: 'post',
 			headers: {
 				Accept: 'application/json',
@@ -97,7 +98,9 @@ export default function Main() {
 					govt_id_image: previewImage
 				});
 				await DataService.saveWallet(encryptedWallet);
-				DataService.saveAddress(wallet.address);
+				await DataService.saveAddress(wallet.address);
+				await DataService.setSynchronized(true);
+
 				setWallet(wallet);
 				setHasWallet(true);
 				showLoading(null);
