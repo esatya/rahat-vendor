@@ -1,4 +1,14 @@
+import { ethers } from 'ethers';
 import Swal from 'sweetalert2';
+
+export const isValidAddress = (address = '') => {
+	try {
+		const isValid = ethers.utils.getAddress(address);
+		return !!isValid;
+	} catch (err) {
+		return false;
+	}
+};
 
 export function isOffline(msg) {
 	if (!navigator.onLine) {
@@ -55,4 +65,10 @@ export const blobToBase64 = blob => {
 			resolve(reader.result);
 		};
 	});
+};
+
+export const getAuthSignature = async wallet => {
+	const data = Date.now().toString();
+	const signature = await wallet.signMessage(data);
+	return `${data}.${signature}`;
 };

@@ -7,7 +7,7 @@ import Wallet from '../../utils/blockchain/wallet';
 import { getDefautAgency, getVendorByWallet } from '../../services';
 
 function SyncDb() {
-	const { wallet, setWallet } = useContext(AppContext);
+	const { wallet, setWallet, hasSynchronized } = useContext(AppContext);
 	const [loadingMsg, setLoadingMsg] = useState({ message: 'Processing...', percent: 0 });
 	const [errorMsg, setErrorMsg] = useState(null);
 	const history = useHistory();
@@ -17,7 +17,7 @@ function SyncDb() {
 		setErrorMsg(msg);
 	};
 
-	const setSynchronizing = useCallback(async val => DataService.setSynchronizing(val), []);
+	const setSynchronized = useCallback(async val => DataService.setSynchronized(val), []);
 
 	const syncAgency = useCallback(async () => {
 		try {
@@ -44,12 +44,13 @@ function SyncDb() {
 			photo && photo.length && (await DataService.saveProfileImage(photo[0]));
 			govt_id_image && (await DataService.saveProfileIdCard(govt_id_image));
 			setLoadingMsg({ percent: 100, message: 'Succesfully synced...', showHome: true });
-			await setSynchronizing(false);
+			await setSynchronized(true);
 		} catch (err) {
+			await setSynchronized(false);
 			console.log('Could not sync profile', err);
 			showError('Unable to sync profile properly');
 		}
-	}, [wallet, setSynchronizing]);
+	}, [wallet, setSynchronized]);
 
 	const unlockWallet = useCallback(async () => {
 		try {
@@ -57,27 +58,35 @@ function SyncDb() {
 			if (wallet) return;
 			const passcode = await DataService.get('temp_passcode');
 			const encWallet = await DataService.getWallet();
+
+			if (!encWallet) return history.push('/setup');
 			const wlt = await Wallet.loadFromJson(passcode, encWallet);
 			setWallet(wlt);
 		} catch (err) {
 			console.log('error at walllet', err);
 			setErrorMsg('Couldnot validate wallet properly.');
 		}
-	}, [wallet, setWallet]);
+	}, [wallet, setWallet, history]);
 
 	const handleBackButton = e => {
 		history.goBack();
 	};
 
 	const initializeSync = useCallback(async () => {
-		await setSynchronizing(true);
+		if (hasSynchronized) return history.push('/');
 		await unlockWallet();
 		await syncAgency();
 		await syncProfile();
-	}, [unlockWallet, syncAgency, syncProfile, setSynchronizing]);
+		await DataService.remove('temp_passcode');
+	}, [unlockWallet, syncAgency, syncProfile, history, hasSynchronized]);
 
 	useEffect(() => {
-		initializeSync();
+		let hasMounted = true;
+		if (hasMounted) initializeSync();
+
+		return () => {
+			hasMounted = false;
+		};
 	}, [initializeSync]);
 
 	return (

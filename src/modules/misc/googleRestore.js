@@ -197,11 +197,7 @@ export default function GoogleRestore() {
 		setErrorMsg(null);
 		setLoading('Unlocking and restoring wallet.');
 		const wallet = await unlockWallet();
-
-		console.log({ wallet });
 		const walletReged = await checkWalletRegistered(wallet?.address);
-		console.log({ walletReged });
-
 		if (walletReged) {
 			await DataService.saveWallet(selectedWallet?.data?.wallet);
 			await DataService.saveHasBackedUp(true);
