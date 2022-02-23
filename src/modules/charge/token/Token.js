@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IoCloseCircle, IoSendOutline } from 'react-icons/io5';
 
-
 import { AppContext } from '../../../contexts/AppContext';
 import { ChargeContext } from '../../../contexts/ChargeContext';
 
@@ -28,7 +27,6 @@ export default function Token(props) {
 	const [chargeAmount, setChargeAmount] = useState(null);
 	const [packages, setPackages] = useState([]);
 
-
 	const handleChargeClick = async () => {
 		try {
 			showLoading('charging beneficiary...');
@@ -41,7 +39,6 @@ export default function Token(props) {
 			showLoading(null);
 		} catch (e) {
 			showLoading(null);
-
 		}
 	};
 
@@ -64,7 +61,6 @@ export default function Token(props) {
 
 				const balance = totalERC1155Balance.balances[index].toNumber();
 
-
 				const pkg = {
 					tokenId: data.tokenId,
 					name: data.name,
@@ -73,7 +69,6 @@ export default function Token(props) {
 					value: data.metadata && data.metadata.fiatValue ? data.metadata.fiatValue : '',
 					imageUri: data.metadata && data.metadata.packageImgURI ? data.metadata.packageImgURI : '',
 					balance
-
 				};
 				setPackages(packages => [...packages, pkg]);
 			});
