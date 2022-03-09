@@ -64,7 +64,7 @@ export default function Otp(props) {
 				title: 'Successfully transfered',
 				timer: 2000
 			});
-			history.push(`/charge/${beneficiary}`);
+			history.push(`/tx/${tx.hash}`);
 		} catch (e) {
 			showLoading(null);
 
