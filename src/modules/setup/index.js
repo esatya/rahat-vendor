@@ -125,7 +125,7 @@ export default function Main() {
 					</div>
 				)}
 
-<div className="text-center mt-4">
+				<div className="text-center mt-4">
 					<small>Version: {PackageJson.version}</small>
 				</div>
 			</div>
