@@ -11,7 +11,7 @@ export default function Asset() {
 	useEffect(() => {
 		async function listNfts() {
 			const nftList = await DataService.listNft();
-			setNfts(nftList);
+			setNfts(nftList || []);
 		}
 
 		listNfts();

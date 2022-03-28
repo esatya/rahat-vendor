@@ -2,6 +2,11 @@ import APP_ACTIONS from '../actions/appActions';
 
 const AppReducer = (state, action) => {
 	switch (action.type) {
+		case APP_ACTIONS.SET_LOADING:
+			return {
+				...state,
+				contextLoading: action.data
+			};
 		case APP_ACTIONS.INIT_APP:
 			return {
 				...state,
@@ -9,7 +14,9 @@ const AppReducer = (state, action) => {
 				network: action.data.network,
 				hasWallet: action.data.hasWallet,
 				tokenBalance: action.data.balance,
-				agency: action.data.agency
+				agency: action.data.agency,
+				hasBackedUp: action.data.hasBackedUp,
+				hasSynchronized: action.data.hasSynchronized
 			};
 
 		case APP_ACTIONS.SET_AGENCY:
@@ -43,9 +50,13 @@ const AppReducer = (state, action) => {
 			};
 
 		case APP_ACTIONS.ADD_RECENT_TX:
+			let tx = action.data;
+			if (!Array.isArray(tx)) tx = [tx];
+			const arr = [...tx, ...state.recentTx];
+
 			return {
 				...state,
-				recentTx: action.data ? action.data : []
+				recentTx: arr ? arr.slice(0, 3) : []
 			};
 
 		case APP_ACTIONS.SET_SCANNED_DATA:

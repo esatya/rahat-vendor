@@ -21,8 +21,8 @@ export default function LockedFooter() {
 		let encryptedWallet = await DataService.getWallet();
 		const wallet = await Wallet.loadFromJson(profile.phone, encryptedWallet);
 		setWallet(wallet);
-		history.push('/');
 		setLoadingModal(false);
+		history.push('/');
 	};
 
 	//setTimeout(handleUnlockClick, 1000);

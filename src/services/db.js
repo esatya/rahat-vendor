@@ -8,12 +8,14 @@ db.version(DB.VERSION).stores({
 	data: 'name,data',
 	documents: 'hash,type,name,file,encryptedFile,createdAt,inIpfs',
 	assets: 'address,type,name,symbol,decimal,balance,network',
-	agencies: 'address,name,api,network,rahatAddress,tokenAddress,nftAddress,adminAddress,phone,email,logo,isApproved',
-	nfts: 'tokenId,name,symbol,description,imageUri,metadataUri,value,amount',
-	transactions: 'hash,type,timestamp,amount,to,from,status,image'
+	agencies: 'address,name,api,network,rahatAddress,tokenAddress,adminAddress,phone,email,logo,isApproved',
+	transactions: 'hash,type,timestamp,amount,to,from,status,image,tokenId',
+	nfts: 'tokenId,name,symbol,description,imageUri,metadataUri,value,amount'
 });
 
 const DataService = {
+	dbInstance: db,
+
 	save(name, data) {
 		return db.data.put({ name, data });
 	},
@@ -48,12 +50,26 @@ const DataService = {
 	saveProfileIdCard(img) {
 		return this.save('profileIdCard', img);
 	},
+	saveHasBackedUp(hasBackedUp) {
+		return this.save('hasBackedUp', hasBackedUp);
+	},
 
 	async initAppData() {
 		let network = await this.getNetwork();
 		let address = await this.getAddress();
 		let wallet = await this.getWallet();
-		return { network, address, wallet };
+		let hasBackedUp = await this.get('hasBackedUp');
+		let hasSynchronized = await this.get('hasSynchronized');
+		return {
+			network,
+			address,
+			wallet,
+			hasBackedUp: hasBackedUp ? true : false,
+			hasSynchronized
+		};
+	},
+	setSynchronized(val) {
+		return this.save('hasSynchronized', val);
 	},
 
 	async clearAll() {
@@ -73,6 +89,19 @@ const DataService = {
 		let network = await this.get('network');
 		if (!network) return getDefaultNetwork();
 		return network;
+	},
+
+	async decrementNft(tokenId, decreaseBy) {
+		if (Math.abs(decreaseBy) <= 0) return 1;
+		const nft = await db.nfts.get({ tokenId });
+		let newAmount = nft.amount - Math.abs(decreaseBy);
+		newAmount = newAmount < 0 ? 0 : newAmount;
+		return db.nfts.update(tokenId, { amount: newAmount });
+	},
+
+	async batchDecrementNft(tokenIds = [], decrements = []) {
+		if (tokenIds.length !== decrements.length) return;
+		return tokenIds.forEach(async (ids, index) => await this.decrementNft(ids, decrements[index]));
 	},
 
 	async getIpfs() {
@@ -162,7 +191,7 @@ const DataService = {
 	},
 
 	listNft() {
-		return db.nfts.toArray();
+		return db.nfts?.toArray(list => list.filter(item => item.amount > 0)).catch(() => []);
 	},
 
 	async saveDocuments(docs) {

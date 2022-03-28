@@ -82,11 +82,13 @@ export default function Main() {
 								<Webcam
 									audio={false}
 									ref={webcamRef}
-									className="circleSelfie"
+									height={720}
+									width="100%"
 									minScreenshotWidth={1024}
 									minScreenshotHeight={720}
 									screenshotFormat="image/png"
 									videoConstraints={videoConstraints}
+									className="circleSelfie"
 								/>
 							</div>
 						)}

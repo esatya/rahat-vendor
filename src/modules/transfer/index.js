@@ -10,21 +10,27 @@ import Loading from '../global/Loading';
 import AppHeader from '../layouts/AppHeader';
 import ModalWrapper from '../global/ModalWrapper';
 import { APP_CONSTANTS } from '../../constants';
-import { TokenService } from '../../services/chain';
-import { isOffline } from '../../utils';
+import { ERC1155_Service, TokenService } from '../../services/chain';
+import { isOffline, isValidAddress } from '../../utils';
 import DataService from '../../services/db';
-
-const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, SCANNER_CAM_STYLE } = APP_CONSTANTS;
-
+import Packages from './component/Packages';
+const { SCAN_DELAY, SCANNER_PREVIEW_STYLE, CHARGE_TYPES } = APP_CONSTANTS;
+const TAB = {
+	TOKEN: 'token',
+	PACKAGE: 'packgae'
+};
 export default function Index(props) {
 	const { agency, wallet, setTokenBalance } = useContext(AppContext);
 	let history = useHistory();
 	let toAddress = props.match.params.address;
-
 	const [sendAmount, setSendAmount] = useState('');
 	const [sendToAddress, setSendToAddress] = useState('');
 	const [loading, showLoading] = useState(null);
 	const [scanModal, setScanModal] = useState(false);
+	const [selectedTab, setSelectedTab] = useState(TAB.TOKEN);
+	const [selectedRedeemablePackage, setSelectedRedeemablePackage] = useState([]);
+	const [isAddressValid, setAddressValid] = useState(true);
+	const changeTab = tab => setSelectedTab(tab);
 
 	const handleScanModalToggle = () => setScanModal(!scanModal);
 
@@ -99,7 +105,7 @@ export default function Index(props) {
 			resetFormStates();
 			DataService.addTx({
 				hash: receipt.transactionHash,
-				type: 'send',
+				type: CHARGE_TYPES.TOKEN_TRANSFER,
 				timestamp: Date.now(),
 				amount: data.sendAmount,
 				to: data.sendToAddress,
@@ -116,13 +122,87 @@ export default function Index(props) {
 		}
 	};
 
-	const handleSendClick = () => {
+	const checkAddress = () => {
+		const isValid = isValidAddress(sendToAddress);
+		setAddressValid(isValid);
+		return isValid;
+	};
+
+	const transferPackages = async () => {
+		if (!selectedRedeemablePackage?.length) return;
+		showLoading('Transferring packages. Please wait...');
+		const ids = [];
+		const amount = [];
+		try {
+			selectedRedeemablePackage.forEach(item => {
+				ids.push(item.tokenId);
+				amount.push(item.amount);
+			});
+
+			const trasnaction = await ERC1155_Service(agency?.address, wallet).batchRedeem(
+				wallet.address,
+				sendToAddress,
+				ids,
+				amount
+			);
+
+			const tx = {
+				hash: trasnaction.transactionHash,
+				type: CHARGE_TYPES.PAKCAGE_TRANSFER,
+				timestamp: Date.now(),
+				amount: amount.reduce((prevVal, curVal) => prevVal + curVal, 0),
+				to: sendToAddress,
+				from: wallet.address,
+				status: 'success',
+				tokenId: ids
+			};
+			await DataService.addTx(tx);
+			await DataService.batchDecrementNft(ids, amount);
+			setSelectedRedeemablePackage([]);
+			showLoading(null);
+			await Swal.fire({
+				icon: 'success',
+				title: 'Success',
+				text: 'Successfully Redeemed Pacakages'
+			});
+		} catch (err) {
+			console.log({ err });
+			showLoading(null);
+
+			Swal.fire({
+				title: 'Error',
+				text: `Couldnot redeem package`,
+				icon: 'error'
+			});
+		}
+	};
+
+	const confirmSendPackage = () => {
+		return Swal.fire({
+			title: 'Warning',
+			icon: 'warning',
+			text: 'All amount of selected packages will be transferred.',
+			showCancelButton: true
+		});
+	};
+
+	const handleTokenSendClick = () => {
+		const isValid = checkAddress();
+		if (!isValid) return;
 		if (isOffline('Cannot transfer while you are offline. Please connect to the Internet and try again.')) return;
 
 		if (!sendAmount || !sendToAddress) {
 			return Swal.fire({ title: 'ERROR', icon: 'error', text: 'Send amount and receiver address is required' });
 		}
 		confirmAndSend({ sendAmount, sendToAddress });
+	};
+
+	const handlePackageSendClick = async () => {
+		const isValid = checkAddress();
+		if (!isValid) return;
+		if (isOffline('Cannot transfer while you are offline. Please connect to the Internet and try again.')) return;
+		const isConfirm = await confirmSendPackage();
+		if (isConfirm.value) transferPackages();
 	};
 
 	useEffect(() => {
@@ -168,89 +248,163 @@ export default function Index(props) {
 	return (
 		<>
 			<ModalWrapper title="Scan a QR Code" showModal={scanModal} onHide={handleScanModalToggle}>
-				<div style={SCANNER_CAM_STYLE}>
-					<QrReader
-						delay={SCAN_DELAY}
-						style={SCANNER_PREVIEW_STYLE}
-						onError={handleScanError}
-						onScan={handlScanSuccess}
-					/>
+				<div className="text-center">
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'center',
+							marginTop: '-50px',
+							padding: '40px',
+							minHeight: 200
+						}}
+					>
+						<QrReader
+							delay={SCAN_DELAY}
+							style={SCANNER_PREVIEW_STYLE}
+							onError={handleScanError}
+							onScan={handlScanSuccess}
+						/>
+					</div>
 				</div>
 			</ModalWrapper>
 			<Loading showModal={loading !== null} message={loading} />
 			<AppHeader currentMenu="Transfer" />
 			<div id="appCapsule">
 				<div id="cmpMain">
-					<div className="section mt-2 mb-5">
-						<div className="card mt-5">
-							<div className="card-body">
-								<form>
-									<div className="form-group boxed" style={{ padding: 0 }}>
-										<div className="input-wrapper">
-											<label className="label" htmlFor="sendToAddr">
-												Destination Address:
-											</label>
-											<div className="input-group mb-3">
-												<input
-													type="text"
-													className="form-control"
-													id="sendToAddr"
-													name="sendToAddr"
-													placeholder="Enter receiver's address"
-													onChange={handleSendToChange}
-													value={sendToAddress}
-												/>
-												<i className="clear-input">
-													<IoCloseCircle className="ion-icon" />
-												</i>
-												<div className="ml-1">
-													<button
-														type="button"
-														className="btn btn-icon btn-primary mr-1 mb-1 btn-scan-address"
-														onClick={handleScanModalToggle}
-													>
-														<IoQrCodeOutline className="ion-icon" />
-													</button>
+					<div className="section mt-2">
+						<div className="form-group boxed">
+							<div className="input-wrapper">
+								<label className="label" htmlFor="sendToAddr">
+									Destination Address:
+								</label>
+								<div className="input-group mb-0">
+									<input
+										type="text"
+										className="form-control"
+										id="sendToAddr"
+										name="sendToAddr"
+										placeholder="Enter receiver's address"
+										onChange={handleSendToChange}
+										value={sendToAddress}
+									/>
+									<i className="clear-input">
+										<IoCloseCircle className="ion-icon" />
+									</i>
+									<div className="ml-1">
+										<button
+											type="button"
+											className="btn btn-icon btn-primary mr-1 mb-1 btn-scan-address"
+											onClick={handleScanModalToggle}
+										>
+											<IoQrCodeOutline className="ion-icon" />
+										</button>
+									</div>
+								</div>
+								{!isAddressValid && <p className="text-danger">Invalid Address.</p>}
+							</div>
+						</div>
+					</div>
+					<div className="tab-content mt-1">
+						<div className="tab-pane fade show active" id="lined" role="tabpanel">
+							<div className="section full mt-1">
+								<div className="wide-block pb-2">
+									<ul className="nav nav-tabs lined" role="tablist">
+										<li className="nav-item">
+											<a
+												className={`nav-link ${selectedTab === TAB.TOKEN && 'active'}`}
+												data-toggle="tab"
+												href="#token"
+												role="tab"
+												onClick={() => changeTab(TAB.TOKEN)}
+											>
+												Token
+											</a>
+										</li>
+										<li className="nav-item">
+											<a
+												className={`nav-link ${selectedTab === TAB.PACKAGE && 'active'}`}
+												data-toggle="tab"
+												href="#package"
+												role="tab"
+												onClick={() => changeTab(TAB.PACKAGE)}
+											>
+												Package
+											</a>
+										</li>
+									</ul>
+									<div className="tab-content mt-2">
+										<div
+											className={`tab-pane fade ${selectedTab === TAB.TOKEN && 'show active'}`}
+											id="home11"
+											role="tabpanel"
+										>
+											<div className="form-group boxed" style={{ padding: 0 }}>
+												<div className="input-wrapper">
+													<label className="label" htmlFor="sendAmount">
+														Amount to Send:
+													</label>
+													<input
+														onChange={handleSendAmtChange}
+														value={sendAmount}
+														type="number"
+														className="form-control"
+														id="sendAmount"
+														name="sendAmount"
+														placeholder="Enter amount to send"
+													/>
+													<i className="clear-input">
+														<IoCloseCircle className="ion-icon" />
+													</i>
 												</div>
+											</div>
+											<div className="mt-3">
+												<small>
+													Important: Please double check the address and amount before
+													sending. Transactions cannot be reversed.
+												</small>
+											</div>
+											<div className="mt-3 text-right">
+												<button
+													type="button"
+													id="btnSend"
+													className="btn btn-success"
+													onClick={handleTokenSendClick}
+													disabled={!sendAmount || sendAmount <= 0}
+												>
+													<IoSendOutline className="ion-icon" /> Send Now
+												</button>
+											</div>
+										</div>
+										<div
+											className={`tab-pane fade ${selectedTab === TAB.PACKAGE && 'show active'}`}
+											id="profile12"
+											role="tabpanel"
+										>
+											<Packages
+												selectedRedeemablePackage={selectedRedeemablePackage}
+												setSelectedRedeemablePackage={setSelectedRedeemablePackage}
+											/>
+
+											<div className="mt-3">
+												<small>
+													Important: Please double check the address and packages before
+													sending. Transactions cannot be reversed.
+												</small>
+											</div>
+											<div className="mt-3 text-right">
+												<button
+													type="button"
+													id="btnSend"
+													className="btn btn-success"
+													onClick={handlePackageSendClick}
+													disabled={!selectedRedeemablePackage?.length}
+												>
+													<IoSendOutline className="ion-icon" /> Send Now
+												</button>
 											</div>
 										</div>
 									</div>
-									<div className="form-group boxed" style={{ padding: 0 }}>
-										<div className="input-wrapper">
-											<label className="label" htmlFor="sendAmount">
-												Amount to Send:
-											</label>
-											<input
-												onChange={handleSendAmtChange}
-												value={sendAmount}
-												type="number"
-												className="form-control"
-												id="sendAmount"
-												name="sendAmount"
-												placeholder="Enter amount to send"
-											/>
-											<i className="clear-input">
-												<IoCloseCircle className="ion-icon" />
-											</i>
-										</div>
-									</div>
-									<div className="mt-3">
-										<small>
-											Important: Please double check the address and amount before sending.
-											Transactions cannot be reversed.
-										</small>
-									</div>
-								</form>
-							</div>
-							<div className="card-footer text-right">
-								<button
-									type="button"
-									id="btnSend"
-									className="btn btn-success"
-									onClick={handleSendClick}
-								>
-									<IoSendOutline className="ion-icon" /> Send Now
-								</button>
+								</div>
 							</div>
 						</div>
 					</div>
