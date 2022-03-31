@@ -143,7 +143,7 @@ export default function Main() {
 						</div>
 						<div className="card1">
 							<div className="card-body text-center">
-								<h3 className="mb-2">
+								<h3>
 									Take a picture of your ID card
 									<small>
 										<br />
@@ -158,7 +158,7 @@ export default function Main() {
 										style={{
 											borderRadius: '10px',
 											width: '100%',
-											height: '350px',
+											height: '300px',
 											border: '3px solid #958d9e',
 											marginTop: '30px'
 										}}
@@ -180,24 +180,33 @@ export default function Main() {
 								)}
 							</div>
 						</div>
-						<div className="pl-4 pr-4">
+						<div className="pl-3 pr-3">
 							{previewImage ? (
-								<div className="text-center">
-									<button
-										type="button"
-										className="btn btn-lg btn-block btn-outline-primary mt-1"
-										onClick={() => setPreviewImage(null)}
-									>
-										<BiReset className="ion-icon" />
-										Retake Picture
-									</button>
-									<button
-										type="button"
-										className="btn btn-lg btn-block btn-success mt-3 mb-2"
-										onClick={save}
-									>
-										Complete setup
-									</button>
+								<div>
+									<div className="text-center">
+										<button
+											type="button"
+											className="btn btn-lg btn-block btn-outline-primary mt-1"
+											onClick={() => setPreviewImage(null)}
+										>
+											<BiReset className="ion-icon" />
+											Retake Picture
+										</button>
+										<button
+											type="button"
+											className="btn btn-lg btn-block btn-success mt-3 mb-2"
+											onClick={save}
+										>
+											Complete setup
+										</button>
+									</div>
+									<p className="text-privacy">
+										By signing up you acknowledge the{' '}
+										<a href="https://docs.rahat.io/privacy-policy" className="privacy-policy">
+											Privacy Policy
+										</a>{' '}
+										.
+									</p>
 								</div>
 							) : (
 								<div className="d-flex justify-content-between align-items-center mt-1 mb-3">

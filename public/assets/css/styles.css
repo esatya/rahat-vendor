@@ -6649,3 +6649,17 @@ input.pwd {
 	top: 50%;
 	margin-top: -8px;
 }
+
+/* custom css */
+
+.text-privacy {
+	color: #27173E;
+	bottom: 1vh;
+	position: absolute;
+	width: 90%;
+	text-align: center;
+	font-size: 12px;
+}
+.privacy-policy {
+	color: #3f9eeb;
+}

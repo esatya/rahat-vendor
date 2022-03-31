@@ -33,7 +33,7 @@ export default function Main() {
 	return (
 		<>
 			<div className="section mt-2">
-				<div className="text-center p-5 mb-3">
+				<div className="text-center p-5">
 					<img src="/assets/img/brand/logo-512.png" alt="alt" width="200" />
 				</div>
 				<Form onSubmit={save}>
@@ -114,12 +114,19 @@ export default function Main() {
 							</div>
 						</div>
 					</div>
-					<div className="p-2">
-						<Button type="submit" className="btn btn-lg btn-block btn-success mt-3">
+					<div className="p-2 mb-3">
+						<Button type="submit" className="btn btn-lg btn-block btn-success mt-2">
 							Continue
 						</Button>
 					</div>
 				</Form>
+				<p className="text-privacy">
+					By signing up you acknowledge the{' '}
+					<a href="https://docs.rahat.io/privacy-policy" className="privacy-policy">
+						Privacy Policy
+					</a>{' '}
+					.
+				</p>
 			</div>
 		</>
 	);
