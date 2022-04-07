@@ -1,6 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { IoCloseCircle, IoSendOutline } from 'react-icons/io5';
+import Swal from 'sweetalert2';
 
 import { AppContext } from '../../../contexts/AppContext';
 import { ChargeContext } from '../../../contexts/ChargeContext';
@@ -26,10 +27,15 @@ export default function Token(props) {
 	const [loading, showLoading] = useState(null);
 	const [chargeAmount, setChargeAmount] = useState(null);
 	const [packages, setPackages] = useState([]);
+	const [beneficiaryTokenBalance, setBeneficiaryTokenBalance] = useState(null);
 
 	const handleChargeClick = async () => {
 		try {
 			showLoading('charging beneficiary...');
+			if (chargeAmount > beneficiaryTokenBalance) {
+				Swal.fire('Error', 'ChareAmount is greater than Beneficiary balance', 'error');
+				showLoading(null);
+			}
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
 			await rahat.chargeCustomerForERC20(beneficiaryPhone, chargeAmount);
@@ -46,6 +52,18 @@ export default function Token(props) {
 		setChargeAmount(e.target.value);
 	};
 
+	const fetchBeneficiaryTokenBalance = useCallback(async () => {
+		if (!beneficiaryPhone) return;
+		const agency = await DataService.getDefaultAgency();
+		const rahat = RahatService(agency.address, wallet);
+		const tokenBalance = await rahat.getBeneficiaryERC20Balance(beneficiaryPhone);
+		setBeneficiaryTokenBalance(tokenBalance.toNumber());
+	}, [beneficiaryPhone, wallet]);
+
+	useEffect(() => {
+		fetchBeneficiaryTokenBalance();
+	}, [fetchBeneficiaryTokenBalance]);
+
 	useEffect(() => {
 		(async () => {
 			setPackages([]);
@@ -58,9 +76,8 @@ export default function Token(props) {
 
 			tokenIds.forEach(async (el, index) => {
 				const data = await getPackageDetails(el);
-
 				const balance = totalERC1155Balance.balances[index].toNumber();
-
+				if (!balance) return;
 				const pkg = {
 					tokenId: data.tokenId,
 					name: data.name,
