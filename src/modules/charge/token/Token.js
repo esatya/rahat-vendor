@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { IoCloseCircle, IoSendOutline } from 'react-icons/io5';
 import Swal from 'sweetalert2';
 
@@ -23,6 +23,8 @@ export default function Token(props) {
 	const { setTokenAmount } = useContext(ChargeContext);
 	let history = useHistory();
 	let beneficiary = props.match.params.beneficiary;
+	const queryParam = useLocation().search;
+	const queryAmount = new URLSearchParams(queryParam).get('amount');
 	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
 	const [loading, showLoading] = useState(null);
 	const [chargeAmount, setChargeAmount] = useState(null);
@@ -33,7 +35,7 @@ export default function Token(props) {
 		try {
 			showLoading('charging beneficiary...');
 			if (chargeAmount > beneficiaryTokenBalance) {
-				Swal.fire('Error', 'ChareAmount is greater than Beneficiary balance', 'error');
+				Swal.fire('Error', 'Charge Amount is greater than Beneficiary balance', 'error');
 				showLoading(null);
 			}
 			const agency = await DataService.getDefaultAgency();
@@ -59,6 +61,14 @@ export default function Token(props) {
 		const tokenBalance = await rahat.getBeneficiaryERC20Balance(beneficiaryPhone);
 		setBeneficiaryTokenBalance(tokenBalance.toNumber());
 	}, [beneficiaryPhone, wallet]);
+
+	const setChargeAmountFromQuery = useCallback(() => {
+		if (queryAmount) setChargeAmount(queryAmount);
+	}, [queryAmount]);
+
+	useEffect(() => {
+		setChargeAmountFromQuery();
+	}, [setChargeAmountFromQuery]);
 
 	useEffect(() => {
 		fetchBeneficiaryTokenBalance();
@@ -105,12 +115,17 @@ export default function Token(props) {
 
 						<div className="card mt-2">
 							<div className="card-header">Tokens</div>
+
 							<div className="card-body">
 								<form>
 									<div className="form-group boxed" style={{ padding: 0 }}>
 										<div className="input-wrapper">
 											<label className="label" htmlFor="chargeAmount">
-												Amount to Charge:
+												Amount to Charge: ({' '}
+												<span className="text-right">
+													Chargable Amount: <strong>{beneficiaryTokenBalance || 0}</strong>
+												</span>
+												)
 											</label>
 											<input
 												onChange={handleChargeAmtChange}
@@ -127,6 +142,7 @@ export default function Token(props) {
 										</div>
 									</div>
 									<div className="mt-3">
+										<br />
 										<small>Important: Please double check the amount before charging</small>
 									</div>
 								</form>
