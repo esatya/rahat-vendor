@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import QrReader from 'react-qr-reader';
 import Swal from 'sweetalert2';
 
@@ -8,9 +9,11 @@ import { AppContext } from '../../contexts/AppContext';
 import { ActionSheetContext } from '../../contexts/ActionSheetContext';
 import ActionSheet from './ActionSheet';
 import { APP_CONSTANTS } from '../../constants';
+import { checkBeneficiary } from '../../services';
 const { SCAN_DELAY, SCANNER_PREVIEW_STYLE } = APP_CONSTANTS;
 
 export default function Camera(props) {
+	const history = useHistory();
 	const { modalSize, onHide, showModal } = props;
 	const { wallet } = useContext(AppContext);
 	const { showLoading, loading, setData, setActiveSheet } = useContext(ActionSheetContext);
@@ -28,15 +31,18 @@ export default function Camera(props) {
 						? data.split('+977').pop().split('?')[0]
 						: data.split(':').pop().split('?')[0];
 				let amount = parseInt(data.split('amount=').pop().split('&')[0], 10);
-				if (!amount) {
-					setData({ phone, amount: '' });
-					return setActiveSheet('charge-details');
+				const isBeneficiary = await checkBeneficiary(phone);
+				if (!isBeneficiary.data) {
+					setActiveSheet('null');
+					showLoading(null);
+					return Swal.fire('Error', `${isBeneficiary.message || 'Invalid Beneficiary'}`, 'error');
 				}
-				const agency = await DataService.getDefaultAgency();
-				const rahat = RahatService(agency.address, wallet);
-				let receipt = await rahat.chargeCustomer(phone.toString(), amount);
-				setData({ phone, amount, chargeTxHash: receipt.transactionHash });
-				setActiveSheet('otp');
+				// const agency = await DataService.getDefaultAgency();
+				// const rahat = RahatService(agency.address, wallet);
+				// let receipt = await rahat.chargeCustomer(data.phone, data.amount);
+				// setData({ chargeTxHash: receipt.transactionHash });
+				setActiveSheet('null');
+				history.push(`/charge/${phone}?amount=${amount}`);
 			} catch (e) {
 				console.log(e);
 				setData({ phone: '', amount: '', chargeTxHash: null });
