@@ -25,7 +25,7 @@
     "axios": "^0.25.0",
     "bootstrap": "^4.5.1",
     "crypto-js": "^4.0.0",
-    "dexie": "^3.0.3",
+    "dexie": "^3.2.2",
     "eth-crypto": "^1.9.0",
     "ethers": "^5.2.0",
     "gapi-script": "^1.0.2",
