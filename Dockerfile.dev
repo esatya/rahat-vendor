@@ -1,0 +1,10 @@
+#BUILD PHASE
+FROM node:14.17.0-alpine3.13 as build-phase
+RUN apk add --update bash git
+WORKDIR /usr/src/app
+COPY . .
+RUN yarn
+EXPOSE 3300
+CMD ["yarn","start"]
+
+
