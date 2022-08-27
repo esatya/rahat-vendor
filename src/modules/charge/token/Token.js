@@ -11,9 +11,8 @@ import AppHeader from '../../layouts/AppHeader';
 import { APP_CONSTANTS } from '../../../constants';
 
 import DataService from '../../../services/db';
-import PackageList from '../../package/packageList';
 import { RahatService } from '../../../services/chain';
-import { getPackageDetails } from '../../../services';
+import { checkBeneficiary } from '../../../services';
 
 const { CHARGE_TYPES } = APP_CONSTANTS;
 
@@ -26,6 +25,7 @@ export default function Token(props) {
 	const queryParam = useLocation().search;
 	const queryAmount = new URLSearchParams(queryParam).get('amount');
 	const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
+	const [projectId, setProjectId] = useState('');
 	const [loading, showLoading] = useState(null);
 	const [chargeAmount, setChargeAmount] = useState(null);
 	const [packages, setPackages] = useState([]);
@@ -33,6 +33,7 @@ export default function Token(props) {
 
 	const handleChargeClick = async () => {
 		try {
+			console.log('chargeing');
 			showLoading('charging beneficiary...');
 			if (chargeAmount > beneficiaryTokenBalance) {
 				Swal.fire('Error', 'Charge Amount is greater than Beneficiary balance', 'error');
@@ -40,12 +41,13 @@ export default function Token(props) {
 			}
 			const agency = await DataService.getDefaultAgency();
 			const rahat = RahatService(agency.address, wallet);
-			await rahat.chargeCustomerForERC20(beneficiaryPhone, chargeAmount);
-
+			const tx = await rahat.chargeCustomerForERC20(projectId, beneficiaryPhone, chargeAmount);
+			console.log({ tx });
 			setTokenAmount(chargeAmount);
 			history.push(`/charge/${beneficiaryPhone}/otp/${CHARGE_TYPES.TOKEN}`);
 			showLoading(null);
 		} catch (e) {
+			console.log(e);
 			showLoading(null);
 		}
 	};
@@ -55,16 +57,27 @@ export default function Token(props) {
 	};
 
 	const fetchBeneficiaryTokenBalance = useCallback(async () => {
+		console.log('ASD');
 		if (!beneficiaryPhone) return;
 		const agency = await DataService.getDefaultAgency();
+		const { data: benData } = await checkBeneficiary(beneficiary);
+		if (!benData?.projects) return;
+		setProjectId(benData.projects[0]);
 		const rahat = RahatService(agency.address, wallet);
-		const tokenBalance = await rahat.getBeneficiaryERC20Balance(beneficiaryPhone);
+		const tokenBalance = await rahat.getBeneficiaryBalance(benData.projects[0], beneficiaryPhone);
+		console.log({ tokenBalance });
 		setBeneficiaryTokenBalance(tokenBalance.toNumber());
-	}, [beneficiaryPhone, wallet]);
+	}, [beneficiaryPhone, wallet, beneficiary]);
 
 	const setChargeAmountFromQuery = useCallback(() => {
 		if (queryAmount) setChargeAmount(queryAmount);
 	}, [queryAmount]);
+
+	useEffect(() => {
+		(async () => {
+			if (beneficiary) setBeneficiaryPhone(beneficiary);
+		})();
+	}, []);
 
 	useEffect(() => {
 		setChargeAmountFromQuery();
@@ -73,34 +86,6 @@ export default function Token(props) {
 	useEffect(() => {
 		fetchBeneficiaryTokenBalance();
 	}, [fetchBeneficiaryTokenBalance]);
-
-	useEffect(() => {
-		(async () => {
-			setPackages([]);
-			if (beneficiary) setBeneficiaryPhone(beneficiary);
-			const agency = await DataService.getDefaultAgency();
-			const rahat = RahatService(agency.address, wallet);
-			let totalERC1155Balance = await rahat.getTotalERC1155Balance(Number(beneficiary));
-
-			let tokenIds = totalERC1155Balance.tokenIds.map(t => t.toNumber());
-
-			tokenIds.forEach(async (el, index) => {
-				const data = await getPackageDetails(el);
-				const balance = totalERC1155Balance.balances[index].toNumber();
-				if (!balance) return;
-				const pkg = {
-					tokenId: data.tokenId,
-					name: data.name,
-					symbol: data.symbol,
-					description: data.metadata && data.metadata.description ? data.metadata.description : '',
-					value: data.metadata && data.metadata.fiatValue ? data.metadata.fiatValue : '',
-					imageUri: data.metadata && data.metadata.packageImgURI ? data.metadata.packageImgURI : '',
-					balance
-				};
-				setPackages(packages => [...packages, pkg]);
-			});
-		})();
-	}, []);
 
 	return (
 		<>
@@ -160,13 +145,13 @@ export default function Token(props) {
 							</div>
 						</div>
 
-						<div className="card mt-3">
+						{/* <div className="card mt-3">
 							<div className="card-header">Packages</div>
 
 							<div class="card-body">
 								<PackageList packages={packages} beneficiary={beneficiaryPhone} />
 							</div>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</div>

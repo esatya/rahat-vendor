@@ -7,7 +7,8 @@ const ABI = {
 	RAHAT: require(`../assets/contracts/Rahat.json`),
 	ERC20: require(`../assets/contracts/RahatERC20.json`),
 	ERC721: require(`../assets/contracts/erc721.json`),
-	ERC1155: require('../assets/contracts/RahatERC1155.json')
+	ERC1155: require('../assets/contracts/RahatERC1155.json'),
+	REGULATOR: require(`../assets/contracts/Regulator.json`)
 };
 
 const DefaultProvider = new ethers.providers.JsonRpcProvider(getDefaultNetwork());
@@ -18,12 +19,14 @@ const getAgencyDetails = async agencyAddress => {
 	const rahatContract = new ethers.Contract(agencyAddress, ABI.RAHAT.abi, provider);
 	const tokenContract = new ethers.Contract(details.tokenAddress, ABI.TOKEN.abi, provider);
 	const nftContract = new ethers.Contract(details.nftAddress, ABI.ERC1155.abi, provider);
+	const regulatorContract = new ethers.Contract(agencyAddress, ABI.REGULATOR.abi, provider);
 	return {
 		details,
 		provider,
 		rahatContract,
 		tokenContract,
-		nftContract
+		nftContract,
+		regulatorContract
 	};
 };
 
@@ -33,11 +36,13 @@ const RahatService = (agencyAddress, wallet) => {
 			const agency = await getAgencyDetails(agencyAddress);
 			return agency.rahatContract.connect(wallet);
 		},
-		async chargeCustomerForERC20(phone, amount) {
-			const contract = await this.getContract();
-
-			const tx = await contract.createERC20Claim(Number(phone), Number(amount));
-
+		async regulatorContract() {
+			const agency = await getAgencyDetails(agencyAddress);
+			return agency.regulatorContract.connect(wallet);
+		},
+		async chargeCustomerForERC20(projectId, phone, amount) {
+			const contract = await this.regulatorContract();
+			const tx = await contract.createERC20Claim(projectId, Number(phone), Number(amount));
 			return tx.wait();
 		},
 		async verifyChargeForERC20(phone, otp) {
@@ -72,6 +77,12 @@ const RahatService = (agencyAddress, wallet) => {
 		async getBeneficiaryERC20Balance(phone) {
 			const contract = await this.getContract();
 			return contract.erc20Balance(phone);
+		},
+
+		async getBeneficiaryBalance(projectId, phone) {
+			const contract = await this.regulatorContract();
+			console.log({ contract });
+			return contract.fetchBeneficiaryBalance(projectId, phone);
 		}
 	};
 };

@@ -219,18 +219,7 @@ export default function Main() {
 		if (agency && !agency.isApproved) return history.push('/setup/pending');
 		await checkRecentTnx();
 		await getTokenBalance();
-		await getPackageBalance();
-	}, [
-		contextLoading,
-		agency,
-		hasSynchronized,
-		hasWallet,
-		hasBackedUp,
-		history,
-		getTokenBalance,
-		checkRecentTnx,
-		getPackageBalance
-	]);
+	}, [contextLoading, agency, hasSynchronized, hasWallet, hasBackedUp, history, getTokenBalance, checkRecentTnx]);
 
 	// Action Sheet togglers
 	const toggleRedeemModal = () => setRedeemModal(prev => !prev);
@@ -409,29 +398,27 @@ export default function Main() {
 								<h1 className={`total `}>{tokenBalance || 0}</h1>
 							</div>
 							<div className="right">
-								<span className="title">Package Balance</span>
-
-								<h1 className={`total ${packageBalanceLoading && 'loading_text'}`}>
-									NRS {packageBalance?.grandTotal || 0}
-								</h1>
+								{wallet && (
+									<button
+										className="item button-link"
+										onClick={() => {
+											if (isOffline()) return;
+											setRedeemModal(true);
+										}}
+									>
+										<div className="col">
+											<div className="action-button">
+												<IoArrowDownCircleOutline
+													className="ion-icon"
+													style={{ fontSize: '40px' }}
+												/>
+											</div>
+										</div>
+										<strong>Redeem</strong>
+									</button>
+								)}
 							</div>
 						</div>
-						{wallet && (
-							<button
-								className="item button-link"
-								onClick={() => {
-									if (isOffline()) return;
-									setRedeemModal(true);
-								}}
-							>
-								<div className="col">
-									<div className="action-button">
-										<IoArrowDownCircleOutline className="ion-icon" style={{ fontSize: '40px' }} />
-									</div>
-								</div>
-								<strong>Redeem</strong>
-							</button>
-						)}
 					</div>
 				</div>
 
