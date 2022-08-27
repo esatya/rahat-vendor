@@ -63,7 +63,7 @@ export default function Main() {
 		<>
 			<div className="section">
 				<div className="text-center p-2">
-					<img src="/assets/img/brand/logo-512.png" alt="alt" width="130" />
+					<img src="/assets/img/brand/g20-logo.png" alt="alt" width="130" />
 				</div>
 				<div className="card1">
 					<div className="card-body text-center" ref={camContainerRef}>

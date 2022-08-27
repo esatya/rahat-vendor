@@ -39,11 +39,15 @@ export default function Info({ togglePasscodeModal }) {
 					delete it or any contents within it.
 				</div>
 				<div className="text-center mt-3">
-					<Link to="/google/backup">
+					{/* <Link to="/google/backup">
 						<button className="btn btn-danger btn-lg" id="btnDrive">
 							Backup to Google Drive
 						</button>
-					</Link>
+					</Link> */}
+
+					<button onClick={() => alert('Coming Soon')} className="btn btn-danger btn-lg" id="btnDrive">
+						Backup to Google Drive
+					</button>
 				</div>
 			</div>
 			<div className="section full mb-2" id="cmpBackup"></div>

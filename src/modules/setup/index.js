@@ -43,7 +43,7 @@ export default function Main() {
 		<>
 			<div className="item p-2">
 				<div className="text-center p-3 mb-3">
-					<img src="/assets/img/brand/logo-512.png" alt="alt" width="200" />
+					<img src="/assets/img/brand/g20-logo.png" alt="alt" width="200" />
 				</div>
 				<h2>राहत अधिकृत पसल</h2>
 				<p>

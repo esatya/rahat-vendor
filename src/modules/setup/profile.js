@@ -34,7 +34,7 @@ export default function Main() {
 		<>
 			<div className="section mt-2">
 				<div className="text-center p-5">
-					<img src="/assets/img/brand/logo-512.png" alt="alt" width="200" />
+					<img src="/assets/img/brand/g20-logo.png" alt="alt" width="200" />
 				</div>
 				<Form onSubmit={save}>
 					<div className="card">

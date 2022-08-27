@@ -27,8 +27,8 @@ export default function Header() {
 					</a>
 				</div>
 				<div className="pageTitle">
-					<img src="assets/img/brand/icon-white-128.png" width="22" alt="logo" className="logo" />
-					&nbsp; Rahat Vendor
+					<img src="assets/img/brand/rumsan-favicon.png" width="22" alt="logo" className="logo" />
+					&nbsp; PAMS Vendor
 				</div>
 				<div className="right">
 					<Dropdown drop="down">
