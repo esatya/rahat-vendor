@@ -1,7 +1,4 @@
 node_modules
-.vscode
-docker-compose.yml
-docker-compose.dev.yml
-Dockerfile
-Dockerfile.dev
-npm-debug.log
+.env.production
+.env.development
+README.md
