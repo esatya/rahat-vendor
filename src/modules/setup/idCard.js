@@ -142,11 +142,11 @@ export default function Main() {
 					<Loading message={loading} showModal={loading !== null} />
 					<div className="section">
 						<div className="text-center p-2">
-							<img src="/assets/img/brand/g20-logo.png" alt="alt" width="130" />
+							<img src="/assets/img/brand/logo-512.png" alt="alt" width="130" />
 						</div>
 						<div className="card1">
 							<div className="card-body text-center">
-								<h3>
+								<h3 className="mb-2">
 									Take a picture of your ID card
 									<small>
 										<br />
@@ -161,7 +161,7 @@ export default function Main() {
 										style={{
 											borderRadius: '10px',
 											width: '100%',
-											height: '300px',
+											height: '350px',
 											border: '3px solid #958d9e',
 											marginTop: '30px'
 										}}
@@ -183,33 +183,24 @@ export default function Main() {
 								)}
 							</div>
 						</div>
-						<div className="pl-3 pr-3">
+						<div className="pl-4 pr-4">
 							{previewImage ? (
-								<div>
-									<div className="text-center">
-										<button
-											type="button"
-											className="btn btn-lg btn-block btn-outline-primary mt-1"
-											onClick={() => setPreviewImage(null)}
-										>
-											<BiReset className="ion-icon" />
-											Retake Picture
-										</button>
-										<button
-											type="button"
-											className="btn btn-lg btn-block btn-success mt-3 mb-2"
-											onClick={save}
-										>
-											Complete setup
-										</button>
-									</div>
-									<p className="text-privacy">
-										By signing up you acknowledge the{' '}
-										<a href="https://docs.rahat.io/privacy-policy" className="privacy-policy">
-											Privacy Policy
-										</a>{' '}
-										.
-									</p>
+								<div className="text-center">
+									<button
+										type="button"
+										className="btn btn-lg btn-block btn-outline-primary mt-1"
+										onClick={() => setPreviewImage(null)}
+									>
+										<BiReset className="ion-icon" />
+										Retake Picture
+									</button>
+									<button
+										type="button"
+										className="btn btn-lg btn-block btn-success mt-3 mb-2"
+										onClick={save}
+									>
+										Complete setup
+									</button>
 								</div>
 							) : (
 								<div className="d-flex justify-content-between align-items-center mt-1 mb-3">
